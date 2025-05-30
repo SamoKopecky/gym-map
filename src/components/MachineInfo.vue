@@ -14,17 +14,23 @@ defineProps({
 
 const selectedTrainer = ref<string>()
 const trainers = ref<string[]>(['samo', 'peter'])
-
-const emit = defineEmits(['update:modelValue'])
-
-function exitButton() {
-  emit('update:modelValue', false)
-}
 </script>
 
 <template>
   <v-dialog v-if="machine" v-model="active">
     <v-card :title="machine.name">
+      <template #title>
+        <div class="d-flex align-center justify-space-between">
+          <p>{{ machine.name }}</p>
+          <v-btn
+            @click="active = false"
+            class="ml-4"
+            color="error"
+            variant="text"
+            icon="mdi-close"
+          ></v-btn>
+        </div>
+      </template>
       <template #text>
         <v-textarea
           variant="outlined"

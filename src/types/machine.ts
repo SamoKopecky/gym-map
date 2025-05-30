@@ -12,6 +12,7 @@ export interface Machine {
   id: string
   name: string
   description: string
+  muscleGroups: string[]
   position: Position
   dimension: Dimension
 }

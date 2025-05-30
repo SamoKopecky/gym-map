@@ -14,6 +14,7 @@ const machines: Machine[] = [
       height: 180,
       width: 190,
     },
+    muscleGroups: ['chest', 'tricep', 'shoulder'],
     id: 'bp',
     position: {
       y: 400,
@@ -24,6 +25,7 @@ const machines: Machine[] = [
     description: 'This is a leg press',
     id: 'lp',
     name: 'Leg press',
+    muscleGroups: ['quadriceps', 'legs'],
     dimension: {
       height: 180,
       width: 190,
@@ -36,8 +38,10 @@ const machines: Machine[] = [
 ]
 
 function selectMachine(machine: Machine) {
-  if (activeMachine.value?.id != machine.id) {
+  if (activeMachine.value?.id !== machine.id) {
     showMenu.value = true
+  } else {
+    showMenu.value = !showMenu.value
   }
   activeMachine.value = machine
 }
@@ -63,18 +67,33 @@ function selectMachine(machine: Machine) {
       />
     </svg>
     <v-menu
+      v-if="activeMachine"
       v-model="showMenu"
-      :activator="activeMachine ? `#${activeMachine.id}` : undefined"
+      :activator="`#${activeMachine.id}`"
       :close-on-content-click="false"
-      :persistent="true"
+      offset="10"
+      :open-on-click="false"
       location="left"
+      persistent
     >
       <v-card min-width="150" max-width="300">
+        <v-card-title>
+          <div class="d-flex align-center justify-space-between">
+            <p>{{ activeMachine.name }}</p>
+            <v-btn
+              @click="showMenu = false"
+              class="ml-4"
+              color="error"
+              variant="text"
+              icon="mdi-close"
+            ></v-btn>
+          </div>
+        </v-card-title>
+        <v-card-subtitle> {{ activeMachine.muscleGroups.join(', ') }} </v-card-subtitle>
         <v-card-text>
-          <v-btn @click="showMenu = false">close</v-btn>
-          <v-btn @click="isOpen = true">show more</v-btn>
-          test</v-card-text
-        >
+          <v-spacer></v-spacer>
+          <v-btn @click="isOpen = true">More details</v-btn>
+        </v-card-text>
       </v-card>
     </v-menu>
   </div>
