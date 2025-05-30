@@ -1,13 +1,31 @@
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
+import {
+  VBtn,
+  VCard,
+  VCardText,
+  VDialog,
+  VDivider,
+  VMenu,
+  VSelect,
+  VTextarea,
+} from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    VSelect,
+    VDialog,
+    VTextarea,
+    VCard,
+    VCardText,
+    VDivider,
+    VBtn,
+    VMenu,
+  },
   directives,
 })
 

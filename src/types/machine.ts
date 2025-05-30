@@ -9,6 +9,7 @@ export interface Dimension {
 }
 
 export interface Machine {
+  id: string
   name: string
   description: string
   position: Position
