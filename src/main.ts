@@ -1,6 +1,6 @@
-import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css'
-import { createVuetify } from 'vuetify'
+import "vuetify/styles"
+import "@mdi/font/css/materialdesignicons.css"
+import { createVuetify } from "vuetify"
 import {
   VBtn,
   VCard,
@@ -9,16 +9,20 @@ import {
   VCardTitle,
   VDialog,
   VDivider,
+  VExpandTransition,
   VIcon,
+  VList,
+  VListItem,
+  VListSubheader,
   VMenu,
   VSelect,
   VSpacer,
   VTextarea,
-} from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+} from "vuetify/components"
+import * as directives from "vuetify/directives"
 
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from "vue"
+import App from "./App.vue"
 
 const vuetify = createVuetify({
   components: {
@@ -32,13 +36,20 @@ const vuetify = createVuetify({
     VMenu,
     VCardTitle,
     VCardSubtitle,
+    VList,
     VIcon,
+    VListItem,
     VSpacer,
+    VListSubheader,
+    VExpandTransition,
   },
   icons: {
-    defaultSet: 'mdi',
+    defaultSet: "mdi",
   },
   directives,
 })
 
-createApp(App).use(vuetify).mount('#app')
+createApp(App).use(vuetify).mount("#app")
+
+// TODO: make animations more smooth
+// TODO: use maps for trainers and their content (make data dymaic base on machine selected)

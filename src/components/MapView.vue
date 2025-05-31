@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import MachineInfo from '@/components/MachineInfo.vue'
-import type { Machine } from '@/types/machine'
-import { nextTick, ref } from 'vue'
+import MachineInfo from "@/components/MachineInfo.vue"
+import type { Machine } from "@/types/machine"
+import { ref } from "vue"
 
 const showMenu = ref(false)
 const isOpen = ref(false)
 const activeMachine = ref<Machine>()
 const machines: Machine[] = [
   {
-    description: 'This is a bench press',
-    name: 'Bench press',
+    description: "This is a bench press",
+    name: "Bench press",
     dimension: {
       height: 180,
       width: 190,
     },
-    muscleGroups: ['chest', 'tricep', 'shoulder'],
-    id: 'bp',
+    muscleGroups: ["chest", "tricep", "shoulder"],
+    id: "bp",
     position: {
       y: 400,
       x: 470,
     },
   },
   {
-    description: 'This is a leg press',
-    id: 'lp',
-    name: 'Leg press',
-    muscleGroups: ['quadriceps', 'legs'],
+    description: "This is a leg press",
+    id: "lp",
+    name: "Leg press",
+    muscleGroups: ["quadriceps", "legs"],
     dimension: {
       height: 180,
       width: 190,
@@ -52,19 +52,27 @@ function selectMachine(machine: Machine) {
     <MachineInfo v-model="isOpen" :machine="activeMachine" />
     <svg width="800" height="600" view-box="0 0 800 600" style="background-color: grey">
       <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
-      <rect
-        :id="machine.id"
-        stroke="blue"
-        fill="#000000"
-        v-for="machine in machines"
-        :key="machine.name"
-        :x="machine.position.x"
-        :y="machine.position.y"
-        :width="machine.dimension.width"
-        :height="machine.dimension.height"
-        style="cursor: pointer"
-        @click="selectMachine(machine)"
-      />
+      <g v-for="machine in machines" :key="machine.name">
+        <rect
+          :id="machine.id"
+          stroke="blue"
+          fill="#000000"
+          :x="machine.position.x"
+          :y="machine.position.y"
+          :width="machine.dimension.width"
+          :height="machine.dimension.height"
+          style="cursor: pointer"
+          @click="selectMachine(machine)"
+        />
+        <text
+          :x="machine.position.x + machine.dimension.height / 2"
+          :y="machine.position.y + machine.dimension.width / 2"
+          fill="red"
+          style="pointer-events: none"
+        >
+          {{ machine.name }}
+        </text>
+      </g>
     </svg>
     <v-menu
       v-if="activeMachine"
@@ -89,7 +97,7 @@ function selectMachine(machine: Machine) {
             ></v-btn>
           </div>
         </v-card-title>
-        <v-card-subtitle> {{ activeMachine.muscleGroups.join(', ') }} </v-card-subtitle>
+        <v-card-subtitle> {{ activeMachine.muscleGroups.join(", ") }} </v-card-subtitle>
         <v-card-text>
           <v-spacer></v-spacer>
           <v-btn @click="isOpen = true">More details</v-btn>
