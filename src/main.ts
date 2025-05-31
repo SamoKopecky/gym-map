@@ -50,6 +50,3 @@ const vuetify = createVuetify({
 })
 
 createApp(App).use(vuetify).mount("#app")
-
-// TODO: make animations more smooth
-// TODO: use maps for trainers and their content (make data dymaic base on machine selected)

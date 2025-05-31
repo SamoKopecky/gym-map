@@ -9,7 +9,8 @@ export interface Dimension {
 }
 
 export interface Machine {
-  id: string
+  id: number
+  htmlId: string
   name: string
   description: string
   muscleGroups: string[]

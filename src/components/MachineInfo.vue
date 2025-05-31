@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import type { Exercise, ChoiseItem, Machine, Trainer } from "@/types/machine"
+import type { ChoiseItem, Machine } from "@/types/machine"
 import { ref, type PropType } from "vue"
 import ChoiseList from "@/components/ChoiseList.vue"
-import { computed } from "vue"
-import type { ComputedRef } from "vue"
 import { watch } from "vue"
+import { getTrainers } from "@/services/trainers"
+import { exerciseToItem, trainerToItem } from "@/utils/transformators"
+import { getExercises } from "@/services/exercise"
 
-defineProps({
+const props = defineProps({
   machine: {
     type: Object as PropType<Machine | undefined>,
     required: false,
@@ -18,44 +19,9 @@ const active = defineModel<boolean>({ required: true })
 
 const selectedExerciseId = ref<number>()
 const selectedTrainerId = ref<number>()
-const exercises = ref<Exercise[]>([
-  {
-    id: 1,
-    availableVideos: 2,
-    muscleGroups: ["feet", "legs"],
-    name: "squat",
-  },
-  {
-    id: 2,
-    availableVideos: 5,
-    muscleGroups: ["feet", "legs"],
-    name: "bench press",
-  },
-  {
-    id: 3,
-    availableVideos: 3,
-    muscleGroups: ["shoulders", "legs", "something else idk"],
-    name: "deadlift",
-  },
-  {
-    id: 4,
-    availableVideos: 0,
-    muscleGroups: ["back", "lats"],
-    name: "pull ups",
-  },
-])
-const trainers = ref<Trainer[]>([
-  {
-    id: 1,
-    name: "samo",
-    fullName: "Samuel Kopecky",
-  },
-  {
-    id: 2,
-    name: "Mirka",
-    fullName: "Miroslava Liptakova",
-  },
-])
+const generalInfoText = ref<string>()
+const trainerItems = ref<ChoiseItem[]>([])
+const exerciseItems = ref<ChoiseItem[]>([])
 
 watch(active, (newActive: boolean) => {
   if (newActive) {
@@ -64,27 +30,32 @@ watch(active, (newActive: boolean) => {
   }
 })
 
-const exerciseItems: ComputedRef<ChoiseItem[]> = computed(() => {
-  return exercises.value.map((e) => {
-    const i: ChoiseItem = {
-      name: e.name,
-      id: e.id,
-      subtitle: e.muscleGroups.join(", "),
-      append: `${e.availableVideos}`,
+watch(
+  () => props.machine,
+  (newMachine?: Machine) => {
+    if (!newMachine) {
+      generalInfoText.value = ""
+      exerciseItems.value = []
+      return
     }
-    return i
-  })
+    generalInfoText.value = newMachine.description
+    exerciseItems.value = getExercises(newMachine.id).map(exerciseToItem)
+  },
+)
+
+watch(selectedExerciseId, (newId?: number) => {
+  if (!newId) {
+    trainerItems.value = []
+    return
+  }
+  trainerItems.value = getTrainers(newId).map(trainerToItem)
 })
 
-const trainerItems: ComputedRef<ChoiseItem[]> = computed(() => {
-  return trainers.value.map((t) => {
-    const i: ChoiseItem = {
-      name: t.name,
-      id: t.id,
-      subtitle: t.fullName,
-    }
-    return i
-  })
+watch(selectedTrainerId, (newId?: number) => {
+  if (!newId) {
+    generalInfoText.value = ""
+    return
+  }
 })
 
 const setExerciseId = (exerciseId?: number) => {
@@ -111,7 +82,13 @@ const setExerciseId = (exerciseId?: number) => {
         </div>
       </template>
       <template #text>
-        <v-textarea variant="outlined" hide-details="auto" rows="3" label="Generic machine notes" />
+        <v-textarea
+          v-model="generalInfoText"
+          variant="outlined"
+          hide-details="auto"
+          rows="3"
+          label="Generic machine notes"
+        />
 
         <h3>Exercises</h3>
         <ChoiseList
