@@ -114,7 +114,7 @@ const setExerciseId = (exerciseId?: number) => {
             rows="3"
             label="Trainer specific instructions"
           />
-          <div class="box mx-auto">video here :)</div>
+          <div class="box mx-auto">video</div>
         </div>
       </template>
     </v-card>
@@ -123,8 +123,8 @@ const setExerciseId = (exerciseId?: number) => {
 
 <style lang="css" scoped>
 .box {
-  width: 400px;
-  height: 200px;
+  width: 100px;
+  height: 50px;
   background-color: lightblue;
   border: 2px solid blue;
   padding: 10px;
