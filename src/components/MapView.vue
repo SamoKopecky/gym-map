@@ -1,48 +1,49 @@
 <script setup lang="ts">
 import MachineInfo from "@/components/MachineInfo.vue"
+import { machineService } from "@/services/machine"
 import type { Machine } from "@/types/machine"
-import { useDebounceFn } from "@vueuse/core"
-import { nextTick } from "vue"
+import { onMounted } from "vue"
 import { ref } from "vue"
-import VueZoomable from "vue-zoomable"
 import "vue-zoomable/dist/style.css"
-import { isObject } from "vuetify/lib/util/helpers.mjs"
 
 const showMenu = ref(false)
 const isOpen = ref(false)
 const activeMachine = ref<Machine>()
-const machines: Machine[] = [
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 1,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a leg press",
-    htmlId: "lp",
-    id: 2,
-    name: "Leg press",
-    muscleGroups: ["quadriceps", "legs"],
-    dimension: {
-      height: 130,
-      width: 130,
-    },
-    position: {
-      y: 650,
-      x: 140,
-    },
-  },
-]
+const machines = ref<Machine[]>([])
+// const machines: Machine[] = [
+//   {
+//     description: "This is a squat rack",
+//     name: "Squat rack",
+//     dimension: {
+//       height: 150,
+//       width: 300,
+//     },
+//     muscleGroups: ["chest", "legs", "back"],
+//     id: 1,
+//     htmlId: "sr",
+//     position: {
+//       y: 0,
+//       x: 590,
+//     },
+//   },
+//   {
+//     description: "This is a leg press",
+//     htmlId: "lp",
+//     id: 2,
+//     name: "Leg press",
+//     muscleGroups: ["quadriceps", "legs"],
+//     dimension: {
+//       height: 130,
+//       width: 130,
+//     },
+//     position: {
+//       y: 650,
+//       x: 140,
+//     },
+//   },
+// ]
+
+onMounted(() => machineService.get().then((res) => (machines.value = res)))
 
 function selectMachine(machine: Machine) {
   if (activeMachine.value?.id !== machine.id) {
