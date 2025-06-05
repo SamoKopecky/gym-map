@@ -2,6 +2,8 @@
 import type { Machine } from "@/types/machine"
 import { isSearched } from "@/utils/search"
 import { computed, ref } from "vue"
+import { useRouter } from "vue-router"
+import { pushToMachinePage } from "@/utils/router"
 
 const machines: Machine[] = [
   {
@@ -12,7 +14,7 @@ const machines: Machine[] = [
       width: 300,
     },
     muscleGroups: ["chest", "legs", "back"],
-    id: 1,
+    id: 2,
     htmlId: "sr",
     position: {
       y: 0,
@@ -111,7 +113,10 @@ const machines: Machine[] = [
   },
 ]
 
+const router = useRouter()
+
 const searchBar = ref<string>()
+
 const searchedMachines = computed(() => {
   if (!searchBar.value) return machines
 
@@ -133,7 +138,7 @@ const searchedMachines = computed(() => {
         <v-card
           :title="machine.name"
           :subtitle="machine.muscleGroups.join(', ')"
-          @click="console.log('a')"
+          @click="pushToMachinePage(router, machine.id)"
         >
           <v-card-text>
             {{ machine.description }}

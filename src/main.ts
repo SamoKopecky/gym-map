@@ -39,6 +39,7 @@ import * as directives from "vuetify/directives"
 
 import { createApp } from "vue"
 import App from "./App.vue"
+import router from "./router"
 
 const vuetify = createVuetify({
   components: {
@@ -80,4 +81,4 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App).use(vuetify).mount("#app")
+createApp(App).use(vuetify).use(router).mount("#app")

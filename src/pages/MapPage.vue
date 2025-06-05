@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import MachineInfo from "@/components/MachineInfo.vue"
-import { machineService } from "@/services/machine"
 import type { Machine } from "@/types/machine"
-import { onMounted } from "vue"
 import { ref } from "vue"
-import "vue-zoomable/dist/style.css"
+import { pushToMachinePage } from "@/utils/router"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const showMenu = ref(false)
 const isOpen = ref(false)
@@ -85,7 +86,7 @@ function selectMachine(machine: Machine) {
           <v-card-subtitle> {{ activeMachine.muscleGroups.join(", ") }} </v-card-subtitle>
           <v-card-text>
             <v-spacer></v-spacer>
-            <v-btn @click="isOpen = true">More details</v-btn>
+            <v-btn @click="pushToMachinePage(router, activeMachine.id)">More details</v-btn>
           </v-card-text>
         </v-card>
       </v-menu>
