@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import MapView from "@/components/MapView.vue"
+import MapPage from "@/pages/MapPage.vue"
 import { ref } from "vue"
+import MachinesPage from "@/pages/MachinesPage.vue"
 
-const tab = ref(null)
+const tab = ref("machines")
 </script>
 
 <template>
@@ -20,10 +21,10 @@ const tab = ref(null)
       <v-main>
         <v-window v-model="tab">
           <v-window-item value="map">
-            <MapView></MapView>
+            <MapPage />
           </v-window-item>
           <v-window-item value="machines">
-            <div>Machines Content Here</div>
+            <MachinesPage />
           </v-window-item>
         </v-window>
       </v-main>

@@ -16,6 +16,7 @@ import {
   VDivider,
   VExpandTransition,
   VIcon,
+  VInput,
   VLayout,
   VList,
   VListItem,
@@ -30,6 +31,7 @@ import {
   VTabsWindow,
   VTabsWindowItem,
   VTextarea,
+  VTextField,
   VWindow,
   VWindowItem,
 } from "vuetify/components"
@@ -53,6 +55,7 @@ const vuetify = createVuetify({
     VCol,
     VAppBar,
     VWindow,
+    VTextField,
     VWindowItem,
     VApp,
     VDialog,
