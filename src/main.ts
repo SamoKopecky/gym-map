@@ -15,6 +15,8 @@ import {
   VDialog,
   VDivider,
   VExpandTransition,
+  VExpansionPanel,
+  VExpansionPanels,
   VIcon,
   VInput,
   VLayout,
@@ -74,6 +76,8 @@ const vuetify = createVuetify({
     VSpacer,
     VListSubheader,
     VExpandTransition,
+    VExpansionPanel,
+    VExpansionPanels,
   },
   icons: {
     defaultSet: "mdi",

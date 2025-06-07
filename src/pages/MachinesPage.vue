@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { Machine } from "@/types/machine"
-import { isSearched } from "@/utils/search"
-import { computed, ref } from "vue"
-import { useRouter } from "vue-router"
-import { pushToMachinePage } from "@/utils/router"
+import { computed, ref, watch } from "vue"
+import CardList from "@/components/CardList.vue"
 
 const machines: Machine[] = [
   {
@@ -44,7 +42,7 @@ const machines: Machine[] = [
       width: 300,
     },
     muscleGroups: ["chest", "legs", "back"],
-    id: 1,
+    id: 3,
     htmlId: "sr",
     position: {
       y: 0,
@@ -59,7 +57,7 @@ const machines: Machine[] = [
       width: 300,
     },
     muscleGroups: ["chest", "legs", "back"],
-    id: 1,
+    id: 4,
     htmlId: "sr",
     position: {
       y: 0,
@@ -74,7 +72,7 @@ const machines: Machine[] = [
       width: 300,
     },
     muscleGroups: ["chest", "legs", "back"],
-    id: 1,
+    id: 5,
     htmlId: "sr",
     position: {
       y: 0,
@@ -89,7 +87,7 @@ const machines: Machine[] = [
       width: 300,
     },
     muscleGroups: ["chest", "legs", "back"],
-    id: 1,
+    id: 6,
     htmlId: "sr",
     position: {
       y: 0,
@@ -99,7 +97,7 @@ const machines: Machine[] = [
   {
     description: "This is a leg press",
     htmlId: "lp",
-    id: 2,
+    id: 7,
     name: "Leg press",
     muscleGroups: ["quadriceps", "legs"],
     dimension: {
@@ -113,14 +111,23 @@ const machines: Machine[] = [
   },
 ]
 
-const router = useRouter()
-
 const searchBar = ref<string>()
+const panelsShow = ref<string[]>([])
+const selectedMachine = ref<Machine | undefined>()
 
-const searchedMachines = computed(() => {
-  if (!searchBar.value) return machines
+const machinesTitle = computed(() => {
+  if (!selectedMachine.value) {
+    return "Machines"
+  } else {
+    return selectedMachine.value.name
+  }
+})
 
-  return machines.filter((m) => isSearched(searchBar.value!, m))
+watch(selectedMachine, (newVal: Machine | undefined) => {
+  if (newVal) {
+    // Remove machines from selected expansion panels to hide it
+    panelsShow.value = panelsShow.value?.filter((p) => p !== "machines")
+  }
 })
 </script>
 
@@ -132,19 +139,15 @@ const searchedMachines = computed(() => {
     placeholder="Search anything..."
     variant="outlined"
   ></v-text-field>
-  <v-container fluid>
-    <v-row>
-      <v-col v-for="machine in searchedMachines" :key="machine.id" cols="12" md="4" sm="6" lg="3">
-        <v-card
-          :title="machine.name"
-          :subtitle="machine.muscleGroups.join(', ')"
-          @click="pushToMachinePage(router, machine.id)"
-        >
-          <v-card-text>
-            {{ machine.description }}
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-expansion-panels v-model="panelsShow" multiple>
+    <v-expansion-panel :title="machinesTitle" value="machines">
+      <template #text>
+        <CardList
+          v-model:cards="machines"
+          v-model:selected="selectedMachine"
+          :search-bar="searchBar"
+        />
+      </template>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
