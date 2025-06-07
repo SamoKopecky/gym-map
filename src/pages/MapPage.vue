@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MachineInfo from "@/components/MachineInfo.vue"
 import type { Machine } from "@/types/machine"
 import { ref } from "vue"
 import { pushToMachinePage } from "@/utils/router"
@@ -8,7 +7,6 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 
 const showMenu = ref(false)
-const isOpen = ref(false)
 const activeMachine = ref<Machine>()
 // const machines = ref<Machine[]>([])
 const machines: Machine[] = [
@@ -58,7 +56,6 @@ function selectMachine(machine: Machine) {
 
 <template>
   <div>
-    <MachineInfo v-model="isOpen" :machine="activeMachine" />
     <div>
       <v-menu
         v-if="activeMachine"

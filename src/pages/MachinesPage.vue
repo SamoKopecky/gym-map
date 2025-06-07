@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Machine } from "@/types/machine"
-import { computed, ref, watch } from "vue"
-import CardList from "@/components/CardList.vue"
+import { type Machine } from "@/types/machine"
+import { ref } from "vue"
+import CardPanel from "@/components/CardPanel.vue"
 
 const machines: Machine[] = [
   {
@@ -113,22 +113,11 @@ const machines: Machine[] = [
 
 const searchBar = ref<string>()
 const panelsShow = ref<string[]>([])
-const selectedMachine = ref<Machine | undefined>()
 
-const machinesTitle = computed(() => {
-  if (!selectedMachine.value) {
-    return "Machines"
-  } else {
-    return selectedMachine.value.name
-  }
-})
-
-watch(selectedMachine, (newVal: Machine | undefined) => {
-  if (newVal) {
-    // Remove machines from selected expansion panels to hide it
-    panelsShow.value = panelsShow.value?.filter((p) => p !== "machines")
-  }
-})
+function handleCardSelect(panelName: string) {
+  // Remove machines from selected expansion panels to hide it
+  panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
+}
 </script>
 
 <template>
@@ -140,14 +129,17 @@ watch(selectedMachine, (newVal: Machine | undefined) => {
     variant="outlined"
   ></v-text-field>
   <v-expansion-panels v-model="panelsShow" multiple>
-    <v-expansion-panel :title="machinesTitle" value="machines">
-      <template #text>
-        <CardList
-          v-model:cards="machines"
-          v-model:selected="selectedMachine"
-          :search-bar="searchBar"
-        />
-      </template>
-    </v-expansion-panel>
+    <CardPanel
+      v-model:cards="machines"
+      name="Machines"
+      :search-bar="searchBar"
+      @select:card="handleCardSelect"
+    />
+    <CardPanel
+      v-model:cards="machines"
+      name="Exercises"
+      :search-bar="searchBar"
+      @select:card="handleCardSelect"
+    />
   </v-expansion-panels>
 </template>
