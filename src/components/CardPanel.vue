@@ -56,7 +56,7 @@ function updateCardId(machine: Machine) {
           <v-col v-for="card in searchedCards" :key="card.id" cols="12" md="4" sm="6" lg="3">
             <v-card
               :title="card.name"
-              :subtitle="card.muscleGroups.join(', ')"
+              :subtitle="card.muscle_groups?.join(', ')"
               :variant="selectedCard?.id === card.id ? 'outlined' : undefined"
               @click="updateCardId(card)"
             >

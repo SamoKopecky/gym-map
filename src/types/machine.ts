@@ -10,10 +10,10 @@ export interface Dimension {
 
 export interface Machine {
   id: number
-  htmlId: string
+  htmlId?: string
   name: string
-  description: string
-  muscleGroups: string[]
+  description?: string
+  muscle_groups?: string[]
   position: Position
   dimension: Dimension
 }

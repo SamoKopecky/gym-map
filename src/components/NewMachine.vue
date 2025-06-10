@@ -4,6 +4,8 @@ import { ref } from "vue"
 
 const MAX_NAME_CHARS = 255
 
+const emit = defineEmits(["create:machine"])
+
 const active = defineModel<boolean>({ required: true })
 const isLoading = ref(false)
 const isFormValid = ref(false)
@@ -29,7 +31,11 @@ function createMachine() {
       description: machineDescription.value,
       muscle_groups: muscleGroups.value,
     })
-    .finally(() => (isLoading.value = false))
+    .then(() => emit("create:machine"))
+    .finally(() => {
+      isLoading.value = false
+      active.value = false
+    })
 }
 </script>
 

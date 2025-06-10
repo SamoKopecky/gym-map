@@ -3,115 +3,10 @@ import { type Machine } from "@/types/machine"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import NewMachine from "@/components/NewMachine.vue"
+import { machineService } from "@/services/machine"
+import { onMounted } from "vue"
 
-const machines: Machine[] = [
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 2,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 1,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 3,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 4,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 5,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscleGroups: ["chest", "legs", "back"],
-    id: 6,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a leg press",
-    htmlId: "lp",
-    id: 7,
-    name: "Leg press",
-    muscleGroups: ["quadriceps", "legs"],
-    dimension: {
-      height: 130,
-      width: 130,
-    },
-    position: {
-      y: 650,
-      x: 140,
-    },
-  },
-]
-
+const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
 const panelsShow = ref<string[]>([])
 const newMachineActive = ref<boolean>(false)
@@ -120,10 +15,18 @@ function handleCardSelect(panelName: string) {
   // Remove machines from selected expansion panels to hide it
   panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
 }
+
+onMounted(() => fetchMachines())
+
+function fetchMachines() {
+  machineService.get().then((res) => {
+    machines.value = res
+  })
+}
 </script>
 
 <template>
-  <NewMachine v-model="newMachineActive" />
+  <NewMachine v-model="newMachineActive" @create:machine="fetchMachines" />
 
   <v-text-field
     v-model="searchBar"
