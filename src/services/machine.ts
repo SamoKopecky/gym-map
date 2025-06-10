@@ -1,7 +1,13 @@
 import { Route, ServiceBase } from "./base"
 import type { Machine } from "@/types/machine"
 
-class MachineService extends ServiceBase<object, object, Machine> {
+export interface MachinePostRequest {
+  name: string
+  description?: string
+  muscle_groups?: string[]
+}
+
+class MachineService extends ServiceBase<object, MachinePostRequest, Machine> {
   constructor() {
     super(Route.Machines)
   }
