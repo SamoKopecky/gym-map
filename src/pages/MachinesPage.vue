@@ -2,18 +2,29 @@
 import { type Machine } from "@/types/machine"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
-import NewMachine from "@/components/NewMachine.vue"
+import MachineDetail from "@/components/MachineDetail.vue"
 import { machineService } from "@/services/machine"
 import { onMounted } from "vue"
 
 const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
 const panelsShow = ref<string[]>([])
-const newMachineActive = ref<boolean>(false)
+const isMachineDetailaActive = ref<boolean>(false)
+const activeMachineDetail = ref<Machine>()
 
 function handleCardSelect(panelName: string) {
   // Remove machines from selected expansion panels to hide it
   panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
+}
+
+function handleMachineSelect(machine: Machine) {
+  activeMachineDetail.value = machine
+  isMachineDetailaActive.value = true
+}
+
+function handleMachineCreation() {
+  activeMachineDetail.value = undefined
+  isMachineDetailaActive.value = true
 }
 
 onMounted(() => fetchMachines())
@@ -26,7 +37,11 @@ function fetchMachines() {
 </script>
 
 <template>
-  <NewMachine v-model="newMachineActive" @create:machine="fetchMachines" />
+  <MachineDetail
+    v-model:active="isMachineDetailaActive"
+    v-model:machine="activeMachineDetail"
+    @create:machine="fetchMachines"
+  />
 
   <v-text-field
     v-model="searchBar"
@@ -34,14 +49,16 @@ function fetchMachines() {
     label="Search"
     placeholder="Search anything..."
     variant="outlined"
+    clearable
   ></v-text-field>
   <v-expansion-panels v-model="panelsShow" multiple>
     <CardPanel
-      v-model:card-dialog="newMachineActive"
-      v-model:cards="machines"
+      v-model="machines"
       name="Machines"
       :search-bar="searchBar"
       @select:card="handleCardSelect"
+      @edit:card="handleMachineSelect"
+      @create:card="handleMachineCreation"
     >
     </CardPanel>
   </v-expansion-panels>

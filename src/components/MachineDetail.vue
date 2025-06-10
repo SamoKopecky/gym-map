@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { machineService } from "@/services/machine"
-import { ref } from "vue"
+import type { Machine } from "@/types/machine"
+import { ref, watch } from "vue"
 
 const MAX_NAME_CHARS = 255
 
 const emit = defineEmits(["create:machine"])
 
-const active = defineModel<boolean>({ required: true })
+const active = defineModel<boolean>("active", { required: true })
+const machine = defineModel<Machine>("machine", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
 
@@ -21,21 +23,53 @@ const nameRules = [
     `Name must be less than ${MAX_NAME_CHARS} characters.`,
 ]
 
-function createMachine() {
+watch(active, (newVal) => {
+  if (machine.value && newVal) {
+    machineName.value = machine.value.name
+    machineDescription.value = machine.value.description
+    muscleGroups.value = machine.value.muscle_groups ?? []
+  } else {
+    machineName.value = undefined
+    machineDescription.value = undefined
+    muscleGroups.value = []
+  }
+})
+
+function saveMachine() {
   // TODO: User feedback on fail
   if (!machineName.value) return
+
   isLoading.value = true
-  machineService
-    .post({
-      name: machineName.value!,
-      description: machineDescription.value,
-      muscle_groups: muscleGroups.value,
-    })
-    .then(() => emit("create:machine"))
-    .finally(() => {
-      isLoading.value = false
-      active.value = false
-    })
+  if (!machine.value) {
+    machineService
+      .post({
+        name: machineName.value!,
+        description: machineDescription.value,
+        muscle_groups: muscleGroups.value,
+      })
+      .then(() => {
+        emit("create:machine")
+      })
+      .finally(() => {
+        isLoading.value = false
+        active.value = false
+      })
+  } else {
+    machineService
+      .patch({
+        id: machine.value.id,
+        name: machineName.value,
+        description: machineDescription.value,
+        muscle_groups: muscleGroups.value,
+      })
+      .then(() => {
+        machine.value!.name = machineName.value!
+        machine.value!.description = machineDescription.value
+        machine.value!.muscle_groups = muscleGroups.value
+      })
+      .finally(() => (isLoading.value = false))
+    machine.value.description = machineDescription.value
+  }
 }
 </script>
 
@@ -48,7 +82,7 @@ function createMachine() {
 
       <v-divider />
 
-      <v-form v-model="isFormValid" @submit.prevent="createMachine">
+      <v-form v-model="isFormValid" @submit.prevent="saveMachine">
         <v-card-text class="pt-4">
           <v-text-field
             v-model="machineName"
@@ -56,7 +90,6 @@ function createMachine() {
             variant="outlined"
             :rules="nameRules"
             :counter="MAX_NAME_CHARS"
-            clearable
             prepend-inner-icon="mdi-dumbbell"
             class="mb-2"
           />
@@ -67,7 +100,6 @@ function createMachine() {
             variant="outlined"
             rows="3"
             auto-grow
-            clearable
             prepend-inner-icon="mdi-note-text-outline"
             class="mb-2"
           />
@@ -77,7 +109,6 @@ function createMachine() {
             label="Muscle groups"
             chips
             multiple
-            clearable
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
             hint="Type and press Enter to add a new muscle group"
@@ -97,7 +128,7 @@ function createMachine() {
             :disabled="!isFormValid"
             :loading="isLoading"
           >
-            Create Machine
+            Save
           </v-btn>
         </v-card-actions>
       </v-form>

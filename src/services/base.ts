@@ -11,14 +11,23 @@ export enum Route {
   // TODO: Make exercise a subpath of timeslot
 }
 
+export interface PatchBase {
+  id: number
+}
+
 export enum Method {
   GET = "GET",
   PUT = "PUT",
   POST = "POST",
   DELETE = "DELETE",
+  PATCH = "PATCH",
 }
 
-export abstract class ServiceBase<PutObj extends object, PostObj extends object, T extends object> {
+export abstract class ServiceBase<
+  PatchObj extends PatchBase,
+  PostObj extends object,
+  T extends object,
+> {
   protected route: Route
 
   constructor(routeBase: Route) {
@@ -106,11 +115,12 @@ export abstract class ServiceBase<PutObj extends object, PostObj extends object,
     })
   }
 
-  public async put(jsonParams: PutObj): Promise<void> {
+  public async patch(jsonParams: PatchObj): Promise<void> {
     return this.handleRequest({
       jsonParams,
-      method: Method.PUT,
-      route: this.route,
+      pathParams: { id: jsonParams.id },
+      method: Method.PATCH,
+      route: `${this.route}/:id`,
     })
   }
 
