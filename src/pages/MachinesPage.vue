@@ -2,6 +2,7 @@
 import { type Machine } from "@/types/machine"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
+import NewMachine from "@/components/NewMachine.vue"
 
 const machines: Machine[] = [
   {
@@ -113,6 +114,7 @@ const machines: Machine[] = [
 
 const searchBar = ref<string>()
 const panelsShow = ref<string[]>([])
+const newMachineActive = ref<boolean>(false)
 
 function handleCardSelect(panelName: string) {
   // Remove machines from selected expansion panels to hide it
@@ -121,6 +123,8 @@ function handleCardSelect(panelName: string) {
 </script>
 
 <template>
+  <NewMachine v-model="newMachineActive" />
+
   <v-text-field
     v-model="searchBar"
     class="mt-2 mx-2"
@@ -130,16 +134,12 @@ function handleCardSelect(panelName: string) {
   ></v-text-field>
   <v-expansion-panels v-model="panelsShow" multiple>
     <CardPanel
+      v-model:card-dialog="newMachineActive"
       v-model:cards="machines"
       name="Machines"
       :search-bar="searchBar"
       @select:card="handleCardSelect"
-    />
-    <CardPanel
-      v-model:cards="machines"
-      name="Exercises"
-      :search-bar="searchBar"
-      @select:card="handleCardSelect"
-    />
+    >
+    </CardPanel>
   </v-expansion-panels>
 </template>
