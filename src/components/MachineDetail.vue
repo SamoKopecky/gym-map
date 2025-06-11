@@ -121,7 +121,7 @@ function saveMachine() {
             multiple
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
-            hint="Type and press Enter to add a new muscle group"
+            :hint="!isReadOnly ? 'Type and press Enter to add a new muscle group' : undefined"
             persistent-hint
           />
         </v-card-text>
@@ -132,10 +132,11 @@ function saveMachine() {
           <v-btn variant="text" @click="active = false"> Cancel </v-btn>
           <v-spacer />
           <v-btn
+            v-if="!isReadOnly"
             color="green"
             variant="flat"
             type="submit"
-            :disabled="!isFormValid || isReadOnly"
+            :disabled="!isFormValid"
             :loading="isLoading"
           >
             Save

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Card } from "@/types/machine"
+import type { Card, CardPanelName } from "@/types/machine"
 import { computed, ref, type PropType } from "vue"
 
 const emit = defineEmits(["select:card", "create:card", "view:card"])
@@ -8,7 +8,7 @@ const selectedCard = ref<Card | undefined>()
 
 const { name } = defineProps({
   name: {
-    type: String,
+    type: String as PropType<CardPanelName>,
     required: true,
   },
   isAdmin: {

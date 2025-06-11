@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Machine } from "@/types/machine"
+import { type CardPanelName, type Machine } from "@/types/machine"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
@@ -11,7 +11,7 @@ import { isSearched } from "@/utils/search"
 
 const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
-const panelsShow = ref<string[]>(["Machines"])
+const panelsShow = ref<CardPanelName[]>(["Machines"])
 const isMachineDetailaActive = ref<boolean>(false)
 const activeMachineDetail = ref<Machine>()
 const isAdmin = ref(false)
@@ -77,7 +77,15 @@ onMounted(() => fetchMachines())
       @select:card="handleCardSelect"
       @view:card="handleMachineSelect"
       @create:card="handleMachineCreation"
-    >
-    </CardPanel>
+    />
+
+    <CardPanel
+      name="Exercises"
+      :cards="cardMachines"
+      :is-admin="isAdmin"
+      @select:card="handleCardSelect"
+      @view:card="handleMachineSelect"
+      @create:card="handleMachineCreation"
+    />
   </v-expansion-panels>
 </template>

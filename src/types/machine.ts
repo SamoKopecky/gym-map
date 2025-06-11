@@ -44,3 +44,5 @@ export interface Card {
   subtitle?: string
   description?: string
 }
+
+export type CardPanelName = "Machines" | "Exercises"
