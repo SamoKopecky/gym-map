@@ -5,6 +5,13 @@ import { ref, watch } from "vue"
 
 const MAX_NAME_CHARS = 255
 
+defineProps({
+  isReadOnly: {
+    type: Boolean,
+    required: true,
+  },
+})
+
 const emit = defineEmits(["create:machine"])
 
 const active = defineModel<boolean>("active", { required: true })
@@ -85,6 +92,7 @@ function saveMachine() {
       <v-form v-model="isFormValid" @submit.prevent="saveMachine">
         <v-card-text class="pt-4">
           <v-text-field
+            :readonly="isReadOnly"
             v-model="machineName"
             label="Machine name"
             variant="outlined"
@@ -95,6 +103,7 @@ function saveMachine() {
           />
 
           <v-textarea
+            :readonly="isReadOnly"
             v-model="machineDescription"
             label="Machine description"
             variant="outlined"
@@ -105,6 +114,7 @@ function saveMachine() {
           />
 
           <v-combobox
+            :readonly="isReadOnly"
             v-model="muscleGroups"
             label="Muscle groups"
             chips

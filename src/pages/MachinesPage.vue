@@ -8,9 +8,10 @@ import { onMounted } from "vue"
 
 const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
-const panelsShow = ref<string[]>([])
+const panelsShow = ref<string[]>(["Machines"])
 const isMachineDetailaActive = ref<boolean>(false)
 const activeMachineDetail = ref<Machine>()
+const isAdmin = ref(false)
 
 function handleCardSelect(panelName: string) {
   // Remove machines from selected expansion panels to hide it
@@ -41,8 +42,10 @@ function fetchMachines() {
     v-model:active="isMachineDetailaActive"
     v-model:machine="activeMachineDetail"
     @create:machine="fetchMachines"
+    :is-read-only="!isAdmin"
   />
 
+  <v-checkbox label="Admin view" v-model="isAdmin" />
   <v-text-field
     v-model="searchBar"
     class="mt-2 mx-2"
@@ -50,14 +53,15 @@ function fetchMachines() {
     placeholder="Search anything..."
     variant="outlined"
     clearable
-  ></v-text-field>
+  />
   <v-expansion-panels v-model="panelsShow" multiple>
     <CardPanel
       v-model="machines"
       name="Machines"
       :search-bar="searchBar"
+      :is-admin="isAdmin"
       @select:card="handleCardSelect"
-      @edit:card="handleMachineSelect"
+      @view:card="handleMachineSelect"
       @create:card="handleMachineCreation"
     >
     </CardPanel>

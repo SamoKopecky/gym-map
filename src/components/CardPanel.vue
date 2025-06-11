@@ -5,7 +5,7 @@ import { computed, ref } from "vue"
 
 const cards = defineModel<Machine[]>({ required: true })
 
-const emit = defineEmits(["select:card", "edit:card", "create:card"])
+const emit = defineEmits(["select:card", "create:card", "view:card"])
 
 const selectedCard = ref<Machine | undefined>()
 
@@ -18,6 +18,11 @@ const { searchBar, name } = defineProps({
   name: {
     type: String,
     required: true,
+  },
+  isAdmin: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 })
 
@@ -48,7 +53,7 @@ function updateCardId(machine: Machine) {
   <v-expansion-panel :title="machinesTitle" :value="name">
     <template #text>
       <v-container fluid>
-        <v-btn class="mb-3" text="add new" @click="emit('create:card')" />
+        <v-btn v-if="isAdmin" class="mb-3" text="add new" @click="emit('create:card')" />
         <v-row>
           <v-col v-for="card in searchedCards" :key="card.id" cols="12" md="4" sm="6" lg="3">
             <v-card
@@ -59,9 +64,19 @@ function updateCardId(machine: Machine) {
             >
               <template #append>
                 <v-btn
+                  v-if="isAdmin"
                   icon="mdi-pencil"
+                  v-tooltip:bottom="'Edit card'"
                   variant="text"
-                  @click="emit('edit:card', card)"
+                  @click="emit('view:card', card)"
+                  @click.stop
+                />
+                <v-btn
+                  v-else
+                  icon="mdi-information-outline"
+                  variant="text"
+                  v-tooltip:bottom="'More info'"
+                  @click="emit('view:card', card)"
                   @click.stop
                 />
               </template>

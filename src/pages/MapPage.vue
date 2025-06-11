@@ -8,7 +8,6 @@ const router = useRouter()
 
 const showMenu = ref(false)
 const activeMachine = ref<Machine>()
-// const machines = ref<Machine[]>([])
 const machines: Machine[] = [
   {
     description: "This is a squat rack",
@@ -17,7 +16,7 @@ const machines: Machine[] = [
       height: 150,
       width: 300,
     },
-    muscleGroups: ["chest", "legs", "back"],
+    muscle_groups: ["chest", "legs", "back"],
     id: 1,
     htmlId: "sr",
     position: {
@@ -30,7 +29,7 @@ const machines: Machine[] = [
     htmlId: "lp",
     id: 2,
     name: "Leg press",
-    muscleGroups: ["quadriceps", "legs"],
+    muscle_groups: ["quadriceps", "legs"],
     dimension: {
       height: 130,
       width: 130,
