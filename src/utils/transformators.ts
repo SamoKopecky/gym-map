@@ -1,4 +1,4 @@
-import type { ChoiseItem, Exercise, Trainer } from "@/types/machine"
+import type { Card, ChoiseItem, Exercise, Machine, Trainer } from "@/types/machine"
 
 export function trainerToItem(trainer: Trainer): ChoiseItem {
   return {
@@ -14,5 +14,14 @@ export function exerciseToItem(exercise: Exercise): ChoiseItem {
     id: exercise.id,
     subtitle: exercise.muscleGroups.join(", "),
     append: `${exercise.availableVideos}`,
+  }
+}
+
+export function machineToCard(machine: Machine): Card {
+  return {
+    subtitle: machine.muscle_groups?.join(", "),
+    name: machine.name,
+    id: machine.id,
+    description: machine.description,
   }
 }

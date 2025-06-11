@@ -5,6 +5,9 @@ import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import { machineService } from "@/services/machine"
 import { onMounted } from "vue"
+import { computed } from "vue"
+import { machineToCard } from "@/utils/transformators"
+import { isSearched } from "@/utils/search"
 
 const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
@@ -18,6 +21,17 @@ function handleCardSelect(panelName: string) {
   panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
 }
 
+// Machines, make composable
+const searchedMachines = computed(() => {
+  if (!searchBar.value) return machines.value
+
+  return machines.value.filter((c) => isSearched(searchBar.value!, c))
+})
+
+const cardMachines = computed(() => {
+  return searchedMachines.value.map((m) => machineToCard(m))
+})
+
 function handleMachineSelect(machine: Machine) {
   activeMachineDetail.value = machine
   isMachineDetailaActive.value = true
@@ -28,13 +42,14 @@ function handleMachineCreation() {
   isMachineDetailaActive.value = true
 }
 
-onMounted(() => fetchMachines())
-
 function fetchMachines() {
   machineService.get().then((res) => {
     machines.value = res
   })
 }
+// End
+
+onMounted(() => fetchMachines())
 </script>
 
 <template>
@@ -56,9 +71,8 @@ function fetchMachines() {
   />
   <v-expansion-panels v-model="panelsShow" multiple>
     <CardPanel
-      v-model="machines"
       name="Machines"
-      :search-bar="searchBar"
+      :cards="cardMachines"
       :is-admin="isAdmin"
       @select:card="handleCardSelect"
       @view:card="handleMachineSelect"

@@ -135,7 +135,7 @@ function saveMachine() {
             color="green"
             variant="flat"
             type="submit"
-            :disabled="!isFormValid"
+            :disabled="!isFormValid || isReadOnly"
             :loading="isLoading"
           >
             Save

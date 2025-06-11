@@ -37,3 +37,10 @@ export interface ChoiseItem {
   subtitle: string
   append?: string
 }
+
+export interface Card {
+  id: number
+  name: string
+  subtitle?: string
+  description?: string
+}
