@@ -3,17 +3,14 @@ import { type CardPanelName, type Machine } from "@/types/machine"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
-import { machineService } from "@/services/machine"
 import { onMounted } from "vue"
-import { computed } from "vue"
 import { machineToCard } from "@/utils/transformators"
-import { isSearched } from "@/utils/search"
+import { isMachineSearched } from "@/utils/search"
+import { useDetail } from "@/composables/useDetail"
+import { machineService } from "@/services/machine"
 
-const machines = ref<Machine[]>([])
 const searchBar = ref<string>()
 const panelsShow = ref<CardPanelName[]>(["Machines"])
-const isMachineDetailaActive = ref<boolean>(false)
-const activeMachineDetail = ref<Machine>()
 const isAdmin = ref(false)
 
 function handleCardSelect(panelName: string) {
@@ -21,41 +18,22 @@ function handleCardSelect(panelName: string) {
   panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
 }
 
-// Machines, make composable
-const searchedMachines = computed(() => {
-  if (!searchBar.value) return machines.value
-
-  return machines.value.filter((c) => isSearched(searchBar.value!, c))
-})
-
-const cardMachines = computed(() => {
-  return searchedMachines.value.map((m) => machineToCard(m))
-})
-
-function handleMachineSelect(machine: Machine) {
-  activeMachineDetail.value = machine
-  isMachineDetailaActive.value = true
-}
-
-function handleMachineCreation() {
-  activeMachineDetail.value = undefined
-  isMachineDetailaActive.value = true
-}
-
-function fetchMachines() {
-  machineService.get().then((res) => {
-    machines.value = res
-  })
-}
-// End
+const {
+  cards: machineCards,
+  activeEntity: activeMachine,
+  isEntityDetailActive: isMachineDetailActive,
+  handleEntityCreation: handleMachineCreation,
+  handleEntitySelect: handleMachineSelect,
+  fetchEntities: fetchMachines,
+} = useDetail<Machine>(searchBar, machineService, isMachineSearched, machineToCard)
 
 onMounted(() => fetchMachines())
 </script>
 
 <template>
   <MachineDetail
-    v-model:active="isMachineDetailaActive"
-    v-model:machine="activeMachineDetail"
+    v-model:active="isMachineDetailActive"
+    v-model:machine="activeMachine"
     @create:machine="fetchMachines"
     :is-read-only="!isAdmin"
   />
@@ -72,7 +50,7 @@ onMounted(() => fetchMachines())
   <v-expansion-panels v-model="panelsShow" multiple>
     <CardPanel
       name="Machines"
-      :cards="cardMachines"
+      :cards="machineCards"
       :is-admin="isAdmin"
       @select:card="handleCardSelect"
       @view:card="handleMachineSelect"
@@ -81,7 +59,7 @@ onMounted(() => fetchMachines())
 
     <CardPanel
       name="Exercises"
-      :cards="cardMachines"
+      :cards="machineCards"
       :is-admin="isAdmin"
       @select:card="handleCardSelect"
       @view:card="handleMachineSelect"

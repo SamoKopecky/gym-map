@@ -8,14 +8,19 @@ export interface Dimension {
   height: number
 }
 
-export interface Machine {
-  id: number
+export interface Machine extends Entity {
   htmlId?: string
   name: string
   description?: string
   muscle_groups?: string[]
   position: Position
   dimension: Dimension
+}
+
+export interface MachineState {
+  name: string
+  description: string
+  muscle_groups: string[]
 }
 
 export interface Exercise {
@@ -46,3 +51,7 @@ export interface Card {
 }
 
 export type CardPanelName = "Machines" | "Exercises"
+
+export interface Entity {
+  id: number
+}

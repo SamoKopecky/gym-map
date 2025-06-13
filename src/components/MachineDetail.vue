@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { machineService } from "@/services/machine"
-import type { Machine } from "@/types/machine"
+import { type MachineState, type Machine } from "@/types/machine"
+import { reactive } from "vue"
 import { ref, watch } from "vue"
 
 const MAX_NAME_CHARS = 255
@@ -19,9 +20,11 @@ const machine = defineModel<Machine>("machine", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
 
-const machineName = ref<string>()
-const machineDescription = ref<string>()
-const muscleGroups = ref<string[]>([])
+const formData = reactive<MachineState>({
+  name: "",
+  description: "",
+  muscle_groups: [],
+})
 
 const nameRules = [
   (value: string) => !!value || "Machine name is required.",
@@ -32,50 +35,44 @@ const nameRules = [
 
 watch(active, (newVal) => {
   if (machine.value && newVal) {
-    machineName.value = machine.value.name
-    machineDescription.value = machine.value.description
-    muscleGroups.value = machine.value.muscle_groups ?? []
+    formData.name = machine.value.name
+    formData.description = machine.value.description ?? ""
+    formData.muscle_groups = machine.value.muscle_groups ?? []
   } else {
-    machineName.value = undefined
-    machineDescription.value = undefined
-    muscleGroups.value = []
+    formData.name = ""
+    formData.description = ""
+    formData.muscle_groups = []
   }
 })
 
 function saveMachine() {
   // TODO: User feedback on fail
-  if (!machineName.value) return
+  if (!isFormValid.value) return
 
   isLoading.value = true
   if (!machine.value) {
     machineService
-      .post({
-        name: machineName.value!,
-        description: machineDescription.value,
-        muscle_groups: muscleGroups.value,
-      })
+      .post({ ...formData })
       .then(() => {
         emit("create:machine")
+        active.value = false
       })
       .finally(() => {
         isLoading.value = false
-        active.value = false
       })
   } else {
     machineService
       .patch({
         id: machine.value.id,
-        name: machineName.value,
-        description: machineDescription.value,
-        muscle_groups: muscleGroups.value,
+        ...formData,
       })
       .then(() => {
-        machine.value!.name = machineName.value!
-        machine.value!.description = machineDescription.value
-        machine.value!.muscle_groups = muscleGroups.value
+        Object.assign(machine.value!, formData)
+        active.value = false
       })
-      .finally(() => (isLoading.value = false))
-    machine.value.description = machineDescription.value
+      .finally(() => {
+        isLoading.value = false
+      })
   }
 }
 </script>
@@ -93,7 +90,7 @@ function saveMachine() {
         <v-card-text class="pt-4">
           <v-text-field
             :readonly="isReadOnly"
-            v-model="machineName"
+            v-model="formData.name"
             label="Machine name"
             variant="outlined"
             :rules="nameRules"
@@ -104,7 +101,7 @@ function saveMachine() {
 
           <v-textarea
             :readonly="isReadOnly"
-            v-model="machineDescription"
+            v-model="formData.description"
             label="Machine description"
             variant="outlined"
             rows="3"
@@ -115,7 +112,7 @@ function saveMachine() {
 
           <v-combobox
             :readonly="isReadOnly"
-            v-model="muscleGroups"
+            v-model="formData.muscle_groups"
             label="Muscle groups"
             chips
             multiple
