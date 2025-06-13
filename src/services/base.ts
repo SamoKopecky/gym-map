@@ -8,7 +8,7 @@ import axios, {
 const API_BASE_URL = import.meta.env.VITE_APP_BACKEND ?? "http://localhost:2001"
 export enum Route {
   Machines = "/machines",
-  // TODO: Make exercise a subpath of timeslot
+  Exercises = "/exercises",
 }
 
 export interface PatchBase {

@@ -1,7 +1,8 @@
 import { computed, ref, type Ref } from "vue"
-import type { Card, Entity } from "@/types/machine"
 import type { ServiceBase } from "@/services/base"
 import { onMounted } from "vue"
+import type { Entity } from "@/types/base"
+import type { Card } from "@/types/card"
 
 export function useDetail<T extends Entity>(
   searchBar: Ref<string | undefined>,

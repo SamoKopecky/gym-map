@@ -79,7 +79,7 @@ function selectMachine(machine: Machine) {
               ></v-btn>
             </div>
           </v-card-title>
-          <v-card-subtitle> {{ activeMachine.muscleGroups.join(", ") }} </v-card-subtitle>
+          <v-card-subtitle> {{ activeMachine.muscle_groups?.join(", ") }} </v-card-subtitle>
           <v-card-text>
             <v-spacer></v-spacer>
             <v-btn @click="pushToMachinePage(router, activeMachine.id)">More details</v-btn>

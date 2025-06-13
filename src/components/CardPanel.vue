@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Card, CardPanelName } from "@/types/machine"
+import type { Card, CardPanelName } from "@/types/card"
 import { computed, ref, type PropType } from "vue"
 
 const emit = defineEmits(["select:card", "create:card", "view:card"])

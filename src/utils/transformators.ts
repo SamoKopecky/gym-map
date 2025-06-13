@@ -1,4 +1,7 @@
-import type { Card, ChoiseItem, Exercise, Machine, Trainer } from "@/types/machine"
+import type { Card } from "@/types/card"
+import type { Exercise } from "@/types/exercise"
+import type { Machine } from "@/types/machine"
+import type { Trainer, ChoiseItem } from "@/types/other"
 
 export function trainerToItem(trainer: Trainer): ChoiseItem {
   return {
@@ -8,12 +11,12 @@ export function trainerToItem(trainer: Trainer): ChoiseItem {
   }
 }
 
-export function exerciseToItem(exercise: Exercise): ChoiseItem {
+export function exerciseToCard(exercise: Exercise): Card {
   return {
     name: exercise.name,
     id: exercise.id,
-    subtitle: exercise.muscleGroups.join(", "),
-    append: `${exercise.availableVideos}`,
+    subtitle: exercise.muscle_groups?.join(", "),
+    description: exercise.description,
   }
 }
 

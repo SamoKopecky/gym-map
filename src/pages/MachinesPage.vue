@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { type CardPanelName, type Machine } from "@/types/machine"
+import { type Machine } from "@/types/machine"
+import { type CardPanelName } from "@/types/card"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import { onMounted } from "vue"
-import { machineToCard } from "@/utils/transformators"
-import { isMachineSearched } from "@/utils/search"
+import { exerciseToCard, machineToCard } from "@/utils/transformators"
+import { isExerciseSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
+import { exerciseService } from "@/services/exercise"
+import type { Exercise } from "@/types/exercise"
+import ExerciseDetail from "@/components/ExerciseDetail.vue"
 
 const searchBar = ref<string>()
 const panelsShow = ref<CardPanelName[]>(["Machines"])
@@ -26,8 +30,19 @@ const {
   handleEntitySelect: handleMachineSelect,
   fetchEntities: fetchMachines,
 } = useDetail<Machine>(searchBar, machineService, isMachineSearched, machineToCard)
+const {
+  cards: exerciseCards,
+  activeEntity: activeExercise,
+  isEntityDetailActive: isExerciseDetailActive,
+  handleEntityCreation: handleExerciseCreation,
+  handleEntitySelect: handleExerciseSelect,
+  fetchEntities: fetchExercises,
+} = useDetail<Exercise>(searchBar, exerciseService, isExerciseSearched, exerciseToCard)
 
-onMounted(() => fetchMachines())
+onMounted(() => {
+  fetchMachines()
+  fetchExercises()
+})
 </script>
 
 <template>
@@ -35,6 +50,13 @@ onMounted(() => fetchMachines())
     v-model:active="isMachineDetailActive"
     v-model:machine="activeMachine"
     @create:machine="fetchMachines"
+    :is-read-only="!isAdmin"
+  />
+
+  <ExerciseDetail
+    v-model:active="isExerciseDetailActive"
+    v-model:exercise="activeExercise"
+    @create:exercise="fetchExercises"
     :is-read-only="!isAdmin"
   />
 
@@ -59,11 +81,11 @@ onMounted(() => fetchMachines())
 
     <CardPanel
       name="Exercises"
-      :cards="machineCards"
+      :cards="exerciseCards"
       :is-admin="isAdmin"
       @select:card="handleCardSelect"
-      @view:card="handleMachineSelect"
-      @create:card="handleMachineCreation"
+      @view:card="handleExerciseSelect"
+      @create:card="handleExerciseCreation"
     />
   </v-expansion-panels>
 </template>
