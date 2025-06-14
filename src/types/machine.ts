@@ -6,6 +6,10 @@ export interface Machine extends Entity, Position {
   muscle_groups?: string[]
 }
 
+export interface MapMachine extends Machine {
+  is_origin: boolean
+}
+
 // Used for post data in machine detail
 export interface MachineState {
   name: string

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { Card, CardPanelName } from "@/types/card"
 import { computed, type PropType } from "vue"
+import { useRouter } from "vue-router"
 
 const emit = defineEmits(["select:card", "create:card", "view:card", "unselect:card"])
 
 const selectedCard = defineModel<Card>()
+
+const router = useRouter()
 
 const { name } = defineProps({
   name: {
@@ -22,7 +25,7 @@ const { name } = defineProps({
   },
 })
 
-const machinesTitle = computed(() => {
+const panelTitle = computed(() => {
   if (!selectedCard.value) {
     return name
   } else {
@@ -42,19 +45,31 @@ function updateCardId(card: Card) {
 </script>
 
 <template>
-  <v-expansion-panel :title="machinesTitle" :value="name">
+  <v-expansion-panel :value="name">
+    <template #title>
+      <v-btn
+        v-if="selectedCard && name === 'Machines'"
+        class="mr-2"
+        variant="text"
+        icon="mdi-map"
+        @click.stop
+        v-tooltip:bottom="'Highlight on map'"
+        @click="router.push(`/map/${selectedCard.id}`)"
+      />
+      {{ panelTitle }}
+    </template>
     <template #text>
       <v-container fluid>
         <v-btn v-if="isAdmin" class="mb-3" text="add new" @click="emit('create:card')" />
         <v-row>
           <v-col v-for="card in cards" :key="card.id" cols="12" md="4" sm="6" lg="3">
-            TODO Add icon to go to machine on map
             <v-card
               :title="card.name"
               :subtitle="card.subtitle"
               :variant="selectedCard?.id === card.id ? 'outlined' : undefined"
               @click="updateCardId(card)"
             >
+              <v-card-title> </v-card-title>
               <template #append>
                 <v-btn
                   v-if="isAdmin"

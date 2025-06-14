@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NumberSlider from "@/components/NumberSlider.vue"
-import type { Machine } from "@/types/machine"
+import type { MapMachine } from "@/types/machine"
 import { onMounted, ref, watch } from "vue"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
@@ -10,11 +10,19 @@ import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
 
+const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+})
+
 const router = useRouter()
 
-const machines = ref<Machine[]>()
-const editMode = ref<boolean>(true)
-const machineEdit = ref<Machine>()
+const machines = ref<MapMachine[]>()
+const editMode = ref<boolean>(false)
+const machineEdit = ref<MapMachine>()
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -23,7 +31,7 @@ const machinePosition = reactive<Position>({
   position_y: 0,
 })
 
-function selectMachine(machine: Machine) {
+function selectMachine(machine: MapMachine) {
   if (editMode.value) {
     machineEdit.value = machine
     machinePosition.width = machine.width
@@ -53,7 +61,17 @@ const updatePositionDebounce = useDebounceFn((position: Position) => {
   })
 }, 500)
 
-onMounted(() => machineService.get().then((res) => (machines.value = res)))
+onMounted(() =>
+  machineService.get().then((res) => {
+    machines.value = res.map((m) => ({ ...m, is_origin: false }))
+    if (props.id) {
+      const originMachine = machines.value.find((m) => m.id === Number(props.id))
+      if (!originMachine) return
+
+      originMachine.is_origin = true
+    }
+  }),
+)
 </script>
 
 <template>
@@ -71,7 +89,7 @@ onMounted(() => machineService.get().then((res) => (machines.value = res)))
       <g v-for="machine in machines" :key="machine.name">
         <rect
           :id="getMachineHtmlId(machine)"
-          stroke="blue"
+          :stroke="machine.is_origin ? 'red' : 'blue'"
           fill="#000000"
           :x="machine.position_x"
           :y="machine.position_y"
@@ -83,7 +101,7 @@ onMounted(() => machineService.get().then((res) => (machines.value = res)))
         <text
           :x="machine.position_x + machine.width / 3"
           :y="machine.position_y + machine.height / 2"
-          fill="red"
+          :fill="machine.is_origin ? 'white' : 'red'"
           style="pointer-events: none"
         >
           {{ machine.name }}

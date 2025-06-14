@@ -4,7 +4,7 @@ import MachinesPage from "@/pages/MachinesPage.vue"
 
 const routes = [
   { path: "/", component: MachinesPage, name: "MachinesDefault" },
-  { path: "/map", component: MapPage, name: "Map" },
+  { path: "/map/:id?", component: MapPage, name: "Map", props: true },
   { path: "/machines/:id?", component: MachinesPage, name: "Machines", props: true },
 ]
 
