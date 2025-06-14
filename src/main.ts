@@ -30,8 +30,10 @@ import {
   VListSubheader,
   VMain,
   VMenu,
+  VNumberInput,
   VRow,
   VSelect,
+  VSlider,
   VSlideYTransition,
   VSpacer,
   VTab,
@@ -90,6 +92,8 @@ const vuetify = createVuetify({
     VListSubheader,
     VExpandTransition,
     VCheckbox,
+    VNumberInput,
+    VSlider,
     VExpansionPanel,
     VExpansionPanels,
   },
@@ -101,4 +105,4 @@ const vuetify = createVuetify({
 
 const pinia = createPinia()
 
-createApp(App).use(vuetify).use(router).use(pinia).mount("#app")
+const app = createApp(App).use(vuetify).use(router).use(pinia).mount("#app")

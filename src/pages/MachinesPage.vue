@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Card, type CardPanelName } from "@/types/card"
-import { ref, watch } from "vue"
+import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import { onMounted } from "vue"

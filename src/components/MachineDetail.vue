@@ -62,7 +62,7 @@ function saveMachine() {
       })
       .finally(() => {
         isLoading.value = false
-        addNotification("Machine saved", "success")
+        addNotification("Machine succesfully saved", "success")
       })
       .catch(() => {
         addNotification("Machine failed to save", "error")
