@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Machine } from "@/types/machine"
 import { pushToMachinesPage } from "@/utils/router"
-import { getMachineHtmlId } from "@/utils/transformators"
-import { ref } from "vue"
 import { useRouter } from "vue-router"
 
 const active = defineModel<boolean>("active", { required: true })

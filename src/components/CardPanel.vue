@@ -48,6 +48,7 @@ function updateCardId(card: Card) {
         <v-btn v-if="isAdmin" class="mb-3" text="add new" @click="emit('create:card')" />
         <v-row>
           <v-col v-for="card in cards" :key="card.id" cols="12" md="4" sm="6" lg="3">
+            TODO Add icon to go to machine on map
             <v-card
               :title="card.name"
               :subtitle="card.subtitle"

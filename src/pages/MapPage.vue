@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MapMachineMenu from "@/components/MapMachineMenu.vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { Machine } from "@/types/machine"
 import { onMounted, ref, watch } from "vue"
@@ -48,11 +47,11 @@ watch(machinePosition, (newPos) => {
 })
 
 const updatePositionDebounce = useDebounceFn((position: Position) => {
-  machineService.patch({
+  machineService.patchPosition({
     id: machineEdit.value!.id,
     ...position,
   })
-}, 1000)
+}, 500)
 
 onMounted(() => machineService.get().then((res) => (machines.value = res)))
 </script>
