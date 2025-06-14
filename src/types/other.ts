@@ -1,12 +1,6 @@
-export interface Trainer {
-  id: number
-  name: string
-  fullName: string
-}
+export type NotificationType = "success" | "info" | "warning" | "error" | undefined
 
-export interface ChoiseItem {
-  id: number
-  name: string
-  subtitle: string
-  append?: string
+export interface ChangeNotification {
+  type: NotificationType
+  text: string
 }

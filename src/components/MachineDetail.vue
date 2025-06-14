@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { machineService } from "@/services/machine"
+import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type MachineState, type Machine } from "@/types/machine"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
@@ -19,6 +20,8 @@ const active = defineModel<boolean>("active", { required: true })
 const machine = defineModel<Machine>("machine", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
+
+const { addNotification } = useNotificationStore()
 
 const formData = reactive<MachineState>({
   name: "",
@@ -53,12 +56,16 @@ function saveMachine() {
   if (!machine.value) {
     machineService
       .post({ ...formData })
-      .then(() => {
-        emit("create:machine")
+      .then((res) => {
+        emit("create:machine", res)
         active.value = false
       })
       .finally(() => {
         isLoading.value = false
+        addNotification("Machine saved", "success")
+      })
+      .catch(() => {
+        addNotification("Machine failed to save", "error")
       })
   } else {
     machineService
@@ -69,6 +76,7 @@ function saveMachine() {
       .then(() => {
         Object.assign(machine.value!, formData)
         active.value = false
+        addNotification("Machine edited", "success")
       })
       .finally(() => {
         isLoading.value = false

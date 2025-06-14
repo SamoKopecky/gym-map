@@ -1,22 +1,13 @@
 import { type Entity } from "./base.ts"
 
-export interface Position {
-  x: number
-  y: number
-}
-
-export interface Dimension {
-  width: number
-  height: number
-}
-
 export interface Machine extends Entity {
-  htmlId?: string
   name: string
   description?: string
   muscle_groups?: string[]
-  position: Position
-  dimension: Dimension
+  position_x: number
+  position_y: number
+  width: number
+  height: number
 }
 
 // Used for post data in machine detail

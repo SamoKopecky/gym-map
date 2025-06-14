@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import NotificationPopup from "@/components/NotificationPopup.vue"
 
 const tab = ref("machines")
 </script>
 
 <template>
   <v-app>
+    <NotificationPopup />
     <v-layout>
       <v-app-bar color="yellow">
         <v-spacer></v-spacer>

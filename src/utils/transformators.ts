@@ -28,3 +28,7 @@ export function machineToCard(machine: Machine): Card {
     description: machine.description,
   }
 }
+
+export function getMachineHtmlId(machine: Machine): string {
+  return `#${machine.name}-${machine.id}`
+}

@@ -13,6 +13,14 @@ import { exerciseService } from "@/services/exercise"
 import type { Exercise } from "@/types/exercise"
 import ExerciseDetail from "@/components/ExerciseDetail.vue"
 
+const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+})
+
 const searchBar = ref<string>()
 const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
 const isAdmin = ref(false)
@@ -78,50 +86,52 @@ function handleMachineUnselect() {
 </script>
 
 <template>
-  <MachineDetail
-    v-model:active="isMachineDetailActive"
-    v-model:machine="activeMachine"
-    @create:machine="handleMachineApiCreation"
-    :is-read-only="!isAdmin"
-  />
-
-  <ExerciseDetail
-    v-model:active="isExerciseDetailActive"
-    v-model:exercise="activeExercise"
-    @create:exercise="handleExerciseApiCreation"
-    :is-read-only="!isAdmin"
-    :machine-id="selectedMachineCard?.id"
-  />
-
-  <v-checkbox label="Admin view" v-model="isAdmin" />
-  <v-text-field
-    v-model="searchBar"
-    class="mt-2 mx-2"
-    label="Search"
-    placeholder="Search anything..."
-    variant="outlined"
-    clearable
-  />
-  <v-expansion-panels v-model="panelsShow" multiple>
-    <CardPanel
-      name="Machines"
-      :cards="machineCards"
-      :is-admin="isAdmin"
-      v-model="selectedMachineCard"
-      @select:card="handleCardSelect"
-      @view:card="handleMachineSelect"
-      @create:card="handleMachineCreation"
-      @unselect:card="handleMachineUnselect"
+  <div>
+    <MachineDetail
+      v-model:active="isMachineDetailActive"
+      v-model:machine="activeMachine"
+      @create:machine="handleMachineApiCreation"
+      :is-read-only="!isAdmin"
     />
 
-    <CardPanel
-      name="Exercises"
-      :cards="exerciseCards"
-      :is-admin="isAdmin"
-      v-model="selectedExerciseCard"
-      @select:card="handleCardSelect"
-      @view:card="handleExerciseSelect"
-      @create:card="handleExerciseCreation"
+    <ExerciseDetail
+      v-model:active="isExerciseDetailActive"
+      v-model:exercise="activeExercise"
+      @create:exercise="handleExerciseApiCreation"
+      :is-read-only="!isAdmin"
+      :machine-id="selectedMachineCard?.id"
     />
-  </v-expansion-panels>
+
+    <v-checkbox label="Admin view" v-model="isAdmin" />
+    <v-text-field
+      v-model="searchBar"
+      class="mt-2 mx-2"
+      label="Search"
+      placeholder="Search anything..."
+      variant="outlined"
+      clearable
+    />
+    <v-expansion-panels v-model="panelsShow" multiple>
+      <CardPanel
+        name="Machines"
+        :cards="machineCards"
+        :is-admin="isAdmin"
+        v-model="selectedMachineCard"
+        @select:card="handleCardSelect"
+        @view:card="handleMachineSelect"
+        @create:card="handleMachineCreation"
+        @unselect:card="handleMachineUnselect"
+      />
+
+      <CardPanel
+        name="Exercises"
+        :cards="exerciseCards"
+        :is-admin="isAdmin"
+        v-model="selectedExerciseCard"
+        @select:card="handleCardSelect"
+        @view:card="handleExerciseSelect"
+        @create:card="handleExerciseCreation"
+      />
+    </v-expansion-panels>
+  </div>
 </template>

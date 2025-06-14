@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { exerciseService } from "@/services/exercise"
+import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type ExerciseState, type Exercise } from "@/types/exercise"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
@@ -24,6 +25,8 @@ const active = defineModel<boolean>("active", { required: true })
 const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
+
+const { addNotification } = useNotificationStore()
 
 const formData = reactive<ExerciseState>({
   name: "",
@@ -57,6 +60,8 @@ function saveExercise() {
   isLoading.value = true
   if (!exercise.value) {
     if (!props.machineId) {
+      addNotification("Select a machine first to create an exercise", "info")
+      isLoading.value = false
       return
     }
     exerciseService

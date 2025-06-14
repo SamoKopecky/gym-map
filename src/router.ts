@@ -5,7 +5,7 @@ import MachinesPage from "@/pages/MachinesPage.vue"
 const routes = [
   { path: "/", component: MachinesPage, name: "MachinesDefault" },
   { path: "/map", component: MapPage, name: "Map" },
-  { path: "/machines", component: MachinesPage, name: "Machines" },
+  { path: "/machines/:id?", component: MachinesPage, name: "Machines", props: true },
 ]
 
 const router = createRouter({

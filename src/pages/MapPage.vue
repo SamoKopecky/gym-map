@@ -1,47 +1,13 @@
 <script setup lang="ts">
+import MapMachineMenu from "@/components/MapMachineMenu.vue"
 import type { Machine } from "@/types/machine"
-import { ref } from "vue"
-import { pushToMachinePage } from "@/utils/router"
-import { useRouter } from "vue-router"
-
-const router = useRouter()
+import { onMounted, ref } from "vue"
+import { machineService } from "@/services/machine"
+import { getMachineHtmlId } from "@/utils/transformators"
 
 const showMenu = ref(false)
 const activeMachine = ref<Machine>()
-const machines: Machine[] = [
-  {
-    description: "This is a squat rack",
-    name: "Squat rack",
-    dimension: {
-      height: 150,
-      width: 300,
-    },
-    muscle_groups: ["chest", "legs", "back"],
-    id: 1,
-    htmlId: "sr",
-    position: {
-      y: 0,
-      x: 590,
-    },
-  },
-  {
-    description: "This is a leg press",
-    htmlId: "lp",
-    id: 2,
-    name: "Leg press",
-    muscle_groups: ["quadriceps", "legs"],
-    dimension: {
-      height: 130,
-      width: 130,
-    },
-    position: {
-      y: 650,
-      x: 140,
-    },
-  },
-]
-
-// onMounted(() => machineService.get().then((res) => (machines.value = res)))
+const machines = ref<Machine[]>()
 
 function selectMachine(machine: Machine) {
   if (activeMachine.value?.id !== machine.id) {
@@ -51,42 +17,18 @@ function selectMachine(machine: Machine) {
   }
   activeMachine.value = machine
 }
+
+onMounted(() => machineService.get().then((res) => (machines.value = res)))
 </script>
 
 <template>
   <div>
-    <div>
-      <v-menu
-        v-if="activeMachine"
-        v-model="showMenu"
-        :activator="`#${activeMachine.htmlId}`"
-        :close-on-content-click="false"
-        offset="10"
-        :open-on-click="false"
-        location="left"
-        persistent
-      >
-        <v-card min-width="150" max-width="300">
-          <v-card-title>
-            <div class="d-flex align-center justify-space-between">
-              <p>{{ activeMachine.name }}</p>
-              <v-btn
-                @click="showMenu = false"
-                class="ml-4"
-                color="error"
-                variant="text"
-                icon="mdi-close"
-              ></v-btn>
-            </div>
-          </v-card-title>
-          <v-card-subtitle> {{ activeMachine.muscle_groups?.join(", ") }} </v-card-subtitle>
-          <v-card-text>
-            <v-spacer></v-spacer>
-            <v-btn @click="pushToMachinePage(router, activeMachine.id)">More details</v-btn>
-          </v-card-text>
-        </v-card>
-      </v-menu>
-    </div>
+    <MapMachineMenu
+      v-if="activeMachine"
+      v-model:active="showMenu"
+      v-model:machine="activeMachine"
+    />
+
     <svg
       id="panable"
       width="900"
@@ -97,19 +39,19 @@ function selectMachine(machine: Machine) {
       <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
       <g v-for="machine in machines" :key="machine.name">
         <rect
-          :id="machine.htmlId"
+          :id="getMachineHtmlId(machine)"
           stroke="blue"
           fill="#000000"
-          :x="machine.position.x"
-          :y="machine.position.y"
-          :width="machine.dimension.width"
-          :height="machine.dimension.height"
+          :x="machine.position_x"
+          :y="machine.position_y"
+          :width="machine.width"
+          :height="machine.height"
           style="cursor: pointer"
           @click="selectMachine(machine)"
         />
         <text
-          :x="machine.position.x + machine.dimension.width / 3"
-          :y="machine.position.y + machine.dimension.height / 2"
+          :x="machine.position_x + machine.width / 3"
+          :y="machine.position_y + machine.height / 2"
           fill="red"
           style="pointer-events: none"
         >

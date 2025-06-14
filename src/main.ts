@@ -2,6 +2,7 @@ import "vuetify/styles"
 import "@mdi/font/css/materialdesignicons.css"
 import { createVuetify } from "vuetify"
 import {
+  VAlert,
   VApp,
   VAppBar,
   VAppBarTitle,
@@ -31,6 +32,7 @@ import {
   VMenu,
   VRow,
   VSelect,
+  VSlideYTransition,
   VSpacer,
   VTab,
   VTabs,
@@ -46,6 +48,7 @@ import * as directives from "vuetify/directives"
 import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./router"
+import { createPinia } from "pinia"
 
 const vuetify = createVuetify({
   components: {
@@ -60,6 +63,8 @@ const vuetify = createVuetify({
     VAppBarTitle,
     VMain,
     VContainer,
+    VAlert,
+    VSlideYTransition,
     VLabel,
     VRow,
     VTabsWindowItem,
@@ -94,4 +99,6 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App).use(vuetify).use(router).mount("#app")
+const pinia = createPinia()
+
+createApp(App).use(vuetify).use(router).use(pinia).mount("#app")
