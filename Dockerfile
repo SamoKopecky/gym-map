@@ -1,4 +1,5 @@
 FROM node:22-slim AS builder
+ARG VITE_APP_BACKEND
 # Setup pnpm
 
 WORKDIR /app
@@ -16,6 +17,7 @@ COPY . .
 RUN npm run build
 
 FROM node:22-slim AS final
+ARG VITE_APP_BACKEND
 
 # Install serve
 RUN npm install -g serve
