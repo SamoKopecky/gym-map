@@ -1,5 +1,5 @@
 import { type Router } from "vue-router"
 
-export function pushToMachinePage(router: Router, machineId: number) {
-  router.push({ path: `/machine/${machineId}` })
+export function pushToMachinesPage(router: Router, machineId: number) {
+  router.push({ path: `/machines/${machineId}` })
 }

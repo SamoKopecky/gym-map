@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Machine } from "@/types/machine"
+import { pushToMachinesPage } from "@/utils/router"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
@@ -38,7 +39,7 @@ const router = useRouter()
         <v-card-subtitle> {{ machine.muscle_groups?.join(", ") }} </v-card-subtitle>
         <v-card-text>
           <v-checkbox label="Admin view" v-model="isAdmin" />
-          <v-btn @click="console.log()">More details</v-btn>
+          <v-btn @click="pushToMachinesPage(router, machine.id)">More details</v-btn>
         </v-card-text>
       </v-card>
     </v-menu>

@@ -38,8 +38,8 @@ export function useDetail<T extends Entity>(
     entities.value.push(entity)
   }
 
-  function fetchAllEntities() {
-    service.get().then((res) => {
+  async function fetchAllEntities(): Promise<unknown> {
+    return service.get().then((res) => {
       entities.value = res
     })
   }

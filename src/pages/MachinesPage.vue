@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { type Machine } from "@/types/machine"
 import { type Card, type CardPanelName } from "@/types/card"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import { onMounted } from "vue"
@@ -10,7 +9,6 @@ import { isExerciseSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
 import { exerciseService } from "@/services/exercise"
-import type { Exercise } from "@/types/exercise"
 import ExerciseDetail from "@/components/ExerciseDetail.vue"
 
 const props = defineProps({
@@ -62,7 +60,8 @@ const {
   handleEntitySelect: handleMachineSelect,
   handleEntityApiCreation: handleMachineApiCreation,
   fetchAllEntities: fetchAllMachines,
-} = useDetail<Machine>(searchBar, machineService, isMachineSearched, machineToCard)
+} = useDetail(searchBar, machineService, isMachineSearched, machineToCard)
+
 const {
   entities: exercises,
   cards: exerciseCards,
@@ -72,11 +71,18 @@ const {
   handleEntitySelect: handleExerciseSelect,
   handleEntityApiCreation: handleExerciseApiCreation,
   fetchAllEntities: fetchAllExercises,
-} = useDetail<Exercise>(searchBar, exerciseService, isExerciseSearched, exerciseToCard)
+} = useDetail(searchBar, exerciseService, isExerciseSearched, exerciseToCard)
 
 onMounted(() => {
   fetchAllExercises()
-  fetchAllMachines()
+  fetchAllMachines().then(() => {
+    if (!props.id) return
+
+    const propMachineCard = machineCards.value.find((m) => m.id === Number(props.id))
+    if (!propMachineCard) return
+
+    handleMachinesCardSelect(propMachineCard)
+  })
 })
 
 function handleMachineUnselect() {
