@@ -84,29 +84,39 @@ onMounted(() =>
       <NumberSlider v-model="machinePosition.position_y" :step="5" :max="1206" label="Y" />
     </div>
 
-    <svg width="900" height="1206" view-box="0 0 900 1206" style="background-color: grey">
-      <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
-      <g v-for="machine in machines" :key="machine.name">
-        <rect
-          :id="getMachineHtmlId(machine)"
-          :stroke="machine.is_origin ? 'red' : 'blue'"
-          fill="#000000"
-          :x="machine.position_x"
-          :y="machine.position_y"
-          :width="machine.width"
-          :height="machine.height"
-          style="cursor: pointer"
-          @click="selectMachine(machine)"
-        />
-        <text
-          :x="machine.position_x + machine.width / 3"
-          :y="machine.position_y + machine.height / 2"
-          :fill="machine.is_origin ? 'white' : 'red'"
-          style="pointer-events: none"
-        >
-          {{ machine.name }}
-        </text>
-      </g>
-    </svg>
+    <div class="svg-container">
+      <svg width="900" height="1206" view-box="0 0 900 1206" style="background-color: grey">
+        <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
+        <g v-for="machine in machines" :key="machine.name">
+          <rect
+            :id="getMachineHtmlId(machine)"
+            :stroke="machine.is_origin ? 'red' : 'blue'"
+            fill="#000000"
+            :x="machine.position_x"
+            :y="machine.position_y"
+            :width="machine.width"
+            :height="machine.height"
+            style="cursor: pointer"
+            @click="selectMachine(machine)"
+          />
+          <text
+            :x="machine.position_x + machine.width / 3"
+            :y="machine.position_y + machine.height / 2"
+            :fill="machine.is_origin ? 'white' : 'red'"
+            style="pointer-events: none"
+          >
+            {{ machine.name }}
+          </text>
+        </g>
+      </svg>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.svg-container {
+  width: 100%; /* Make the container take the full width of its parent */
+  overflow: auto; /* This is the key! It adds scrollbars when content overflows */
+  -webkit-overflow-scrolling: touch; /* Enables smooth, momentum-based scrolling on iOS */
+}
+</style>
