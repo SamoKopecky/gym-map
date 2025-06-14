@@ -135,7 +135,6 @@ export abstract class ServiceBase<
 
 export function replacePathParams<T extends object>(url: string, params: T): string {
   Object.keys(params).forEach((key) => {
-    // @ts-expect-error dunno
     url = url.replace(`:${key}`, params[key])
   })
   return url
@@ -144,14 +143,12 @@ export function replacePathParams<T extends object>(url: string, params: T): str
 export function addQueryParams<T extends object>(url: string, params: T): string {
   const urlObj = new URL(url)
   Object.keys(params).forEach((key) => {
-    // @ts-expect-error dunno
     const paramVal = params[key]
     if (isArray(paramVal)) {
       paramVal.forEach((val) => {
         urlObj.searchParams.append(key, String(val))
       })
     } else {
-      // @ts-expect-error dunno
       urlObj.searchParams.append(key, params[key])
     }
   })

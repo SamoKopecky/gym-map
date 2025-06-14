@@ -6,6 +6,7 @@ import type { Card } from "@/types/card"
 
 export function useDetail<T extends Entity>(
   searchBar: Ref<string | undefined>,
+  // eslint-disable-next-line
   service: ServiceBase<any, any, T>,
   searchFunction: (searchText: string, card: T) => boolean,
   entityToCard: (entity: T) => Card,
