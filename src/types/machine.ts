@@ -1,39 +1,25 @@
-export interface Position {
-  x: number
-  y: number
+import { type Entity } from "./base.ts"
+
+export interface Machine extends Entity, Position {
+  name: string
+  description?: string
+  muscle_groups?: string[]
 }
 
-export interface Dimension {
-  width: number
-  height: number
+export interface MapMachine extends Machine {
+  is_origin: boolean
 }
 
-export interface Machine {
-  id: number
-  htmlId: string
+// Used for post data in machine detail
+export interface MachineState {
   name: string
   description: string
-  muscleGroups: string[]
-  position: Position
-  dimension: Dimension
+  muscle_groups: string[]
 }
 
-export interface Exercise {
-  id: number
-  name: string
-  muscleGroups: string[]
-  availableVideos: number
-}
-
-export interface Trainer {
-  id: number
-  name: string
-  fullName: string
-}
-
-export interface ChoiseItem {
-  id: number
-  name: string
-  subtitle: string
-  append?: string
+export interface Position {
+  position_x: number
+  position_y: number
+  width: number
+  height: number
 }

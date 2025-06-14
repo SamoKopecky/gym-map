@@ -1,45 +1,35 @@
-import type { Exercise } from "@/types/machine"
+import { Method, Route, ServiceBase, type PatchBase } from "./base"
+import type { Exercise } from "@/types/exercise"
 
-const squatRack: Exercise[] = [
-  {
-    id: 1,
-    availableVideos: 2,
-    muscleGroups: ["feet", "legs"],
-    name: "squat",
-  },
-  {
-    id: 2,
-    availableVideos: 1,
-    muscleGroups: ["chest"],
-    name: "bench press",
-  },
-  {
-    id: 3,
-    availableVideos: 1,
-    muscleGroups: ["back", "lats"],
-    name: "pull ups",
-  },
-]
+export interface ExercisePostRequest {
+  machine_id: number
+  name: string
+  description?: string
+  muscle_groups?: string[]
+}
 
-const legPress: Exercise[] = [
-  {
-    id: 1,
-    availableVideos: 2,
-    muscleGroups: ["feet", "legs"],
-    name: "wide stance",
-  },
-  {
-    id: 2,
-    availableVideos: 1,
-    muscleGroups: ["feet", "legs"],
-    name: "narrow stance",
-  },
-]
+export interface ExercisePatchRequest extends PatchBase {
+  name?: string
+  description?: string
+  muscle_groups?: string[]
+}
 
-export function getExercises(machineId: number): Exercise[] {
-  if (machineId === 1) {
-    return squatRack
-  } else {
-    return legPress
+export interface ExerciseQueryParams {
+  machine_id: number
+}
+
+class ExerciseService extends ServiceBase<ExercisePatchRequest, ExercisePostRequest, Exercise> {
+  constructor() {
+    super(Route.Exercises)
+  }
+
+  public async get(queryParams?: ExerciseQueryParams): Promise<Exercise[]> {
+    return this.handleRequest({
+      queryParams,
+      method: Method.GET,
+      route: this.route,
+    })
   }
 }
+
+export const exerciseService = new ExerciseService()

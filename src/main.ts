@@ -2,31 +2,82 @@ import "vuetify/styles"
 import "@mdi/font/css/materialdesignicons.css"
 import { createVuetify } from "vuetify"
 import {
+  VAlert,
+  VApp,
+  VAppBar,
+  VAppBarTitle,
   VBtn,
   VCard,
+  VCardActions,
   VCardSubtitle,
   VCardText,
   VCardTitle,
+  VCheckbox,
+  VCol,
+  VCombobox,
+  VContainer,
   VDialog,
   VDivider,
   VExpandTransition,
+  VExpansionPanel,
+  VExpansionPanels,
+  VExpansionPanelTitle,
+  VForm,
   VIcon,
+  VLabel,
+  VLayout,
   VList,
   VListItem,
   VListSubheader,
+  VMain,
   VMenu,
+  VNumberInput,
+  VRow,
   VSelect,
+  VSlider,
+  VSlideYTransition,
   VSpacer,
+  VTab,
+  VTabs,
+  VTabsWindow,
+  VTabsWindowItem,
   VTextarea,
+  VTextField,
+  VWindow,
+  VWindowItem,
 } from "vuetify/components"
 import * as directives from "vuetify/directives"
 
 import { createApp } from "vue"
 import App from "./App.vue"
+import router from "./router"
+import { createPinia } from "pinia"
 
 const vuetify = createVuetify({
   components: {
     VSelect,
+    VTabs,
+    VCombobox,
+    VTabsWindow,
+    VTab,
+    VCardActions,
+    VLayout,
+    VForm,
+    VAppBarTitle,
+    VMain,
+    VContainer,
+    VAlert,
+    VSlideYTransition,
+    VLabel,
+    VRow,
+    VTabsWindowItem,
+    VCol,
+    VAppBar,
+    VExpansionPanelTitle,
+    VWindow,
+    VTextField,
+    VWindowItem,
+    VApp,
     VDialog,
     VTextarea,
     VCard,
@@ -42,6 +93,11 @@ const vuetify = createVuetify({
     VSpacer,
     VListSubheader,
     VExpandTransition,
+    VCheckbox,
+    VNumberInput,
+    VSlider,
+    VExpansionPanel,
+    VExpansionPanels,
   },
   icons: {
     defaultSet: "mdi",
@@ -49,4 +105,6 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App).use(vuetify).mount("#app")
+const pinia = createPinia()
+
+createApp(App).use(vuetify).use(router).use(pinia).mount("#app")
