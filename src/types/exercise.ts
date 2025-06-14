@@ -1,7 +1,7 @@
 import { type Entity } from "./base"
 
 export interface Exercise extends Entity {
-  machineId: number
+  machine_id: number
   name: string
   description?: string
   muscle_groups?: string[]

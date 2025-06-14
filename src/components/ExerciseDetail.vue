@@ -6,10 +6,15 @@ import { ref, watch } from "vue"
 
 const MAX_NAME_CHARS = 255
 
-defineProps({
+const props = defineProps({
   isReadOnly: {
     type: Boolean,
     required: true,
+  },
+  machineId: {
+    type: Number,
+    required: false,
+    default: undefined,
   },
 })
 
@@ -51,11 +56,13 @@ function saveExercise() {
 
   isLoading.value = true
   if (!exercise.value) {
+    if (!props.machineId) {
+      return
+    }
     exerciseService
-      // FIXME: use real machine id
-      .post({ ...formData, machine_id: 0 })
-      .then(() => {
-        emit("create:exercise")
+      .post({ ...formData, machine_id: props.machineId })
+      .then((res) => {
+        emit("create:exercise", res)
         active.value = false
       })
       .finally(() => {

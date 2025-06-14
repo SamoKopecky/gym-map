@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Machine } from "@/types/machine"
-import { type CardPanelName } from "@/types/card"
+import { type Card, type CardPanelName } from "@/types/card"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
@@ -14,50 +14,83 @@ import type { Exercise } from "@/types/exercise"
 import ExerciseDetail from "@/components/ExerciseDetail.vue"
 
 const searchBar = ref<string>()
-const panelsShow = ref<CardPanelName[]>(["Machines"])
+const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
 const isAdmin = ref(false)
+const selectedMachineCard = ref<Card>()
+const selectedExerciseCard = ref<Card>()
 
-function handleCardSelect(panelName: string) {
-  // Remove machines from selected expansion panels to hide it
-  panelsShow.value = panelsShow.value?.filter((p) => p !== panelName)
+function handleCardSelect(card: Card, panelName: CardPanelName) {
+  if (panelName === "Machines") {
+    handleMachinesCardSelect(card)
+  } else if (panelName === "Exercises") {
+    handleExerciseCardSelect(card)
+  }
+}
+
+function handleExerciseCardSelect(card: Card) {
+  // TODO: Select trainer cards
+  panelsShow.value = []
+
+  const exercise = exercises.value.find((m) => m.id === card.id)
+  if (!exercise) return
+  // Select machine
+  selectedMachineCard.value = machines.value.find((m) => m.id === exercise?.machine_id)
+  // Limit exercises
+  exerciseService.get({ machine_id: exercise?.machine_id }).then((res) => (exercises.value = res))
+}
+
+function handleMachinesCardSelect(card: Card) {
+  selectedMachineCard.value = card
+  exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
+  panelsShow.value = ["Exercises"]
 }
 
 const {
+  entities: machines,
   cards: machineCards,
   activeEntity: activeMachine,
   isEntityDetailActive: isMachineDetailActive,
   handleEntityCreation: handleMachineCreation,
   handleEntitySelect: handleMachineSelect,
-  fetchEntities: fetchMachines,
+  handleEntityApiCreation: handleMachineApiCreation,
+  fetchAllEntities: fetchAllMachines,
 } = useDetail<Machine>(searchBar, machineService, isMachineSearched, machineToCard)
 const {
+  entities: exercises,
   cards: exerciseCards,
   activeEntity: activeExercise,
   isEntityDetailActive: isExerciseDetailActive,
   handleEntityCreation: handleExerciseCreation,
   handleEntitySelect: handleExerciseSelect,
-  fetchEntities: fetchExercises,
+  handleEntityApiCreation: handleExerciseApiCreation,
+  fetchAllEntities: fetchAllExercises,
 } = useDetail<Exercise>(searchBar, exerciseService, isExerciseSearched, exerciseToCard)
 
 onMounted(() => {
-  fetchMachines()
-  fetchExercises()
+  fetchAllExercises()
+  fetchAllMachines()
 })
+
+function handleMachineUnselect() {
+  fetchAllExercises()
+  selectedExerciseCard.value = undefined
+}
 </script>
 
 <template>
   <MachineDetail
     v-model:active="isMachineDetailActive"
     v-model:machine="activeMachine"
-    @create:machine="fetchMachines"
+    @create:machine="handleMachineApiCreation"
     :is-read-only="!isAdmin"
   />
 
   <ExerciseDetail
     v-model:active="isExerciseDetailActive"
     v-model:exercise="activeExercise"
-    @create:exercise="fetchExercises"
+    @create:exercise="handleExerciseApiCreation"
     :is-read-only="!isAdmin"
+    :machine-id="selectedMachineCard?.id"
   />
 
   <v-checkbox label="Admin view" v-model="isAdmin" />
@@ -74,15 +107,18 @@ onMounted(() => {
       name="Machines"
       :cards="machineCards"
       :is-admin="isAdmin"
+      v-model="selectedMachineCard"
       @select:card="handleCardSelect"
       @view:card="handleMachineSelect"
       @create:card="handleMachineCreation"
+      @unselect:card="handleMachineUnselect"
     />
 
     <CardPanel
       name="Exercises"
       :cards="exerciseCards"
       :is-admin="isAdmin"
+      v-model="selectedExerciseCard"
       @select:card="handleCardSelect"
       @view:card="handleExerciseSelect"
       @create:card="handleExerciseCreation"

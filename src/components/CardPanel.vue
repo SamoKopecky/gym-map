@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Card, CardPanelName } from "@/types/card"
-import { computed, ref, type PropType } from "vue"
+import { computed, type PropType } from "vue"
 
-const emit = defineEmits(["select:card", "create:card", "view:card"])
+const emit = defineEmits(["select:card", "create:card", "view:card", "unselect:card"])
 
-const selectedCard = ref<Card | undefined>()
+const selectedCard = defineModel<Card>()
 
 const { name } = defineProps({
   name: {
@@ -33,8 +33,9 @@ const machinesTitle = computed(() => {
 function updateCardId(card: Card) {
   if (selectedCard.value?.id === card.id) {
     selectedCard.value = undefined
+    emit("unselect:card")
   } else {
-    emit("select:card", name)
+    emit("select:card", card, name)
     selectedCard.value = card
   }
 }

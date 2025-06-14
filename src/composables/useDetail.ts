@@ -34,20 +34,26 @@ export function useDetail<T extends Entity>(
     isEntityDetailActive.value = true
   }
 
-  function fetchEntities() {
+  function handleEntityApiCreation(entity: T) {
+    entities.value.push(entity)
+  }
+
+  function fetchAllEntities() {
     service.get().then((res) => {
       entities.value = res
     })
   }
 
-  onMounted(() => fetchEntities())
+  onMounted(() => fetchAllEntities())
 
   return {
+    entities,
     cards,
     activeEntity,
     isEntityDetailActive,
     handleEntitySelect,
     handleEntityCreation,
-    fetchEntities,
+    handleEntityApiCreation,
+    fetchAllEntities,
   }
 }
