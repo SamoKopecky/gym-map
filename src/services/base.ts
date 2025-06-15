@@ -1,3 +1,4 @@
+import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
 import axios, {
   AxiosError,
   type AxiosRequestConfig,
@@ -158,4 +159,19 @@ export function addQueryParams<T extends object>(url: string, params: T): string
 
 export function isArray(value: unknown): value is unknown[] {
   return Array.isArray(value)
+}
+
+export function tokenInterceptor() {
+  axios.interceptors.request.use(
+    (config) => {
+      const keycloak = useKeycloak()
+      if (keycloak.authenticated) {
+        config.headers.Authorization = `Bearer ${keycloak.token}`
+      }
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    },
+  )
 }

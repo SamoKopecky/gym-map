@@ -58,6 +58,7 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./router"
 import { createPinia } from "pinia"
+import { tokenInterceptor } from "./services/base"
 
 const vuetify = createVuetify({
   components: {
@@ -119,7 +120,9 @@ const vuetify = createVuetify({
 const viteKeycloakUrl = import.meta.env.VITE_APP_KEYCLOAK_URL ?? "http://localhost:8080"
 const pinia = createPinia()
 
-createApp(App)
+const app = createApp(App)
+
+app
   .use(vuetify)
   .use(router)
   .use(pinia)
@@ -132,5 +135,8 @@ createApp(App)
     init: {
       onLoad: "check-sso",
     },
+    onReady: () => {
+      tokenInterceptor()
+      app.mount("#app")
+    },
   })
-  .mount("#app")
