@@ -13,6 +13,7 @@ import ExerciseDetail from "@/components/ExerciseDetail.vue"
 import { Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { type SearchData } from "@/types/other"
+import { useUser } from "@/composables/useUser"
 
 const props = defineProps({
   id: {
@@ -22,12 +23,13 @@ const props = defineProps({
   },
 })
 
+const { isAdmin } = useUser()
+
 const searchData = reactive<SearchData>({
   difficulties: [],
   text: "",
 })
 const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
-const isAdmin = ref(false)
 const selectedMachineCard = ref<Card>()
 const selectedExerciseCard = ref<Card>()
 
@@ -115,7 +117,6 @@ function handleMachineUnselect() {
     />
 
     <v-container fluid>
-      <v-checkbox label="Admin view" v-model="isAdmin" hide-details="auto" />
       <v-text-field
         prepend-icon="mdi-magnify"
         v-model="searchData.text"
