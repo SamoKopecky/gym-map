@@ -1,6 +1,5 @@
 import { computed, ref, type Ref } from "vue"
 import type { ServiceBase } from "@/services/base"
-import { onMounted } from "vue"
 import type { Entity } from "@/types/base"
 import type { Card } from "@/types/card"
 import type { SearchData } from "@/types/other"
@@ -43,8 +42,6 @@ export function useDetail<T extends Entity>(
       entities.value = res
     })
   }
-
-  onMounted(() => fetchAllEntities())
 
   return {
     entities,
