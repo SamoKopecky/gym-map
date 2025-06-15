@@ -1,13 +1,22 @@
-import type { Card } from "@/types/card"
-import type { Exercise } from "@/types/exercise"
+import type { Card, Chip } from "@/types/card"
+import { Difficulty, type Exercise } from "@/types/exercise"
 import type { Machine } from "@/types/machine"
 
 export function exerciseToCard(exercise: Exercise): Card {
+  const chips: Chip[] = []
+  if (exercise.difficulty) {
+    chips.push({
+      text: difficultyToString(exercise.difficulty),
+      color: difficultyToColor(exercise.difficulty),
+    })
+  }
+
   return {
     name: exercise.name,
     id: exercise.id,
     subtitle: exercise.muscle_groups?.join(", "),
     description: exercise.description,
+    chips: chips,
   }
 }
 
@@ -22,4 +31,26 @@ export function machineToCard(machine: Machine): Card {
 
 export function getMachineHtmlId(machine: Machine): string {
   return `#${machine.name}-${machine.id}`
+}
+
+export function difficultyToString(difficulty: Difficulty): string {
+  switch (difficulty) {
+    case Difficulty.Easy:
+      return "Easy"
+    case Difficulty.Normal:
+      return "Normal"
+    case Difficulty.Hard:
+      return "Hard"
+  }
+}
+
+export function difficultyToColor(difficulty: Difficulty): string {
+  switch (difficulty) {
+    case Difficulty.Easy:
+      return "green"
+    case Difficulty.Normal:
+      return "orange"
+    case Difficulty.Hard:
+      return "red"
+  }
 }
