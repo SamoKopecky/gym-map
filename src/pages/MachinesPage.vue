@@ -140,7 +140,7 @@ function handleMachineUnselect() {
       </div>
     </v-container>
 
-    <v-expansion-panels v-model="panelsShow" multiple>
+    <v-expansion-panels v-model="panelsShow" multiple variant="accordion">
       <CardPanel
         name="Machines"
         :cards="machineCards"
