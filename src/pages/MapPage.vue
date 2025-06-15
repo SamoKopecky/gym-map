@@ -77,6 +77,8 @@ onMounted(() =>
 <template>
   <div>
     <v-checkbox label="Edit machines" v-model="editMode" hide-details="auto" />
+    <p v-if="editMode">Click a machine to edit</p>
+    <p v-else>Click a machine for more info</p>
     <div v-if="editMode && machineEdit">
       <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
       <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />

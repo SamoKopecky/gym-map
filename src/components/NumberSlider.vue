@@ -21,6 +21,7 @@ const valueNum = defineModel<number>({ required: true })
   <v-slider v-model="valueNum" :label="label" :max="max" :step="step">
     <template #append>
       <v-number-input
+        min-width="100"
         :step="step"
         v-model="valueNum"
         density="compact"

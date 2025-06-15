@@ -11,4 +11,4 @@ export interface Chip {
   color: string
 }
 
-export type CardPanelName = "Machines" | "Exercises"
+export type CardPanelName = "Machines" | "Exercises" | "Instructions"

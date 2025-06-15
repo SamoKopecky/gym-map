@@ -41,7 +41,7 @@ function handleCardSelect(card: Card, panelName: CardPanelName) {
 
 function handleExerciseCardSelect(card: Card) {
   // TODO: Select trainer cards
-  panelsShow.value = []
+  panelsShow.value = ["Instructions"]
 
   const exercise = exercises.value.find((m) => m.id === card.id)
   if (!exercise) return
@@ -117,10 +117,11 @@ function handleMachineUnselect() {
     <v-container fluid>
       <v-checkbox label="Admin view" v-model="isAdmin" hide-details="auto" />
       <v-text-field
+        prepend-icon="mdi-magnify"
         v-model="searchData.text"
         class="mt-2 mx-2"
         label="Search"
-        placeholder="Search anything..."
+        placeholder="Search name or muscle groups..."
         variant="outlined"
         clearable
         hide-details="auto"
@@ -161,6 +162,15 @@ function handleMachineUnselect() {
         @view:card="handleExerciseSelect"
         @create:card="handleExerciseCreation"
       />
+
+      <v-expansion-panel title="Instructions" value="Instructions">
+        <template #text>
+          <h3>Under construction, choose which instructions to follow</h3>
+        </template>
+      </v-expansion-panel>
+      <div v-if="panelsShow.includes('Instructions')">
+        <h3>Detailed instructions including a video + trainer info here</h3>
+      </div>
     </v-expansion-panels>
   </div>
 </template>
