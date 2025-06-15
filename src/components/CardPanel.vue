@@ -90,6 +90,7 @@ function updateCardId(card: Card) {
               </template>
               <v-card-text>
                 <v-chip
+                  variant="outlined"
                   v-for="chip in card.chips"
                   :key="chip.text"
                   :text="chip.text"

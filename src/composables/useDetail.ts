@@ -3,12 +3,13 @@ import type { ServiceBase } from "@/services/base"
 import { onMounted } from "vue"
 import type { Entity } from "@/types/base"
 import type { Card } from "@/types/card"
+import type { SearchData } from "@/types/other"
 
 export function useDetail<T extends Entity>(
-  searchBar: Ref<string | undefined>,
+  searchData: SearchData,
   // eslint-disable-next-line
   service: ServiceBase<any, any, T>,
-  searchFunction: (searchText: string, card: T) => boolean,
+  searchFunction: (searchData: SearchData, card: T) => boolean,
   entityToCard: (entity: T) => Card,
 ) {
   const entities = ref<T[]>([]) as Ref<T[]>
@@ -16,9 +17,7 @@ export function useDetail<T extends Entity>(
   const isEntityDetailActive = ref<boolean>(false)
 
   const searchedEntities = computed(() => {
-    if (!searchBar.value) return entities.value
-
-    return entities.value.filter((e) => searchFunction(searchBar.value!, e))
+    return entities.value.filter((e) => searchFunction(searchData, e))
   })
 
   const cards = computed(() => {

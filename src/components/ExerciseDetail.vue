@@ -4,6 +4,7 @@ import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type ExerciseState, type Exercise, Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
+import { difficultyToString } from "@/utils/transformators"
 
 const MAX_NAME_CHARS = 255
 
@@ -143,7 +144,9 @@ function saveExercise() {
             :readonly="isReadOnly"
             v-model="formData.difficulty"
             :items="Object.values(Difficulty)"
+            :item-title="difficultyToString"
             label="Exercise difficulty"
+            return-object
             variant="outlined"
             prepend-inner-icon="mdi-speedometer"
             class="mb-2"

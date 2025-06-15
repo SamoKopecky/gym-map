@@ -4,12 +4,15 @@ import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import { onMounted } from "vue"
-import { exerciseToCard, machineToCard } from "@/utils/transformators"
+import { exerciseToCard, machineToCard, difficultyToColor } from "@/utils/transformators"
 import { isExerciseSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
 import { exerciseService } from "@/services/exercise"
 import ExerciseDetail from "@/components/ExerciseDetail.vue"
+import { Difficulty } from "@/types/exercise"
+import { reactive } from "vue"
+import { type SearchData } from "@/types/other"
 
 const props = defineProps({
   id: {
@@ -19,7 +22,10 @@ const props = defineProps({
   },
 })
 
-const searchBar = ref<string>()
+const searchData = reactive<SearchData>({
+  difficulties: [],
+  text: "",
+})
 const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
 const isAdmin = ref(false)
 const selectedMachineCard = ref<Card>()
@@ -60,7 +66,7 @@ const {
   handleEntitySelect: handleMachineSelect,
   handleEntityApiCreation: handleMachineApiCreation,
   fetchAllEntities: fetchAllMachines,
-} = useDetail(searchBar, machineService, isMachineSearched, machineToCard)
+} = useDetail(searchData, machineService, isMachineSearched, machineToCard)
 
 const {
   entities: exercises,
@@ -71,7 +77,7 @@ const {
   handleEntitySelect: handleExerciseSelect,
   handleEntityApiCreation: handleExerciseApiCreation,
   fetchAllEntities: fetchAllExercises,
-} = useDetail(searchBar, exerciseService, isExerciseSearched, exerciseToCard)
+} = useDetail(searchData, exerciseService, isExerciseSearched, exerciseToCard)
 
 onMounted(() => {
   fetchAllExercises()
@@ -108,15 +114,32 @@ function handleMachineUnselect() {
       :machine-id="selectedMachineCard?.id"
     />
 
-    <v-checkbox label="Admin view" v-model="isAdmin" />
-    <v-text-field
-      v-model="searchBar"
-      class="mt-2 mx-2"
-      label="Search"
-      placeholder="Search anything..."
-      variant="outlined"
-      clearable
-    />
+    <v-container fluid>
+      <v-checkbox label="Admin view" v-model="isAdmin" hide-details="auto" />
+      <v-text-field
+        v-model="searchData.text"
+        class="mt-2 mx-2"
+        label="Search"
+        placeholder="Search anything..."
+        variant="outlined"
+        clearable
+        hide-details="auto"
+      />
+      <div class="d-flex pa-2">
+        <v-chip-group v-model="searchData.difficulties" filter multiple>
+          <v-chip
+            variant="outlined"
+            v-for="difficulty in Object.values(Difficulty)"
+            :key="difficulty"
+            :value="difficulty"
+            :color="difficultyToColor(difficulty)"
+          >
+            {{ difficulty }}
+          </v-chip>
+        </v-chip-group>
+      </div>
+    </v-container>
+
     <v-expansion-panels v-model="panelsShow" multiple>
       <CardPanel
         name="Machines"
