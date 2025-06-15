@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { exerciseService } from "@/services/exercise"
 import { useNotificationStore } from "@/stores/useNotificationStore"
-import { type ExerciseState, type Exercise } from "@/types/exercise"
+import { type ExerciseState, type Exercise, Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
 
@@ -32,6 +32,7 @@ const formData = reactive<ExerciseState>({
   name: "",
   description: "",
   muscle_groups: [],
+  difficulty: undefined,
 })
 
 const nameRules = [
@@ -46,10 +47,12 @@ watch(active, (newVal) => {
     formData.name = exercise.value.name
     formData.description = exercise.value.description ?? ""
     formData.muscle_groups = exercise.value.muscle_groups ?? []
+    formData.difficulty = exercise.value.difficulty
   } else {
     formData.name = ""
     formData.description = ""
     formData.muscle_groups = []
+    formData.difficulty = undefined
   }
 })
 
@@ -133,7 +136,18 @@ function saveExercise() {
             prepend-inner-icon="mdi-weight-lifter"
             :hint="!isReadOnly ? 'Type and press Enter to add a new muscle group' : undefined"
             persistent-hint
+            :class="[!isReadOnly ? 'mb-3' : '']"
           />
+
+          <v-select
+            :readonly="isReadOnly"
+            v-model="formData.difficulty"
+            :items="Object.values(Difficulty)"
+            label="Exercise difficulty"
+            variant="outlined"
+            prepend-inner-icon="mdi-speedometer"
+            class="mb-2"
+          ></v-select>
         </v-card-text>
 
         <v-divider />
