@@ -80,6 +80,8 @@ function handleMachinesCardSelect(card: Card) {
   exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
 }
 
+// FIXME: Also reset proper expansion panels on card change
+
 const { isAdmin, isTrainer } = useUser()
 const {
   entities: machines,
