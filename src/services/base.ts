@@ -10,6 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_APP_BACKEND ?? "http://localhost:2001"
 export enum Route {
   Machines = "/machines",
   Exercises = "/exercises",
+  Instructions = "/instructions",
 }
 
 export interface PatchBase {

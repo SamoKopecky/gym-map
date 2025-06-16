@@ -7,7 +7,8 @@ export function useUser() {
   const keycloak = useKeycloak()
   const userRole = computed(() => getUserRole(keycloak.tokenParsed))
   const isAdmin = computed(() => userRole.value === UserRole.Admin)
-  const isTrainer = computed(() => userRole.value === UserRole.Trainer)
+  const isTrainer = computed(() => isAdmin.value || userRole.value === UserRole.Trainer)
+  const userId = keycloak.subject
 
-  return { userRole, isAdmin, isTrainer }
+  return { userRole, isAdmin, isTrainer, userId }
 }

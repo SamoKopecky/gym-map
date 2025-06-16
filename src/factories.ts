@@ -1,5 +1,6 @@
 import type { Machine } from "@/types/machine"
 import { Difficulty, type Exercise } from "./types/exercise"
+import type { Instruction } from "./types/instruction"
 
 export function machineFactory(name?: string, muscleGroups?: string[]): Machine {
   return {
@@ -26,5 +27,18 @@ export function exerciseFactory(
     description: "bar",
     difficulty: diffculty,
     id: 1,
+  }
+}
+
+export function instructionFactory(firstName?: string, lastName?: string): Instruction {
+  return {
+    id: 1,
+    description: "",
+    user_id: "foo",
+    exercise_id: 1,
+    email: "bar",
+    first_name: firstName ?? "foo",
+    last_name: lastName ?? "bar",
+    name: "foo bar",
   }
 }

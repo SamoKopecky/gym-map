@@ -1,5 +1,6 @@
 import type { Card, Chip } from "@/types/card"
 import { Difficulty, type Exercise } from "@/types/exercise"
+import type { Instruction } from "@/types/instruction"
 import type { Machine } from "@/types/machine"
 
 export function exerciseToCard(exercise: Exercise): Card {
@@ -26,6 +27,15 @@ export function machineToCard(machine: Machine): Card {
     name: machine.name,
     id: machine.id,
     description: machine.description,
+  }
+}
+
+export function instructionToCard(instruction: Instruction): Card {
+  return {
+    subtitle: "",
+    name: instruction.name ?? "N/A",
+    id: instruction.id,
+    description: "",
   }
 }
 
