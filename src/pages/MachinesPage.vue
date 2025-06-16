@@ -13,7 +13,6 @@ import ExerciseDetail from "@/components/ExerciseDetail.vue"
 import { Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { type SearchData } from "@/types/other"
-import { useUser } from "@/composables/useUser"
 
 const props = defineProps({
   id: {
@@ -22,8 +21,6 @@ const props = defineProps({
     default: undefined,
   },
 })
-
-const { isAdmin } = useUser()
 
 const searchData = reactive<SearchData>({
   difficulties: [],
@@ -105,14 +102,12 @@ function handleMachineUnselect() {
       v-model:active="isMachineDetailActive"
       v-model:machine="activeMachine"
       @create:machine="handleMachineApiCreation"
-      :is-read-only="!isAdmin"
     />
 
     <ExerciseDetail
       v-model:active="isExerciseDetailActive"
       v-model:exercise="activeExercise"
       @create:exercise="handleExerciseApiCreation"
-      :is-read-only="!isAdmin"
       :machine-id="selectedMachineCard?.id"
     />
 
@@ -146,7 +141,6 @@ function handleMachineUnselect() {
       <CardPanel
         name="Machines"
         :cards="machineCards"
-        :is-admin="isAdmin"
         v-model="selectedMachineCard"
         @select:card="handleCardSelect"
         @view:card="handleMachineSelect"
@@ -157,7 +151,6 @@ function handleMachineUnselect() {
       <CardPanel
         name="Exercises"
         :cards="exerciseCards"
-        :is-admin="isAdmin"
         v-model="selectedExerciseCard"
         @select:card="handleCardSelect"
         @view:card="handleExerciseSelect"

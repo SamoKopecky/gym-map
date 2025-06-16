@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useUser } from "@/composables/useUser"
 import { machineService } from "@/services/machine"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type MachineState, type Machine } from "@/types/machine"
@@ -6,13 +7,6 @@ import { reactive } from "vue"
 import { ref, watch } from "vue"
 
 const MAX_NAME_CHARS = 255
-
-defineProps({
-  isReadOnly: {
-    type: Boolean,
-    required: true,
-  },
-})
 
 const emit = defineEmits(["create:machine"])
 
@@ -22,6 +16,7 @@ const isLoading = ref(false)
 const isFormValid = ref(false)
 
 const { addNotification } = useNotificationStore()
+const { isAdmin } = useUser()
 
 const formData = reactive<MachineState>({
   name: "",
@@ -59,10 +54,10 @@ function saveMachine() {
       .then((res) => {
         emit("create:machine", res)
         active.value = false
+        addNotification("Machine succesfully saved", "success")
       })
       .finally(() => {
         isLoading.value = false
-        addNotification("Machine succesfully saved", "success")
       })
       .catch(() => {
         addNotification("Machine failed to save", "error")
@@ -81,6 +76,9 @@ function saveMachine() {
       .finally(() => {
         isLoading.value = false
       })
+      .catch(() => {
+        addNotification("Machine failed to save", "error")
+      })
   }
 }
 </script>
@@ -97,7 +95,7 @@ function saveMachine() {
       <v-form v-model="isFormValid" @submit.prevent="saveMachine">
         <v-card-text class="pt-4">
           <v-text-field
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.name"
             label="Machine name"
             variant="outlined"
@@ -108,7 +106,7 @@ function saveMachine() {
           />
 
           <v-textarea
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.description"
             label="Machine description"
             variant="outlined"
@@ -119,14 +117,14 @@ function saveMachine() {
           />
 
           <v-combobox
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.muscle_groups"
             label="Muscle groups"
             chips
             multiple
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
-            :hint="!isReadOnly ? 'Type and press Enter to add a new muscle group' : undefined"
+            :hint="isAdmin ? 'Type and press Enter to add a new muscle group' : undefined"
             persistent-hint
           />
         </v-card-text>
@@ -137,7 +135,7 @@ function saveMachine() {
           <v-btn variant="text" @click="active = false"> Cancel </v-btn>
           <v-spacer />
           <v-btn
-            v-if="!isReadOnly"
+            v-if="isAdmin"
             color="green"
             variant="flat"
             type="submit"

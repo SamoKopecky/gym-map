@@ -5,14 +5,11 @@ import { type ExerciseState, type Exercise, Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
 import { difficultyToString } from "@/utils/transformators"
+import { useUser } from "@/composables/useUser"
 
 const MAX_NAME_CHARS = 255
 
 const props = defineProps({
-  isReadOnly: {
-    type: Boolean,
-    required: true,
-  },
   machineId: {
     type: Number,
     required: false,
@@ -28,6 +25,7 @@ const isLoading = ref(false)
 const isFormValid = ref(false)
 
 const { addNotification } = useNotificationStore()
+const { isAdmin } = useUser()
 
 const formData = reactive<ExerciseState>({
   name: "",
@@ -77,6 +75,9 @@ function saveExercise() {
       .finally(() => {
         isLoading.value = false
       })
+      .catch(() => {
+        addNotification("Exercise failed to save", "error")
+      })
   } else {
     exerciseService
       .patch({
@@ -86,9 +87,13 @@ function saveExercise() {
       .then(() => {
         Object.assign(exercise.value!, formData)
         active.value = false
+        addNotification("Machine edited", "success")
       })
       .finally(() => {
         isLoading.value = false
+      })
+      .catch(() => {
+        addNotification("Exercise failed to save", "error")
       })
   }
 }
@@ -106,7 +111,7 @@ function saveExercise() {
       <v-form v-model="isFormValid" @submit.prevent="saveExercise">
         <v-card-text class="pt-4">
           <v-text-field
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.name"
             label="Exercise name"
             variant="outlined"
@@ -117,7 +122,7 @@ function saveExercise() {
           />
 
           <v-textarea
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.description"
             label="Exercise description"
             variant="outlined"
@@ -128,20 +133,20 @@ function saveExercise() {
           />
 
           <v-combobox
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.muscle_groups"
             label="Muscle groups"
             chips
             multiple
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
-            :hint="!isReadOnly ? 'Type and press Enter to add a new muscle group' : undefined"
+            :hint="isAdmin ? 'Type and press Enter to add a new muscle group' : undefined"
             persistent-hint
-            :class="[!isReadOnly ? 'mb-3' : '']"
+            :class="[isAdmin ? 'mb-3' : '']"
           />
 
           <v-select
-            :readonly="isReadOnly"
+            :readonly="!isAdmin"
             v-model="formData.difficulty"
             :items="Object.values(Difficulty)"
             :item-title="difficultyToString"
@@ -159,7 +164,7 @@ function saveExercise() {
           <v-btn variant="text" @click="active = false"> Cancel </v-btn>
           <v-spacer />
           <v-btn
-            v-if="!isReadOnly"
+            v-if="isAdmin"
             color="green"
             variant="flat"
             type="submit"

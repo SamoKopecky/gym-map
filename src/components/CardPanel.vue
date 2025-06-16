@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useUser } from "@/composables/useUser"
 import type { Card, CardPanelName } from "@/types/card"
 import { computed, type PropType } from "vue"
 import { useRouter } from "vue-router"
@@ -8,16 +9,12 @@ const emit = defineEmits(["select:card", "create:card", "view:card", "unselect:c
 const selectedCard = defineModel<Card>()
 
 const router = useRouter()
+const { isAdmin } = useUser()
 
 const { name } = defineProps({
   name: {
     type: String as PropType<CardPanelName>,
     required: true,
-  },
-  isAdmin: {
-    type: Boolean,
-    required: false,
-    default: false,
   },
   cards: {
     type: Object as PropType<Card[]>,
