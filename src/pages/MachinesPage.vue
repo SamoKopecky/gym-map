@@ -4,6 +4,7 @@ import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import InstructionDetail from "@/components/InstructionDetail.vue"
+import InstructionView from "@/components/InstructionView.vue"
 import { onMounted } from "vue"
 import {
   exerciseToCard,
@@ -83,8 +84,6 @@ function handleMachinesCardSelect(card: Card) {
   selectedInstructionCard.value = undefined
   instructions.value = []
 }
-
-// FIXME: Also reset proper expansion panels on card change
 
 const { isAdmin, isTrainer } = useUser()
 const {
@@ -227,9 +226,7 @@ function handleExerciseUnselect() {
         @create:card="handleInstructionCreation"
       />
     </v-expansion-panels>
-    <div v-if="selectedInstruction">
-      {{ selectedInstruction.email }}
-      <v-textarea variant="outlined" v-model="selectedInstruction.description" />
-    </div>
+
+    <InstructionView v-if="selectedInstruction" v-model="selectedInstruction" />
   </div>
 </template>
