@@ -72,12 +72,16 @@ function handleExerciseCardSelect(card: Card) {
   // Limit exercises
   exerciseService.get({ machine_id: exercise?.machine_id }).then((res) => (exercises.value = res))
   instructionService.get({ exercise_id: exercise?.id }).then((res) => (instructions.value = res))
+  selectedInstructionCard.value = undefined
 }
 
 function handleMachinesCardSelect(card: Card) {
   panelsShow.value = ["Exercises"]
 
   exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
+  selectedExerciseCard.value = undefined
+  selectedInstructionCard.value = undefined
+  instructions.value = []
 }
 
 // FIXME: Also reset proper expansion panels on card change
