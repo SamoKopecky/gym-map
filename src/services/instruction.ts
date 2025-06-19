@@ -32,6 +32,24 @@ class InstructionService extends ServiceBase<
       route: this.route,
     })
   }
+
+  public postFile(id: number, data: FormData): Promise<void> {
+    return this.handleRequest({
+      method: Method.POST,
+      route: `${this.route}/:id/media`,
+      pathParams: { id },
+      postBody: data,
+    }) as Promise<void>
+  }
+
+  public getFile(id: number): Promise<Blob> {
+    return this.handleRequest({
+      method: Method.GET,
+      route: `${this.route}/:id/media`,
+      pathParams: { id },
+      responseType: "blob",
+    }) as Promise<Blob>
+  }
 }
 
 export const instructionService = new InstructionService()

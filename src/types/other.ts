@@ -11,3 +11,15 @@ export interface SearchData {
   text: string
   difficulties: Difficulty[]
 }
+
+export interface MediaBlob {
+  url?: string
+  type?: string
+  loading: boolean
+}
+
+export interface FileInfo {
+  data?: File
+  name?: string
+  loading: boolean
+}

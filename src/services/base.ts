@@ -1,3 +1,4 @@
+import { isArray } from "@/utils/other"
 import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
 import axios, {
   AxiosError,
@@ -156,10 +157,6 @@ export function addQueryParams<T extends object>(url: string, params: T): string
   })
 
   return urlObj.toString()
-}
-
-export function isArray(value: unknown): value is unknown[] {
-  return Array.isArray(value)
 }
 
 export function tokenInterceptor() {

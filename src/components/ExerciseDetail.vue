@@ -70,6 +70,7 @@ function saveExercise() {
       .post({ ...formData, machine_id: props.machineId })
       .then((res) => {
         emit("create:exercise", res)
+        addNotification("Exercise succesfully saved", "success")
         active.value = false
       })
       .finally(() => {
@@ -87,7 +88,7 @@ function saveExercise() {
       .then(() => {
         Object.assign(exercise.value!, formData)
         active.value = false
-        addNotification("Machine edited", "success")
+        addNotification("Exercise edited", "success")
       })
       .finally(() => {
         isLoading.value = false
