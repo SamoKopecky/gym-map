@@ -4,8 +4,10 @@ import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
 import { onMounted } from "vue"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { useUser } from "./composables/useUser"
 
 const keycloak = useKeycloak()
+const { isAdmin } = useUser()
 const route = useRoute()
 const tab = ref<string>()
 
@@ -15,6 +17,9 @@ const getTabFromPath = (path: string) => {
   }
   if (path.startsWith("/map")) {
     return "map"
+  }
+  if (path.startsWith("/admin")) {
+    return "admin"
   }
 
   return ""
@@ -53,6 +58,7 @@ function login() {
           <v-tabs v-model="tab">
             <v-tab to="/map" value="map">Map</v-tab>
             <v-tab to="/machines" value="machines">Machines</v-tab>
+            <v-tab to="/admin" value="admin" v-if="isAdmin">Admin</v-tab>
           </v-tabs>
         </div>
 

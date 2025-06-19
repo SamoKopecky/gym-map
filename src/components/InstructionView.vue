@@ -105,11 +105,11 @@ function uploadFile(uploadFile: File | File[]) {
       :readonly="!canEdit"
     />
     <v-file-input
+      v-if="canEdit"
       v-model="file.data"
       @update:model-value="uploadFile"
       :hint="file.name ?? 'No file found'"
       :loading="file.loading"
-      :readonly="!canEdit"
       ref="file-upload-input"
       label="Upload new file"
       variant="outlined"
