@@ -1,6 +1,6 @@
 import { test, expect } from "vitest"
-import { exerciseFactory, machineFactory } from "@/factories"
-import { isExerciseSearched, isMachineSearched } from "./search"
+import { exerciseFactory, instructionFactory, machineFactory } from "@/factories"
+import { isExerciseSearched, isInstructionSearched, isMachineSearched } from "./search"
 import { Difficulty } from "@/types/exercise"
 
 test("isSearched__name", () => {
@@ -91,4 +91,14 @@ test("isSearched__difficulty__exercise__missing_diffculty", () => {
 
   expect(isExerciseSearched({ text: "", difficulties: [] }, exercise)).toBe(true)
   expect(isExerciseSearched({ text: "", difficulties: [Difficulty.Normal] }, exercise)).toBe(false)
+})
+
+test("isSearch__instruction", () => {
+  const instruction = instructionFactory("foo", "bar")
+
+  expect(isInstructionSearched({ text: "", difficulties: [] }, instruction)).toBe(true)
+  expect(isInstructionSearched({ text: "foo", difficulties: [] }, instruction)).toBe(true)
+  expect(isInstructionSearched({ text: "bar", difficulties: [] }, instruction)).toBe(true)
+  expect(isInstructionSearched({ text: "fo", difficulties: [] }, instruction)).toBe(true)
+  expect(isInstructionSearched({ text: "baz", difficulties: [] }, instruction)).toBe(false)
 })

@@ -14,14 +14,19 @@ const { name } = defineProps({
     type: String as PropType<CardPanelName>,
     required: true,
   },
-  isAdmin: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   cards: {
     type: Object as PropType<Card[]>,
     required: true,
+  },
+  useActions: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  canEdit: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 })
 
@@ -60,7 +65,7 @@ function updateCardId(card: Card) {
     </template>
     <template #text>
       <v-container fluid>
-        <v-btn v-if="isAdmin" class="mb-3" text="add new" @click="emit('create:card')" />
+        <v-btn v-if="canEdit" class="mb-3" text="add new" @click="emit('create:card')" />
         <v-row>
           <v-col v-for="card in cards" :key="card.id" cols="12" md="4" sm="6" lg="3">
             <v-card
@@ -70,9 +75,9 @@ function updateCardId(card: Card) {
               @click="updateCardId(card)"
             >
               <v-card-title> </v-card-title>
-              <template #append>
+              <template v-if="useActions" #append>
                 <v-btn
-                  v-if="isAdmin"
+                  v-if="canEdit"
                   icon="mdi-pencil"
                   v-tooltip:bottom="'Edit card'"
                   variant="text"

@@ -1,3 +1,5 @@
+import { isArray } from "@/utils/other"
+import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
 import axios, {
   AxiosError,
   type AxiosRequestConfig,
@@ -9,6 +11,7 @@ const API_BASE_URL = import.meta.env.VITE_APP_BACKEND ?? "http://localhost:2001"
 export enum Route {
   Machines = "/machines",
   Exercises = "/exercises",
+  Instructions = "/instructions",
 }
 
 export interface PatchBase {
@@ -156,6 +159,17 @@ export function addQueryParams<T extends object>(url: string, params: T): string
   return urlObj.toString()
 }
 
-export function isArray(value: unknown): value is unknown[] {
-  return Array.isArray(value)
+export function tokenInterceptor() {
+  axios.interceptors.request.use(
+    (config) => {
+      const keycloak = useKeycloak()
+      if (keycloak.authenticated) {
+        config.headers.Authorization = `Bearer ${keycloak.token}`
+      }
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    },
+  )
 }

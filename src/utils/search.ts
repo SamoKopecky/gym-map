@@ -1,12 +1,13 @@
 import { type Exercise } from "@/types/exercise"
+import type { Instruction } from "@/types/instruction"
 import type { Machine } from "@/types/machine"
 import type { SearchData } from "@/types/other"
 
 export function isMachineSearched(searchData: SearchData, machine: Machine): boolean {
-  const adjustedSearchText = searchData.text.toLowerCase()
+  const textLower = searchData.text.toLowerCase()
   return (
-    machine.name.toLowerCase().includes(adjustedSearchText) ||
-    machine.muscle_groups!.some((mg) => mg.toLowerCase().includes(adjustedSearchText))
+    machine.name.toLowerCase().includes(textLower) ||
+    machine.muscle_groups!.some((mg) => mg.toLowerCase().includes(textLower))
   )
 }
 
@@ -26,4 +27,15 @@ export function isExerciseSearched(searchData: SearchData, exercise: Exercise): 
   }
 
   return textSearched && difficultySearched
+}
+
+export function isInstructionSearched(searchData: SearchData, instruction: Instruction): boolean {
+  const textLower = searchData.text.toLowerCase()
+
+  if (!instruction.first_name || !instruction.last_name) return true
+
+  return (
+    instruction.first_name.toLowerCase().includes(textLower) ||
+    instruction.last_name.toLowerCase().includes(textLower)
+  )
 }

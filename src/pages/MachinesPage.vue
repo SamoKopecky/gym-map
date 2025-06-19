@@ -3,9 +3,16 @@ import { type Card, type CardPanelName } from "@/types/card"
 import { ref } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
+import InstructionDetail from "@/components/InstructionDetail.vue"
+import InstructionView from "@/components/InstructionView.vue"
 import { onMounted } from "vue"
-import { exerciseToCard, machineToCard, difficultyToColor } from "@/utils/transformators"
-import { isExerciseSearched, isMachineSearched } from "@/utils/search"
+import {
+  exerciseToCard,
+  machineToCard,
+  difficultyToColor,
+  instructionToCard,
+} from "@/utils/transformators"
+import { isExerciseSearched, isInstructionSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
 import { exerciseService } from "@/services/exercise"
@@ -13,6 +20,9 @@ import ExerciseDetail from "@/components/ExerciseDetail.vue"
 import { Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { type SearchData } from "@/types/other"
+import { instructionService } from "@/services/instruction"
+import { computed } from "vue"
+import { useUser } from "@/composables/useUser"
 
 const props = defineProps({
   id: {
@@ -27,20 +37,33 @@ const searchData = reactive<SearchData>({
   text: "",
 })
 const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
-const isAdmin = ref(false)
 const selectedMachineCard = ref<Card>()
 const selectedExerciseCard = ref<Card>()
+const selectedInstructionCard = ref<Card>()
+
+const selectedInstruction = computed(() => {
+  if (!selectedInstructionCard.value) return
+
+  return instructions.value.find((i) => i.id === selectedInstructionCard.value?.id)
+})
+
+const { userId } = useUser()
 
 function handleCardSelect(card: Card, panelName: CardPanelName) {
   if (panelName === "Machines") {
     handleMachinesCardSelect(card)
   } else if (panelName === "Exercises") {
     handleExerciseCardSelect(card)
+  } else if (panelName === "Instructions") {
+    handleInstructionCardSelect()
   }
 }
 
+function handleInstructionCardSelect() {
+  panelsShow.value = []
+}
+
 function handleExerciseCardSelect(card: Card) {
-  // TODO: Select trainer cards
   panelsShow.value = ["Instructions"]
 
   const exercise = exercises.value.find((m) => m.id === card.id)
@@ -49,14 +72,20 @@ function handleExerciseCardSelect(card: Card) {
   selectedMachineCard.value = machines.value.find((m) => m.id === exercise?.machine_id)
   // Limit exercises
   exerciseService.get({ machine_id: exercise?.machine_id }).then((res) => (exercises.value = res))
+  instructionService.get({ exercise_id: exercise?.id }).then((res) => (instructions.value = res))
+  selectedInstructionCard.value = undefined
 }
 
 function handleMachinesCardSelect(card: Card) {
-  selectedMachineCard.value = card
-  exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
   panelsShow.value = ["Exercises"]
+
+  exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
+  selectedExerciseCard.value = undefined
+  selectedInstructionCard.value = undefined
+  instructions.value = []
 }
 
+const { isAdmin, isTrainer } = useUser()
 const {
   entities: machines,
   cards: machineCards,
@@ -79,6 +108,16 @@ const {
   fetchAllEntities: fetchAllExercises,
 } = useDetail(searchData, exerciseService, isExerciseSearched, exerciseToCard)
 
+const {
+  entities: instructions,
+  cards: instructionCards,
+  activeEntity: activeInstruction,
+  isEntityDetailActive: isInstructionDetailActive,
+  handleEntityCreation: handleInstructionCreation,
+  handleEntitySelect: handleInstructionSelect,
+  handleEntityApiCreation: handleInstructionApiCreation,
+} = useDetail(searchData, instructionService, isInstructionSearched, instructionToCard)
+
 onMounted(() => {
   fetchAllExercises()
   fetchAllMachines().then(() => {
@@ -92,8 +131,14 @@ onMounted(() => {
 })
 
 function handleMachineUnselect() {
+  handleExerciseUnselect()
   fetchAllExercises()
   selectedExerciseCard.value = undefined
+}
+
+function handleExerciseUnselect() {
+  selectedInstructionCard.value = undefined
+  instructions.value = []
 }
 </script>
 
@@ -103,19 +148,24 @@ function handleMachineUnselect() {
       v-model:active="isMachineDetailActive"
       v-model:machine="activeMachine"
       @create:machine="handleMachineApiCreation"
-      :is-read-only="!isAdmin"
     />
 
     <ExerciseDetail
       v-model:active="isExerciseDetailActive"
       v-model:exercise="activeExercise"
       @create:exercise="handleExerciseApiCreation"
-      :is-read-only="!isAdmin"
       :machine-id="selectedMachineCard?.id"
     />
 
+    <InstructionDetail
+      v-model:active="isInstructionDetailActive"
+      v-model:instruction="activeInstruction"
+      @create:instruction="handleInstructionApiCreation"
+      :exercise-id="selectedExerciseCard?.id"
+      :user-id="userId"
+    />
+
     <v-container fluid>
-      <v-checkbox label="Admin view" v-model="isAdmin" hide-details="auto" />
       <v-text-field
         prepend-icon="mdi-magnify"
         v-model="searchData.text"
@@ -144,8 +194,8 @@ function handleMachineUnselect() {
     <v-expansion-panels v-model="panelsShow" multiple variant="accordion">
       <CardPanel
         name="Machines"
+        :can-edit="isAdmin"
         :cards="machineCards"
-        :is-admin="isAdmin"
         v-model="selectedMachineCard"
         @select:card="handleCardSelect"
         @view:card="handleMachineSelect"
@@ -155,22 +205,28 @@ function handleMachineUnselect() {
 
       <CardPanel
         name="Exercises"
+        :can-edit="isAdmin"
         :cards="exerciseCards"
-        :is-admin="isAdmin"
         v-model="selectedExerciseCard"
         @select:card="handleCardSelect"
         @view:card="handleExerciseSelect"
         @create:card="handleExerciseCreation"
+        @unselect:card="handleExerciseUnselect"
       />
 
-      <v-expansion-panel title="Instructions" value="Instructions">
-        <template #text>
-          <h3>Under construction, choose which instructions to follow</h3>
-        </template>
-      </v-expansion-panel>
-      <div v-if="panelsShow.includes('Instructions')">
-        <h3>Detailed instructions including a video + trainer info here</h3>
-      </div>
+      <CardPanel
+        v-if="selectedExerciseCard"
+        name="Instructions"
+        :can-edit="isTrainer"
+        :use-actions="false"
+        :cards="instructionCards"
+        v-model="selectedInstructionCard"
+        @select:card="handleCardSelect"
+        @view:card="handleInstructionSelect"
+        @create:card="handleInstructionCreation"
+      />
     </v-expansion-panels>
+
+    <InstructionView v-if="selectedInstruction" v-model="selectedInstruction" />
   </div>
 </template>

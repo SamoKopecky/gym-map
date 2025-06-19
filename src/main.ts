@@ -1,5 +1,6 @@
 import "vuetify/styles"
 import "@mdi/font/css/materialdesignicons.css"
+import VueKeyCloak from "@dsb-norge/vue-keycloak-js"
 import { createVuetify } from "vuetify"
 import {
   VAlert,
@@ -24,18 +25,22 @@ import {
   VExpansionPanel,
   VExpansionPanels,
   VExpansionPanelTitle,
+  VFileInput,
   VForm,
   VIcon,
   VLabel,
   VLayout,
   VList,
   VListItem,
+  VListItemTitle,
   VListSubheader,
   VMain,
   VMenu,
   VNumberInput,
+  VProgressCircular,
   VRadio,
   VRadioGroup,
+  VResponsive,
   VRow,
   VSelect,
   VSlider,
@@ -56,11 +61,13 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./router"
 import { createPinia } from "pinia"
+import { tokenInterceptor } from "./services/base"
 
 const vuetify = createVuetify({
   components: {
     VSelect,
     VTabs,
+    VResponsive,
     VCombobox,
     VTabsWindow,
     VTab,
@@ -73,6 +80,7 @@ const vuetify = createVuetify({
     VAlert,
     VSlideYTransition,
     VLabel,
+    VProgressCircular,
     VRow,
     VTabsWindowItem,
     VChip,
@@ -83,6 +91,7 @@ const vuetify = createVuetify({
     VChipGroup,
     VExpansionPanelTitle,
     VWindow,
+    VFileInput,
     VTextField,
     VWindowItem,
     VApp,
@@ -94,10 +103,11 @@ const vuetify = createVuetify({
     VBtn,
     VMenu,
     VCardTitle,
+    VListItem,
+    VListItemTitle,
     VCardSubtitle,
     VList,
     VIcon,
-    VListItem,
     VSpacer,
     VListSubheader,
     VExpandTransition,
@@ -113,6 +123,26 @@ const vuetify = createVuetify({
   directives,
 })
 
+const viteKeycloakUrl = import.meta.env.VITE_APP_KEYCLOAK_URL ?? "http://localhost:8080"
 const pinia = createPinia()
 
-createApp(App).use(vuetify).use(router).use(pinia).mount("#app")
+const app = createApp(App)
+
+app
+  .use(vuetify)
+  .use(router)
+  .use(pinia)
+  .use(VueKeyCloak, {
+    config: {
+      url: viteKeycloakUrl,
+      realm: "gym-map",
+      clientId: "gym-map",
+    },
+    init: {
+      onLoad: "check-sso",
+    },
+    onReady: () => {
+      tokenInterceptor()
+      app.mount("#app")
+    },
+  })

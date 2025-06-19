@@ -9,6 +9,7 @@ import { type Position } from "@/types/machine"
 import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
+import { useUser } from "@/composables/useUser"
 
 const props = defineProps({
   id: {
@@ -19,6 +20,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { isAdmin } = useUser()
 
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
@@ -76,7 +78,7 @@ onMounted(() =>
 
 <template>
   <div>
-    <v-checkbox label="Edit machines" v-model="editMode" hide-details="auto" />
+    <v-checkbox v-if="isAdmin" label="Edit machines" v-model="editMode" hide-details="auto" />
     <p v-if="editMode">Click a machine to edit</p>
     <p v-else>Click a machine for more info</p>
     <div v-if="editMode && machineEdit">
