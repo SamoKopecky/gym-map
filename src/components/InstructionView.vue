@@ -6,7 +6,7 @@ import { type Instruction } from "@/types/instruction"
 import { type FileInfo, type MediaBlob } from "@/types/other"
 import { isArray } from "@/utils/other"
 import { watchDebounced } from "@vueuse/core"
-import { onMounted } from "vue"
+import { watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
 
 const instruction = defineModel<Instruction>({ required: true })
@@ -28,10 +28,21 @@ const canEdit = computed(() => {
   return trainerOwns || isAdmin.value
 })
 
+watch(
+  instruction,
+  () => {
+    file.name = instruction.value.file_name
+    getMediaBlob()
+  },
+  { immediate: true },
+)
+
 watchDebounced(
   () => instruction.value.description,
   (newDescription) => {
-    instructionService.patch({ id: instruction.value.id, description: newDescription })
+    if (canEdit.value) {
+      instructionService.patch({ id: instruction.value.id, description: newDescription })
+    }
   },
   { debounce: 500 },
 )
@@ -83,11 +94,6 @@ function uploadFile(uploadFile: File | File[]) {
       file.data = undefined
     })
 }
-
-onMounted(() => {
-  file.name = instruction.value.file_name
-  getMediaBlob()
-})
 </script>
 
 <template>
@@ -103,6 +109,7 @@ onMounted(() => {
       @update:model-value="uploadFile"
       :hint="file.name ?? 'No file found'"
       :loading="file.loading"
+      :readonly="!canEdit"
       ref="file-upload-input"
       label="Upload new file"
       variant="outlined"
