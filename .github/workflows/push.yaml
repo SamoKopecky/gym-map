@@ -45,7 +45,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_APP_BACKEND=${{ vars.BACKEND_ULR }}
+            VITE_APP_BACKEND=${{ vars.BACKEND_URL }}
             VITE_APP_KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
 
       - name: Generate artifact attestation

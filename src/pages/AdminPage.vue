@@ -44,7 +44,6 @@ function addNew() {
 
 function unregisterUserFn() {
   if (!unregisterUser.value) return
-  console.log(unregisterUser.value)
   userService
     .deleteUser(unregisterUser.value?.id)
     .then(() => {

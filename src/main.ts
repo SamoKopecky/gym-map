@@ -126,7 +126,6 @@ const vuetify = createVuetify({
 })
 
 const viteKeycloakUrl = import.meta.env.VITE_APP_KEYCLOAK_URL ?? "http://localhost:8080"
-console.log("Using kc", viteKeycloakUrl)
 const pinia = createPinia()
 
 const app = createApp(App)
