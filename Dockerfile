@@ -18,6 +18,7 @@ RUN npm run build
 
 FROM node:22-slim AS final
 ARG VITE_APP_BACKEND
+ARG VITE_APP_KEYCLOAK_URL
 
 # Install serve
 RUN npm install -g serve
