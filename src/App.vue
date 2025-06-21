@@ -63,31 +63,23 @@ function login() {
         </div>
 
         <template #append>
-          <div v-if="keycloak.subject">
-            <span class="font-weight-medium mr-2">{{ keycloak.fullName }}</span>
-            <v-icon>mdi-account</v-icon>
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+            </template>
 
-            <v-menu>
-              <template v-slot:activator="{ props }">
-                <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
-              </template>
-
-              <v-list>
-                <v-list-item @click="logout" title="Logout" />
-              </v-list>
-            </v-menu>
-          </div>
-          <div v-else>
-            <v-menu>
-              <template v-slot:activator="{ props }">
-                <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
-              </template>
-
-              <v-list>
-                <v-list-item @click="login" title="Login" />
-              </v-list>
-            </v-menu>
-          </div>
+            <v-list>
+              <v-list-item
+                v-if="keycloak.subject"
+                :title="keycloak.fullName"
+                prepend-icon="mdi-account"
+              />
+              <v-list-item
+                @click="keycloak.subject ? logout() : login()"
+                :title="keycloak.subject ? 'Logout' : 'Login'"
+              />
+            </v-list>
+          </v-menu>
         </template>
       </v-app-bar>
 

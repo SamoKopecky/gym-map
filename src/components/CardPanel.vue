@@ -135,7 +135,6 @@ function updateCardId(card: Card) {
 
 <style scoped>
 .selected-card {
-  border-color: #1867c0; /* Vuetify primary color */
   border-width: 2px;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
