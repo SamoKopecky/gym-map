@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from "vue"
+import panzoom from "panzoom"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
-import { onMounted, ref, watch } from "vue"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { reactive } from "vue"
@@ -25,6 +26,9 @@ const { isAdmin } = useUser()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
 const machineEdit = ref<MapMachine>()
+
+// Create a ref for the SVG element
+const svgElement = ref<SVGElement | null>(null)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -63,7 +67,7 @@ const updatePositionDebounce = useDebounceFn((position: Position) => {
   })
 }, 500)
 
-onMounted(() =>
+onMounted(() => {
   machineService.get().then((res) => {
     machines.value = res.map((m) => ({ ...m, is_origin: false }))
     if (props.id) {
@@ -72,8 +76,22 @@ onMounted(() =>
 
       originMachine.is_origin = true
     }
-  }),
-)
+  })
+
+  // Initialize panzoom
+  if (svgElement.value) {
+    panzoom(svgElement.value, {
+      maxZoom: 10,
+      minZoom: 0.5,
+      // The following option is useful for mobile to prevent the page from scrolling
+      // when panning the SVG.
+      filterKey: () => {
+        // returning `true` tells panzoom to not handle this event.
+        return true
+      },
+    })
+  }
+})
 </script>
 
 <template>
@@ -89,7 +107,7 @@ onMounted(() =>
     </div>
 
     <div class="svg-container">
-      <svg width="900" height="1206" view-box="0 0 900 1206" style="background-color: grey">
+      <svg ref="svgElement" width="900" height="1206" view-box="0 0 900 1206">
         <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
         <g v-for="machine in machines" :key="machine.name">
           <rect
@@ -119,8 +137,16 @@ onMounted(() =>
 
 <style scoped>
 .svg-container {
-  width: 100%; /* Make the container take the full width of its parent */
-  overflow: auto; /* This is the key! It adds scrollbars when content overflows */
-  -webkit-overflow-scrolling: touch; /* Enables smooth, momentum-based scrolling on iOS */
+  width: 100%;
+  height: 100%; /* Give it a defined height or make it flexible */
+  overflow: hidden; /* Important: panzoom will handle the panning */
+  border: 1px solid #ccc; /* Optional: for visualization */
+}
+
+/* It's important that the SVG can be transformed */
+.svg-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 </style>
