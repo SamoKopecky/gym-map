@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { userService } from "@/services/user"
+import { useNotificationStore } from "@/stores/useNotificationStore"
 import type { User } from "@/types/user"
 import { computed } from "vue"
 import { onMounted } from "vue"
@@ -14,6 +15,8 @@ const isFormValid = ref(true)
 const confirmDeleteActve = ref(false)
 const unregisterUser = ref<User>()
 
+const { addNotification } = useNotificationStore()
+
 const unregisterUserName = computed(() => unregisterUser.value?.name ?? unregisterUser.value?.email)
 
 const emailRules = [(value: string) => /.+@.+\..+/.test(value) || "E-mail must be valid."]
@@ -25,12 +28,31 @@ const headers = [
 ]
 
 function addNew() {
-  console.log("add")
+  if (!email.value) return
+  emailLoading.value = true
+  userService
+    .post({ email: email.value })
+    .then(() => {
+      addNotification("User registered sucesfully", "success")
+      loadUsers()
+    })
+    .catch(() => {
+      addNotification("User registration failed", "error")
+    })
+    .finally(() => (emailLoading.value = false))
 }
 
 function unregisterUserFn() {
-  console.log("unregister")
-  confirmDeleteActve.value = false
+  if (!unregisterUser.value) return
+  console.log(unregisterUser.value)
+  userService
+    .deleteUser(unregisterUser.value?.id)
+    .then(() => {
+      loadUsers()
+      addNotification("User unregistered succesfuly", "success")
+    })
+    .catch(() => addNotification("User unregistration failed", "error"))
+    .finally(() => (confirmDeleteActve.value = false))
 }
 
 function confirmUserUnregistration(user: User) {
@@ -38,7 +60,11 @@ function confirmUserUnregistration(user: User) {
   unregisterUser.value = user
 }
 
-onMounted(() => userService.get().then((res) => (users.value = res)))
+function loadUsers() {
+  userService.get().then((res) => (users.value = res))
+}
+
+onMounted(() => loadUsers())
 </script>
 
 <template>
