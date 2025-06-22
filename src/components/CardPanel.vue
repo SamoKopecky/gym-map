@@ -123,6 +123,7 @@ function initialDeletion(card: Card) {
                       v-if="canEdit"
                       size="small"
                       variant="text"
+                      color="error"
                       icon="mdi-delete"
                       @click="initialDeletion(card)"
                     />

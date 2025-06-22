@@ -144,6 +144,12 @@ function handleExerciseUnselect() {
   selectedInstructionCard.value = undefined
   instructions.value = []
 }
+
+function handleInstructionUnselect() {
+  panelsShow.value = ["Instructions"]
+  instructions.value = instructions.value.filter((i) => i.id !== selectedInstructionCard.value?.id)
+  selectedInstructionCard.value = undefined
+}
 </script>
 
 <template>
@@ -233,6 +239,10 @@ function handleExerciseUnselect() {
       />
     </v-expansion-panels>
 
-    <InstructionView v-if="selectedInstruction" v-model="selectedInstruction" />
+    <InstructionView
+      v-if="selectedInstruction"
+      v-model="selectedInstruction"
+      @delete:instruction="handleInstructionUnselect"
+    />
   </div>
 </template>
