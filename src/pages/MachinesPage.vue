@@ -11,6 +11,7 @@ import {
   machineToCard,
   difficultyToColor,
   instructionToCard,
+  difficultyToString,
 } from "@/utils/transformators"
 import { isExerciseSearched, isInstructionSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
@@ -186,7 +187,7 @@ function handleExerciseUnselect() {
             :value="difficulty"
             :color="difficultyToColor(difficulty)"
           >
-            {{ difficulty }}
+            {{ difficultyToString(difficulty) }}
           </v-chip>
         </v-chip-group>
       </div>
