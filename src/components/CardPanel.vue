@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import type { Card, CardPanelName } from "@/types/card"
-import { computed, type PropType } from "vue"
+import { computed, ref, type PropType } from "vue"
 import { useRouter } from "vue-router"
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 
-const emit = defineEmits(["select:card", "create:card", "view:card", "unselect:card"])
+const deleteDialogActive = ref(false)
+const deleteCard = ref<Card>()
+
+const emit = defineEmits([
+  "select:card",
+  "create:card",
+  "view:card",
+  "unselect:card",
+  "delete:card",
+])
 
 const selectedCard = defineModel<Card>()
 
@@ -56,9 +66,23 @@ function updateCardId(card: Card) {
     selectedCard.value = card
   }
 }
+
+function initialDeletion(card: Card) {
+  deleteCard.value = card
+  deleteDialogActive.value = true
+}
 </script>
 
 <template>
+  <DeleteConfirmationDialog
+    v-model="deleteDialogActive"
+    confirm-text="Delete"
+    @confirm="emit('delete:card', deleteCard?.id)"
+  >
+    Do you really want to delete <strong>{{ deleteCard?.name }}</strong
+    >? This action cannot be undone.
+  </DeleteConfirmationDialog>
+
   <v-expansion-panel :value="name">
     <v-expansion-panel-title>
       <v-icon :icon="panelIcon" start />
@@ -95,6 +119,13 @@ function updateCardId(card: Card) {
                 <div class="d-flex align-center">
                   <v-spacer />
                   <div @click.stop v-if="useActions">
+                    <v-btn
+                      v-if="canEdit"
+                      size="small"
+                      variant="text"
+                      icon="mdi-delete"
+                      @click="initialDeletion(card)"
+                    />
                     <v-btn
                       v-tooltip:bottom="canEdit ? 'Edit Card' : 'More Info'"
                       :icon="canEdit ? 'mdi-pencil-outline' : 'mdi-information-outline'"

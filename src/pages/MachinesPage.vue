@@ -95,6 +95,7 @@ const {
   handleEntityCreation: handleMachineCreation,
   handleEntitySelect: handleMachineSelect,
   handleEntityApiCreation: handleMachineApiCreation,
+  handleDelete: handleMachineDeletion,
   fetchAllEntities: fetchAllMachines,
 } = useDetail(searchData, machineService, isMachineSearched, machineToCard)
 
@@ -106,6 +107,7 @@ const {
   handleEntityCreation: handleExerciseCreation,
   handleEntitySelect: handleExerciseSelect,
   handleEntityApiCreation: handleExerciseApiCreation,
+  handleDelete: handleExerciseDeletion,
   fetchAllEntities: fetchAllExercises,
 } = useDetail(searchData, exerciseService, isExerciseSearched, exerciseToCard)
 
@@ -203,6 +205,7 @@ function handleExerciseUnselect() {
         @view:card="handleMachineSelect"
         @create:card="handleMachineCreation"
         @unselect:card="handleMachineUnselect"
+        @delete:card="handleMachineDeletion"
       />
 
       <CardPanel
@@ -214,6 +217,7 @@ function handleExerciseUnselect() {
         @view:card="handleExerciseSelect"
         @create:card="handleExerciseCreation"
         @unselect:card="handleExerciseUnselect"
+        @delete:card="handleExerciseDeletion"
       />
 
       <CardPanel
