@@ -126,6 +126,7 @@ onMounted(() => {
     const propMachineCard = machineCards.value.find((m) => m.id === Number(props.id))
     if (!propMachineCard) return
 
+    selectedMachineCard.value = propMachineCard
     handleMachinesCardSelect(propMachineCard)
   })
 })
