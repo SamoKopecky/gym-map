@@ -5,6 +5,7 @@ import type { User } from "@/types/user"
 import { computed } from "vue"
 import { onMounted } from "vue"
 import { ref } from "vue"
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 
 const users = ref<User[]>([])
 const search = ref<string>()
@@ -67,23 +68,14 @@ onMounted(() => loadUsers())
 </script>
 
 <template>
-  <v-dialog v-model="confirmDeleteActive" max-width="500px">
-    <v-card>
-      <v-card-title class="text-h5 text-center">Are you sure?</v-card-title>
-      <v-card-text class="text-center">
-        Do you really want to unregister <strong>{{ unregisterUserName }}</strong
-        >? This action cannot be undone.
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue-darken-1" variant="text" @click="confirmDeleteActive = false">
-          Cancel
-        </v-btn>
-        <v-btn color="red-darken-1" variant="tonal" @click="unregisterUserFn"> Unregister </v-btn>
-        <v-spacer></v-spacer>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <DeleteConfirmationDialog
+    v-model="confirmDeleteActive"
+    confirm-text="Unregister"
+    @confirm="unregisterUserFn"
+  >
+    Do you really want to unregister <strong>{{ unregisterUserName }}</strong
+    >? This action cannot be undone.
+  </DeleteConfirmationDialog>
 
   <v-card>
     <v-card-title class="d-flex align-center">

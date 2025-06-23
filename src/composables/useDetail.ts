@@ -3,6 +3,7 @@ import type { ServiceBase } from "@/services/base"
 import type { Entity } from "@/types/base"
 import type { Card } from "@/types/card"
 import type { SearchData } from "@/types/other"
+import { useNotificationStore } from "@/stores/useNotificationStore"
 
 export function useDetail<T extends Entity>(
   searchData: SearchData,
@@ -14,6 +15,8 @@ export function useDetail<T extends Entity>(
   const entities = ref<T[]>([]) as Ref<T[]>
   const activeEntity = ref<T>()
   const isEntityDetailActive = ref<boolean>(false)
+
+  const { addNotification } = useNotificationStore()
 
   const searchedEntities = computed(() => {
     return entities.value.filter((e) => searchFunction(searchData, e))
@@ -43,6 +46,16 @@ export function useDetail<T extends Entity>(
     })
   }
 
+  function handleDelete(id: number) {
+    service
+      .delete(id)
+      .then(() => {
+        entities.value = entities.value.filter((e) => e.id !== id)
+        addNotification("Deleted succesfully", "success")
+      })
+      .catch(() => addNotification("Deletion failed", "error"))
+  }
+
   return {
     entities,
     cards,
@@ -51,6 +64,7 @@ export function useDetail<T extends Entity>(
     handleEntitySelect,
     handleEntityCreation,
     handleEntityApiCreation,
+    handleDelete,
     fetchAllEntities,
   }
 }

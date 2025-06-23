@@ -24,6 +24,8 @@ import { type SearchData } from "@/types/other"
 import { instructionService } from "@/services/instruction"
 import { computed } from "vue"
 import { useUser } from "@/composables/useUser"
+import type { Machine } from "@/types/machine"
+import type { Exercise } from "@/types/exercise"
 
 const props = defineProps({
   id: {
@@ -95,6 +97,7 @@ const {
   handleEntityCreation: handleMachineCreation,
   handleEntitySelect: handleMachineSelect,
   handleEntityApiCreation: handleMachineApiCreation,
+  handleDelete: handleMachineDeletion,
   fetchAllEntities: fetchAllMachines,
 } = useDetail(searchData, machineService, isMachineSearched, machineToCard)
 
@@ -106,6 +109,7 @@ const {
   handleEntityCreation: handleExerciseCreation,
   handleEntitySelect: handleExerciseSelect,
   handleEntityApiCreation: handleExerciseApiCreation,
+  handleDelete: handleExerciseDeletion,
   fetchAllEntities: fetchAllExercises,
 } = useDetail(searchData, exerciseService, isExerciseSearched, exerciseToCard)
 
@@ -141,6 +145,26 @@ function handleMachineUnselect() {
 function handleExerciseUnselect() {
   selectedInstructionCard.value = undefined
   instructions.value = []
+}
+
+function handleInstructionUnselect() {
+  panelsShow.value = ["Instructions"]
+  instructions.value = instructions.value.filter((i) => i.id !== selectedInstructionCard.value?.id)
+  selectedInstructionCard.value = undefined
+}
+
+function cascadeMachineDeletion(machine: Machine) {
+  handleMachineDeletion(machine.id)
+  const exerciseIds = exercises.value.filter((e) => e.machine_id === machine.id).map((e) => e.id)
+
+  exercises.value = exercises.value.filter((e) => e.machine_id !== machine.id)
+  instructions.value = instructions.value.filter((i) => !exerciseIds.includes(i.exercise_id))
+}
+
+function cascadeExerciseDeletion(exercise: Exercise) {
+  handleExerciseDeletion(exercise.id)
+
+  instructions.value = instructions.value.filter((i) => i.exercise_id !== exercise.id)
 }
 </script>
 
@@ -203,7 +227,26 @@ function handleExerciseUnselect() {
         @view:card="handleMachineSelect"
         @create:card="handleMachineCreation"
         @unselect:card="handleMachineUnselect"
-      />
+        @delete:card="cascadeMachineDeletion"
+      >
+        <template #deletionWarning>
+          <div class="text-start mt-2">
+            <p>The following will be permanently deleted:</p>
+
+            <v-list density="compact" bg-color="transparent">
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>The machine</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of its associated exercises</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of the exercises' associated instructions</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </div>
+        </template>
+      </CardPanel>
 
       <CardPanel
         name="Exercises"
@@ -214,7 +257,23 @@ function handleExerciseUnselect() {
         @view:card="handleExerciseSelect"
         @create:card="handleExerciseCreation"
         @unselect:card="handleExerciseUnselect"
-      />
+        @delete:card="cascadeExerciseDeletion"
+      >
+        <template #deletionWarning>
+          <div class="text-start mt-2">
+            <p>The following will be permanently deleted:</p>
+
+            <v-list density="compact" bg-color="transparent">
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>The exercise</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of associated instructions</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </div>
+        </template>
+      </CardPanel>
 
       <CardPanel
         v-if="selectedExerciseCard"
@@ -229,6 +288,10 @@ function handleExerciseUnselect() {
       />
     </v-expansion-panels>
 
-    <InstructionView v-if="selectedInstruction" v-model="selectedInstruction" />
+    <InstructionView
+      v-if="selectedInstruction"
+      v-model="selectedInstruction"
+      @delete:instruction="handleInstructionUnselect"
+    />
   </div>
 </template>
