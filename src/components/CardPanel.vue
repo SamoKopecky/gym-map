@@ -77,7 +77,7 @@ function initialDeletion(card: Card) {
   <DeleteConfirmationDialog
     v-model="deleteDialogActive"
     confirm-text="Delete"
-    @confirm="emit('delete:card', deleteCard?.id)"
+    @confirm="emit('delete:card', deleteCard)"
   >
     Do you really want to delete <strong>{{ deleteCard?.name }}</strong
     >? This action cannot be undone.

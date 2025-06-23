@@ -24,6 +24,8 @@ import { type SearchData } from "@/types/other"
 import { instructionService } from "@/services/instruction"
 import { computed } from "vue"
 import { useUser } from "@/composables/useUser"
+import type { Machine } from "@/types/machine"
+import type { Exercise } from "@/types/exercise"
 
 const props = defineProps({
   id: {
@@ -150,6 +152,20 @@ function handleInstructionUnselect() {
   instructions.value = instructions.value.filter((i) => i.id !== selectedInstructionCard.value?.id)
   selectedInstructionCard.value = undefined
 }
+
+function cascadeMachineDeletion(machine: Machine) {
+  handleMachineDeletion(machine.id)
+  const exerciseIds = exercises.value.filter((e) => e.machine_id === machine.id).map((e) => e.id)
+
+  exercises.value = exercises.value.filter((e) => e.machine_id !== machine.id)
+  instructions.value = instructions.value.filter((i) => !exerciseIds.includes(i.exercise_id))
+}
+
+function cascadeExerciseDeletion(exercise: Exercise) {
+  handleExerciseDeletion(exercise.id)
+
+  instructions.value = instructions.value.filter((i) => i.exercise_id !== exercise.id)
+}
 </script>
 
 <template>
@@ -211,7 +227,7 @@ function handleInstructionUnselect() {
         @view:card="handleMachineSelect"
         @create:card="handleMachineCreation"
         @unselect:card="handleMachineUnselect"
-        @delete:card="handleMachineDeletion"
+        @delete:card="cascadeMachineDeletion"
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
@@ -241,7 +257,7 @@ function handleInstructionUnselect() {
         @view:card="handleExerciseSelect"
         @create:card="handleExerciseCreation"
         @unselect:card="handleExerciseUnselect"
-        @delete:card="handleExerciseDeletion"
+        @delete:card="cascadeExerciseDeletion"
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
