@@ -81,6 +81,8 @@ function initialDeletion(card: Card) {
   >
     Do you really want to delete <strong>{{ deleteCard?.name }}</strong
     >? This action cannot be undone.
+
+    <slot name="deletionWarning" />
   </DeleteConfirmationDialog>
 
   <v-expansion-panel :value="name">

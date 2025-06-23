@@ -212,7 +212,25 @@ function handleInstructionUnselect() {
         @create:card="handleMachineCreation"
         @unselect:card="handleMachineUnselect"
         @delete:card="handleMachineDeletion"
-      />
+      >
+        <template #deletionWarning>
+          <div class="text-start mt-2">
+            <p>The following will be permanently deleted:</p>
+
+            <v-list density="compact" bg-color="transparent">
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>The machine</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of its associated exercises</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of the exercises' associated instructions</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </div>
+        </template>
+      </CardPanel>
 
       <CardPanel
         name="Exercises"
@@ -224,7 +242,22 @@ function handleInstructionUnselect() {
         @create:card="handleExerciseCreation"
         @unselect:card="handleExerciseUnselect"
         @delete:card="handleExerciseDeletion"
-      />
+      >
+        <template #deletionWarning>
+          <div class="text-start mt-2">
+            <p>The following will be permanently deleted:</p>
+
+            <v-list density="compact" bg-color="transparent">
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>The exercise</v-list-item-title>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
+                <v-list-item-title>All of associated instructions</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </div>
+        </template>
+      </CardPanel>
 
       <CardPanel
         v-if="selectedExerciseCard"
