@@ -116,7 +116,11 @@ onUnmounted(() => {
         density="compact"
         class="ma-0"
       >
-        {{ editMode ? "Click a machine to edit" : "Click a machine to see machine exercises" }}
+        {{
+          editMode
+            ? "Click a machine to edit its position & size"
+            : "Click a machine to see its exercises"
+        }}
       </v-alert>
     </div>
 
