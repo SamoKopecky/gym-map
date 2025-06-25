@@ -18,6 +18,7 @@
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^3.0.3",
     "@mdi/font": "^7.4.47",
+    "@panzoom/panzoom": "^4.6.0",
     "@vueuse/core": "^13.3.0",
     "axios": "^1.9.0",
     "pinia": "^3.0.3",
