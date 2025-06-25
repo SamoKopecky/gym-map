@@ -120,6 +120,9 @@ function initialDeletion(card: Card) {
               <template #append>
                 <div class="d-flex align-center">
                   <v-spacer />
+                  <div v-if="useActions">
+                    {{ card.count }}
+                  </div>
                   <div @click.stop v-if="useActions">
                     <v-btn
                       v-if="canEdit"

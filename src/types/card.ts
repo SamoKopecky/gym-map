@@ -4,6 +4,7 @@ export interface Card {
   subtitle?: string
   description?: string
   chips?: Chip[]
+  count?: number
 }
 
 export interface Chip {

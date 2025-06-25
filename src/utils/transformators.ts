@@ -18,6 +18,7 @@ export function exerciseToCard(exercise: Exercise): Card {
     subtitle: exercise.muscle_groups?.join(", "),
     description: exercise.description,
     chips: chips,
+    count: exercise.instruction_count,
   }
 }
 
@@ -27,6 +28,7 @@ export function machineToCard(machine: Machine): Card {
     name: machine.name,
     id: machine.id,
     description: machine.description,
+    count: machine.exercise_count ?? 0,
   }
 }
 

@@ -12,6 +12,7 @@ export interface Exercise extends Entity {
   description?: string
   muscle_groups?: string[]
   difficulty?: Difficulty
+  instruction_count: number
 }
 
 // Used for post data in machine detail
