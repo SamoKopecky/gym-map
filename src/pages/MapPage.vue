@@ -100,9 +100,26 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <v-checkbox v-if="isAdmin" label="Edit machines" v-model="editMode" hide-details="auto" />
-    <p v-if="editMode">Click a machine to edit</p>
-    <p v-else>Click a machine for more info</p>
+    <div class="d-flex justify-center align-center">
+      <v-switch
+        v-if="isAdmin"
+        label="Edit machines"
+        v-model="editMode"
+        hide-details
+        color="yellow"
+        class="mr-2 mb-0"
+      />
+      <v-alert
+        :type="editMode ? 'warning' : 'info'"
+        :icon="editMode ? 'mdi-pencil-circle-outline' : 'mdi-information-outline'"
+        variant="tonal"
+        density="compact"
+        class="ma-0"
+      >
+        {{ editMode ? "Click a machine to edit" : "Click a machine to see machine exercises" }}
+      </v-alert>
+    </div>
+
     <div v-if="editMode && machineEdit">
       <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
       <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
