@@ -55,6 +55,12 @@ const panelIcon = computed(() => {
   return "mdi-view-grid"
 })
 
+const countIcon = computed(() => {
+  if (name === "Machines") return "mdi-weight-lifter"
+  if (name === "Exercises") return "mdi-information-outline"
+  return "mdi-view-grid"
+})
+
 const singularName = computed(() => name.slice(0, -1))
 
 function updateCardId(card: Card) {
@@ -112,20 +118,26 @@ function initialDeletion(card: Card) {
             <v-card
               hover
               :class="{ 'selected-card': selectedCard?.id === card.id }"
-              :title="card.name"
               variant="outlined"
               @click="updateCardId(card)"
               style="transition: all 0.2s ease-out"
             >
+              <template #title>
+                <div class="d-flex align-center">
+                  <v-chip v-if="useActions" class="mr-2" size="small" variant="tonal">
+                    <v-icon :icon="countIcon" start />
+                    {{ card.count }}
+                  </v-chip>
+                  <span>{{ card.name }}</span>
+                </div>
+              </template>
               <template #append>
                 <div class="d-flex align-center">
                   <v-spacer />
-                  <div v-if="useActions">
-                    {{ card.count }}
-                  </div>
                   <div @click.stop v-if="useActions">
                     <v-btn
                       v-if="canEdit"
+                      v-tooltip:bottom="'Delete card'"
                       size="small"
                       variant="text"
                       color="error"
@@ -134,7 +146,7 @@ function initialDeletion(card: Card) {
                     />
                     <v-btn
                       v-tooltip:bottom="canEdit ? 'Edit Card' : 'More Info'"
-                      :icon="canEdit ? 'mdi-pencil-outline' : 'mdi-information-outline'"
+                      :icon="canEdit ? 'mdi-pencil-outline' : 'mdi-open-in-new'"
                       size="small"
                       variant="text"
                       @click="emit('view:card', card)"

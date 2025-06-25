@@ -1,6 +1,6 @@
 import type { Machine } from "@/types/machine"
-import { Difficulty, type Exercise } from "./types/exercise"
-import type { Instruction } from "./types/instruction"
+import { Difficulty, type Exercise } from "@/types/exercise"
+import type { Instruction } from "@/types/instruction"
 
 export function machineFactory(name?: string, muscleGroups?: string[]): Machine {
   return {
@@ -12,6 +12,7 @@ export function machineFactory(name?: string, muscleGroups?: string[]): Machine 
     id: 1,
     position_x: 0,
     position_y: 0,
+    exercise_count: 0,
   }
 }
 
@@ -27,6 +28,7 @@ export function exerciseFactory(
     description: "bar",
     difficulty: diffculty,
     id: 1,
+    instruction_count: 0,
   }
 }
 
