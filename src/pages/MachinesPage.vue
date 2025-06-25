@@ -26,6 +26,7 @@ import { computed } from "vue"
 import { useUser } from "@/composables/useUser"
 import type { Machine } from "@/types/machine"
 import type { Exercise } from "@/types/exercise"
+import type { Instruction } from "@/types/instruction"
 
 const props = defineProps({
   id: {
@@ -166,6 +167,22 @@ function cascadeExerciseDeletion(exercise: Exercise) {
 
   instructions.value = instructions.value.filter((i) => i.exercise_id !== exercise.id)
 }
+
+function exerciseCreation(exercise: Exercise) {
+  handleExerciseApiCreation(exercise)
+  const machineSelected = machines.value.find((m) => m.id === exercise.machine_id)
+  if (machineSelected) {
+    machineSelected.exercise_count += 1
+  }
+}
+
+function instructionCreation(instruction: Instruction) {
+  handleInstructionApiCreation(instruction)
+  const exerciseSelected = exercises.value.find((e) => e.id === instruction.exercise_id)
+  if (exerciseSelected) {
+    exerciseSelected.instruction_count += 1
+  }
+}
 </script>
 
 <template>
@@ -179,14 +196,14 @@ function cascadeExerciseDeletion(exercise: Exercise) {
     <ExerciseDetail
       v-model:active="isExerciseDetailActive"
       v-model:exercise="activeExercise"
-      @create:exercise="handleExerciseApiCreation"
+      @create:exercise="exerciseCreation"
       :machine-id="selectedMachineCard?.id"
     />
 
     <InstructionDetail
       v-model:active="isInstructionDetailActive"
       v-model:instruction="activeInstruction"
-      @create:instruction="handleInstructionApiCreation"
+      @create:instruction="instructionCreation"
       :exercise-id="selectedExerciseCard?.id"
       :user-id="userId"
     />

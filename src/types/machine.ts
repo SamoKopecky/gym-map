@@ -4,6 +4,7 @@ export interface Machine extends Entity, Position {
   name: string
   description?: string
   muscle_groups?: string[]
+  exercise_count: number
 }
 
 export interface MapMachine extends Machine {
