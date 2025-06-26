@@ -13,7 +13,7 @@ import {
   instructionToCard,
   difficultyToString,
 } from "@/utils/transformators"
-import { isExerciseSearched, isInstructionSearched, isMachineSearched } from "@/utils/search"
+import { isExerciseSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
 import { exerciseService } from "@/services/exercise"
@@ -122,7 +122,7 @@ const {
   handleEntityCreation: handleInstructionCreation,
   handleEntitySelect: handleInstructionSelect,
   handleEntityApiCreation: handleInstructionApiCreation,
-} = useDetail(searchData, instructionService, isInstructionSearched, instructionToCard)
+} = useDetail(searchData, instructionService, () => true, instructionToCard)
 
 onMounted(() => {
   fetchAllExercises()

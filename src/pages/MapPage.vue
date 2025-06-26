@@ -86,8 +86,8 @@ onMounted(() =>
         minScale: 0.5,
         maxScale: 5,
       })
-      panzoomInstance.value = pz // Save the instance
 
+      panzoomInstance.value = pz
       svgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
     }
   }),
