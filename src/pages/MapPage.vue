@@ -93,6 +93,49 @@ onMounted(() =>
   }),
 )
 
+function zoomToFit() {
+  console.log(panzoomInstance.value?.getPan())
+  console.log(panzoomInstance.value?.getScale())
+  if (!panzoomInstance.value || !svgContainer.value || !svgElement.value) {
+    console.error("Panzoom or elements not initialized.")
+    return
+  }
+
+  // 1. Get dimensions
+  const containerRect = svgContainer.value.getBoundingClientRect()
+  const svgRect = svgElement.value.getBoundingClientRect()
+
+  // Use getBBox for the SVG's internal dimensions, which is more reliable
+  // than getBoundingClientRect for scaled elements.
+  const svgBBox = svgElement.value.getBBox()
+
+  const containerWidth = containerRect.width
+  console.log(containerWidth)
+  const containerHeight = containerRect.height
+  const svgWidth = svgBBox.width
+  const svgHeight = svgBBox.height
+  console.log(svgWidth)
+
+  // 2. Calculate the best scale
+  // Add some padding to prevent the SVG from touching the edges
+  const padding = 0.9
+  const scaleX = (containerWidth / svgWidth) * padding
+  const scaleY = (containerHeight / svgHeight) * padding
+
+  // Use the smaller scale to ensure the whole SVG fits
+  const newScale = Math.min(scaleX, scaleY)
+
+  // 3. Center the SVG
+  // Calculate the position to center the SVG within the container
+  const newX = ((containerWidth - svgWidth * newScale) / 2) * -1
+  const newY = ((containerHeight - svgHeight * newScale) / 2) * -1
+
+  console.log(newX, newY)
+  // 4. Apply the new transform with Panzoom's zoom and pan methods
+  panzoomInstance.value.zoom(newScale, { animate: true })
+  panzoomInstance.value.pan(newX, newY, { animate: true })
+}
+
 onUnmounted(() => {
   panzoomInstance.value?.destroy()
 })
@@ -100,6 +143,7 @@ onUnmounted(() => {
 
 <template>
   <div>
+    <v-btn @click="zoomToFit">fit</v-btn>
     <div class="d-flex justify-center align-center">
       <v-switch
         v-if="isAdmin"
