@@ -38,6 +38,7 @@ export function instructionToCard(instruction: Instruction): Card {
     name: instruction.name ?? "N/A",
     id: instruction.id,
     description: "",
+    imageId: instruction.avatar_id,
   }
 }
 
