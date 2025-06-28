@@ -9,6 +9,8 @@ import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import { API_BASE_URL } from "@/services/base"
+import { mediaService } from "@/services/media"
 
 const emit = defineEmits(["delete:instruction"])
 
@@ -35,8 +37,7 @@ const canEdit = computed(() => {
 watch(
   instruction,
   () => {
-    file.name = instruction.value.file_name
-    getMediaBlob()
+    getMedia()
   },
   { immediate: true },
 )
@@ -51,24 +52,15 @@ watchDebounced(
   { debounce: 500 },
 )
 
-function revokeMediaBlob() {
-  if (media.url) {
-    URL.revokeObjectURL(media.url)
-    media.url = undefined
-    media.type = undefined
-  }
-}
-
-function getMediaBlob() {
-  revokeMediaBlob()
+function getMedia() {
+  if (!instruction.value.media_id) return
   media.loading = true
-  instructionService
-    .getFile(instruction.value.id)
+  mediaService
+    .getMetadata(instruction.value.media_id)
     .then((res) => {
-      if (res.type == "text/xml") return
-      const blob = res
-      media.type = blob.type
-      media.url = URL.createObjectURL(blob)
+      file.name = res.original_file_name
+      media.url = `${API_BASE_URL}/media/${res.id}`
+      media.type = res.content_type
     })
     .finally(() => (media.loading = false))
 }
@@ -87,10 +79,10 @@ function uploadFile(uploadFile: File | File[]) {
   file.loading = true
   instructionService
     .postFile(instruction.value.id, formData)
-    .then(() => {
-      getMediaBlob()
+    .then((res) => {
+      instruction.value.media_id = res.media_id
+      getMedia()
       addNotification("File uploaded succesfully", "success")
-      file.name = uploadFile.name
     })
     .catch(() => addNotification("File upload failed", "error"))
     .finally(() => {
@@ -156,7 +148,7 @@ function deleteInstruction() {
       >
       </v-file-input>
 
-      <div class="d-flex justify-center">
+      <div class="d-flex justify-center mt-2">
         <v-progress-circular size="100" v-if="media.loading" indeterminate />
         <v-responsive v-else v-show="media.url" aspect-ratio="16/9" max-width="500px">
           <video

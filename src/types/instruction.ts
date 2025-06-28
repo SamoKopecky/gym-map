@@ -5,8 +5,7 @@ export interface Instruction extends Omit<User, "id"> {
   exercise_id: number
   user_id: string
   description: string
-  file_id?: string
-  file_name?: string
+  media_id?: number
 }
 
 export interface InstructionState {
