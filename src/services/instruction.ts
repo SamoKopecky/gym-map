@@ -16,6 +16,10 @@ export interface InstructionQueryParams {
   user_id?: string
 }
 
+export interface InstructionMediaPostResponse {
+  media_id: number
+}
+
 class InstructionService extends ServiceBase<
   InterfacePatchRequest,
   InterfacePostRequest,
@@ -33,22 +37,13 @@ class InstructionService extends ServiceBase<
     })
   }
 
-  public postFile(id: number, data: FormData): Promise<void> {
+  public postFile(id: number, data: FormData): Promise<InstructionMediaPostResponse> {
     return this.handleRequest({
       method: Method.POST,
       route: `${this.route}/:id/media`,
       pathParams: { id },
       postBody: data,
-    }) as Promise<void>
-  }
-
-  public getFile(id: number): Promise<Blob> {
-    return this.handleRequest({
-      method: Method.GET,
-      route: `${this.route}/:id/media`,
-      pathParams: { id },
-      responseType: "blob",
-    }) as Promise<Blob>
+    })
   }
 }
 
