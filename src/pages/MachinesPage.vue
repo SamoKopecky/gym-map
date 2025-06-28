@@ -296,7 +296,7 @@ function instructionCreation(instruction: Instruction) {
         v-if="selectedExerciseCard"
         name="Instructions"
         :can-edit="isTrainer"
-        :use-actions="false"
+        :are-instructions="true"
         :cards="instructionCards"
         v-model="selectedInstructionCard"
         @select:card="handleCardSelect"

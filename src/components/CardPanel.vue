@@ -3,6 +3,7 @@ import type { Card, CardPanelName } from "@/types/card"
 import { computed, ref, type PropType } from "vue"
 import { useRouter } from "vue-router"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import { API_BASE_URL } from "@/services/base"
 
 const deleteDialogActive = ref(false)
 const deleteCard = ref<Card>()
@@ -28,10 +29,10 @@ const { name } = defineProps({
     type: Object as PropType<Card[]>,
     required: true,
   },
-  useActions: {
+  areInstructions: {
     type: Boolean,
     required: false,
-    default: true,
+    default: false,
   },
   canEdit: {
     type: Boolean,
@@ -76,6 +77,10 @@ function updateCardId(card: Card) {
 function initialDeletion(card: Card) {
   deleteCard.value = card
   deleteDialogActive.value = true
+}
+
+function imageIdToUrl(id: string) {
+  return `${API_BASE_URL}/media/${id}`
 }
 </script>
 
@@ -124,7 +129,7 @@ function initialDeletion(card: Card) {
             >
               <template #title>
                 <div class="d-flex align-center">
-                  <v-chip v-if="useActions" class="mr-2" size="small" variant="tonal">
+                  <v-chip v-if="!areInstructions" class="mr-2" size="small" variant="tonal">
                     <v-icon :icon="countIcon" start />
                     {{ card.count }}
                   </v-chip>
@@ -133,8 +138,7 @@ function initialDeletion(card: Card) {
               </template>
               <template #append>
                 <div class="d-flex align-center">
-                  <v-spacer />
-                  <div @click.stop v-if="useActions">
+                  <div @click.stop v-if="!areInstructions">
                     <v-btn
                       v-if="canEdit"
                       v-tooltip:bottom="'Delete card'"
@@ -152,6 +156,11 @@ function initialDeletion(card: Card) {
                       @click="emit('view:card', card)"
                     />
                   </div>
+                  <div v-else>
+                    <v-avatar size="80">
+                      <v-img v-if="card.imageId" :src="imageIdToUrl(card.imageId)" />
+                    </v-avatar>
+                  </div>
                 </div>
               </template>
 
@@ -159,7 +168,7 @@ function initialDeletion(card: Card) {
                 {{ card.subtitle }}
               </v-card-subtitle>
 
-              <v-card-text>
+              <v-card-text v-if="!areInstructions">
                 <div class="mb-2">
                   <v-chip
                     v-for="chip in card.chips"

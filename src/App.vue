@@ -3,12 +3,13 @@ import NotificationPopup from "@/components/NotificationPopup.vue"
 import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
 import { onMounted } from "vue"
 import { ref, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useUser } from "./composables/useUser"
 
 const keycloak = useKeycloak()
 const { isAdmin } = useUser()
 const route = useRoute()
+const router = useRouter()
 const tab = ref<string>()
 
 const getTabFromPath = (path: string) => {
@@ -73,6 +74,7 @@ function login() {
                 v-if="keycloak.subject"
                 :title="keycloak.fullName"
                 prepend-icon="mdi-account"
+                @click="router.push('/user')"
               />
               <v-list-item
                 @click="keycloak.subject ? logout() : login()"
