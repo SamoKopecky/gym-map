@@ -83,7 +83,6 @@ function uploadFile(uploadFile: File | File[]) {
       instruction.value.media_id = res.media_id
       getMedia()
       addNotification("File uploaded succesfully", "success")
-      file.name = uploadFile.name
     })
     .catch(() => addNotification("File upload failed", "error"))
     .finally(() => {
