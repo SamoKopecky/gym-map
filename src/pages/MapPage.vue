@@ -165,7 +165,7 @@ onUnmounted(() => destroyPanZoom())
       </v-alert>
     </div>
 
-    <div v-if="editMode && machineEdit">
+    <div v-if="editMode">
       <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
       <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
