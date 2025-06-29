@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue" // <-- Import onUnmounted and nextTick
-import Panzoom from "@panzoom/panzoom" // <-- 1. Import Panzoom
-import type { PanzoomObject } from "@panzoom/panzoom" // <-- Import its type for type safety
-
+import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
+import Panzoom from "@panzoom/panzoom"
+import type { PanzoomObject } from "@panzoom/panzoom"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
-import { type Position } from "@/types/machine"
+import { type Machine, type Position } from "@/types/machine"
 import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
+import { roundTo } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
 
 const props = defineProps({
@@ -27,6 +27,11 @@ const { isAdmin } = useUser()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
 const machineEdit = ref<MapMachine>()
+const dragginMachine = ref<Machine>()
+const draggingOffset = reactive({
+  x: 0,
+  y: 0,
+})
 
 const svgContainer = ref<HTMLElement | null>(null)
 const svgElement = ref<SVGElement | null>(null)
@@ -37,6 +42,14 @@ const machinePosition = reactive<Position>({
   height: 0,
   position_x: 0,
   position_y: 0,
+})
+
+watch(editMode, (newVal) => {
+  if (newVal) {
+    destroyPanZoom()
+  } else {
+    setupPanZoom()
+  }
 })
 
 function selectMachine(machine: MapMachine) {
@@ -69,6 +82,46 @@ const updatePositionDebounce = useDebounceFn((position: Position) => {
   })
 }, 500)
 
+function drag(event: MouseEvent, machineId: number) {
+  dragginMachine.value = machines.value?.find((m) => m.id === machineId)
+  if (!dragginMachine.value) return
+  draggingOffset.x = event.offsetX - dragginMachine.value.position_x
+  draggingOffset.y = event.offsetY - dragginMachine.value.position_y
+
+  //@ts-expect-error correct type
+  event.target?.addEventListener("mousemove", move)
+}
+
+const move = (event: MouseEvent) => {
+  if (dragginMachine.value) {
+    dragginMachine.value.position_x = roundTo(event.offsetX - draggingOffset.x, 5)
+    dragginMachine.value.position_y = roundTo(event.offsetY - draggingOffset.y, 5)
+  }
+}
+
+function drop(event: MouseEvent) {
+  dragginMachine.value = undefined
+  //@ts-expect-error correct type
+  event.target?.removeEventListener("mousemove", move)
+}
+
+function setupPanZoom() {
+  if (svgElement.value && svgContainer.value) {
+    const pz = Panzoom(svgElement.value, {
+      canvas: true,
+      minScale: 0.5,
+      maxScale: 5,
+    })
+
+    panzoomInstance.value = pz
+    svgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
+  }
+}
+
+function destroyPanZoom() {
+  panzoomInstance.value?.destroy()
+}
+
 onMounted(() =>
   machineService.get().then(async (res) => {
     machines.value = res.map((m) => ({ ...m, is_origin: false }))
@@ -79,23 +132,11 @@ onMounted(() =>
     }
 
     await nextTick()
-
-    if (svgElement.value && svgContainer.value) {
-      const pz = Panzoom(svgElement.value, {
-        canvas: true,
-        minScale: 0.5,
-        maxScale: 5,
-      })
-
-      panzoomInstance.value = pz
-      svgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
-    }
+    setupPanZoom()
   }),
 )
 
-onUnmounted(() => {
-  panzoomInstance.value?.destroy()
-})
+onUnmounted(() => destroyPanZoom())
 </script>
 
 <template>
@@ -118,17 +159,16 @@ onUnmounted(() => {
       >
         {{
           editMode
-            ? "Click a machine to edit its position & size"
+            ? "Click a machine to edit its position & size (drag to move)"
             : "Click a machine to see its exercises"
         }}
       </v-alert>
     </div>
 
-    <div v-if="editMode && machineEdit">
+    <div v-if="editMode">
       <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
       <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
-      <NumberSlider v-model="machinePosition.position_x" :step="5" :max="900" label="X" />
-      <NumberSlider v-model="machinePosition.position_y" :step="5" :max="1206" label="Y" />
+      X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
     </div>
 
     <div ref="svgContainer" class="svg-container">
@@ -145,6 +185,8 @@ onUnmounted(() => {
             :height="machine.height"
             style="cursor: pointer"
             @click="selectMachine(machine)"
+            @mousedown="drag($event, machine.id)"
+            @mouseup="drop($event)"
             rx="8"
           />
 
