@@ -12,6 +12,8 @@ import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
 import { roundTo } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
+import { mapFileService } from "@/services/mapFile"
+import { all } from "axios"
 
 const props = defineProps({
   id: {
@@ -24,6 +26,7 @@ const props = defineProps({
 const router = useRouter()
 const { isAdmin } = useUser()
 
+const svgContent = ref<string>()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
 const machineEdit = ref<MapMachine>()
@@ -36,6 +39,7 @@ const draggingOffset = reactive({
 const svgContainer = ref<HTMLElement | null>(null)
 const svgElement = ref<SVGElement | null>(null)
 const panzoomInstance = ref<PanzoomObject | null>(null)
+const mapContainer = ref<SVGElement | null>(null)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -122,19 +126,41 @@ function destroyPanZoom() {
   panzoomInstance.value?.destroy()
 }
 
-onMounted(() =>
-  machineService.get().then(async (res) => {
-    machines.value = res.map((m) => ({ ...m, is_origin: false }))
-    if (props.id) {
-      const originMachine = machines.value.find((m) => m.id === Number(props.id))
-      if (!originMachine) return
-      originMachine.is_origin = true
-    }
+onMounted(() => {
+  mapFileService.getMap().then((map) => {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(map, "text/html")
+    const svgElement = doc.querySelector("svg")
+    const inner = svgElement?.innerHTML
+    svgContent.value = inner
+    machineService.get().then(async (res) => {
+      machines.value = res.map((m) => ({ ...m, is_origin: false }))
+      if (props.id) {
+        const originMachine = machines.value.find((m) => m.id === Number(props.id))
+        if (!originMachine) return
+        originMachine.is_origin = true
+      }
 
-    await nextTick()
-    setupPanZoom()
-  }),
-)
+      await nextTick()
+      if (!mapContainer.value) return
+      console.log(mapContainer.value)
+
+      const allLines = mapContainer.value.querySelectorAll("line")
+      allLines.forEach((line) => {
+        line.style = "cursor: move"
+        line.addEventListener("click", (e) => {
+          console.log(line.y1.animVal.value)
+          line.setAttribute("y1", String(line.y1.animVal.value + 20))
+          console.log(line)
+          console.log("e", e)
+          console.log("click")
+        })
+      })
+      await nextTick()
+      setupPanZoom()
+    })
+  })
+})
 
 onUnmounted(() => destroyPanZoom())
 </script>
@@ -173,7 +199,7 @@ onUnmounted(() => destroyPanZoom())
 
     <div ref="svgContainer" class="svg-container">
       <svg ref="svgElement" width="900" height="1206" view-box="0 0 900 1206" class="svg-map">
-        <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
+        <g v-if="svgContent" v-html="svgContent" ref="mapContainer"></g>
         <g v-for="machine in machines" :key="machine.name">
           <rect
             :id="getMachineHtmlId(machine)"

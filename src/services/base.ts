@@ -14,6 +14,7 @@ export enum Route {
   Instructions = "/instructions",
   Users = "/users",
   Media = "/media",
+  Map = "/map",
 }
 
 export interface PatchBase {
