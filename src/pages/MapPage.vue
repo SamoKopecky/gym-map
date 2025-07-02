@@ -10,37 +10,12 @@ import { type Machine, type Position } from "@/types/machine"
 import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
-import { roundTo } from "@/utils/drag"
+import { roundTo as snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
-const map = `
-<svg xmlns="http://www.w3.org/2000/svg">
- <g width="100%">
-  <title>Layer 1</title>
-  <line id="svg_12" y2="1100.0002" x2="1843.66716" y1="1098.33354" x1="1840.33383" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_13" y2="1757.04402" x2="700.22219" y1="2194.7226" x1="700.22219" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_17" y2="2191.33324" x2="1082.47211" y1="2191.33324" x1="692.55891" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_19" y2="1084.67704" x2="1074.16959" y1="2184.72259" x1="1074.16959" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_22" y2="732.50009" x2="-40.21678" y1="732.50009" x1="841.99998" stroke-width="15" stroke="#000" fill="none"/>
-  <path id="svg_23" d="m466.37601,2202.45337l0,-438.52741" opacity="undefined" stroke-width="15" stroke="#000" fill="none"/>
-  <path id="svg_24" d="m707.40065,1764.72234l363.32152,0" opacity="undefined" stroke-width="15" stroke="#000" fill="none"/>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_25" y="1917.22257" x="770.22219" stroke-width="0" stroke="#000" fill="#000000">Recepce</text>
-  <line id="svg_26" y2="736.92317" x2="1800.23522" y1="736.92317" x1="1238.69263" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_27" y2="214.75149" x2="1066.07715" y1="748.92316" x1="1066.07715" stroke-width="15" stroke="#000" fill="none"/>
-  <path d="m1491.42859,571.14282c-2.85718,0 -8.34949,3.63849 -17.14282,5.71429c-19.6626,4.64172 -39.94409,6.13721 -60,8.57147c-28.50476,3.45972 -62.85718,11.42853 -94.28577,17.14282c-31.42859,5.71429 -60.36768,12.54175 -91.42859,20c-29.005,6.9646 -56.90332,15.81152 -88.57141,20c-34.10742,4.51111 -74.28564,2.85718 -108.57141,2.85718c-37.14288,0 -65.56207,-7.13928 -85.71429,-8.57147c-5.69989,-0.40509 -7.21643,-3.28381 -5.71429,-5.71429c3.35876,-5.43457 17.46655,-10.95734 34.28571,-22.85712c11.66199,-8.25104 25.71429,-20 37.14288,-31.42859c11.42859,-11.42853 24.83545,-24.03119 34.28577,-37.14282c11.20679,-15.54852 20,-31.42859 28.57141,-45.71429l2.85706,-5.71429" id="svg_37" stroke-width="0" stroke="#000" fill="none"/>
-  <path d="m1014.28571,454c-14.28571,5.71426 -25.94202,10.9942 -37.14282,17.14285c-14.60413,8.01688 -26.36816,16.37036 -40,28.57141c-9.03235,8.08432 -22.85718,20.00003 -28.57147,28.57144l-2.85712,5.71429" id="svg_38" stroke-width="0" stroke="#000" fill="none"/>
-  <line stroke-width="15" id="svg_40" y2="1088.28572" x2="-522.85717" y1="1088.28572" x1="-525.71431" stroke="#000" fill="none"/>
-  <line id="svg_41" y2="2431.26054" x2="1537.14288" y1="731.14286" x1="1537.14288" stroke-width="15" stroke="#000" fill="none"/>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_42" y="1011.14286" x="1602.85717" stroke-width="0" stroke="#000" fill="#000000">satny muzi</text>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_43" y="2071.14289" x="1600.00003" stroke-width="0" stroke="#000" fill="#000000">satny zeny</text>
-  <line id="svg_44" y2="1931.14289" x2="1811.5625" y1="1931.14289" x1="1537.14288" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_45" y2="2194" x2="195.88062" y1="2194" x1="464" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_46" y2="2426.12394" x2="200" y1="2184" x1="200" stroke-width="15" stroke="#000" fill="none"/>
-  <line id="svg_47" y2="2846" x2="764" y1="2844" x1="762" stroke-width="15" stroke="#000" fill="none"/>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_48" y="2352" x="276" stroke-width="0" stroke="#000" fill="#000000">Vstup</text>
- </g>
+import { mapFileService } from "@/services/mapFile"
 
-</svg>
-`
+const MAP_WIDTH = 1800
+const MAP_HEIGHT = 3200
 
 const props = defineProps({
   id: {
@@ -53,7 +28,7 @@ const props = defineProps({
 const router = useRouter()
 const { isAdmin } = useUser()
 
-const svgContent = ref<string>()
+const bgSvgData = ref<string>()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
 const machineEdit = ref<MapMachine>()
@@ -63,10 +38,10 @@ const draggingOffset = reactive({
   y: 0,
 })
 
-const svgContainer = ref<HTMLElement | null>(null)
-const svgElement = ref<SVGElement | null>(null)
+const mainSvgContainer = ref<HTMLElement | null>(null)
+const mainSvg = ref<SVGElement | null>(null)
 const panzoomInstance = ref<PanzoomObject | null>(null)
-const mapContainer = ref<SVGElement | null>(null)
+const bgSvgGroup = ref<SVGElement | null>(null)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -77,8 +52,32 @@ const machinePosition = reactive<Position>({
 
 watch(editMode, (newVal) => {
   if (newVal) {
+    const visibleLines = bgSvgGroup.value?.querySelectorAll("line")
+
+    visibleLines?.forEach((visibleLine) => {
+      // 1. Create the hitbox by cloning the visible line
+      const hitbox = visibleLine.cloneNode() as SVGLineElement
+
+      // 2. Style the hitbox to be wide and invisible
+      hitbox.style.stroke = "transparent" // Makes the line see-through
+      hitbox.style.strokeWidth = "20px" // A large, easy-to-click area
+      hitbox.style.cursor = "pointer" // Shows a pointer on hover for better UX
+
+      // 3. Add the hitbox to the SVG
+      // It's good practice to add it right after the visible line.
+      visibleLine.parentNode?.insertBefore(hitbox, visibleLine.nextSibling)
+
+      // 4. Attach your drag handler to the HITBOX, not the visible line.
+      // We need to modify it to move both lines.
+      addEventHandlerToMove(hitbox)
+    })
     destroyPanZoom()
   } else {
+    const lines = bgSvgGroup.value?.querySelectorAll("line")
+    lines?.forEach((line) => {
+      console.log(line)
+      line.setAttribute("stroke-width", "15")
+    })
     setupPanZoom()
   }
 })
@@ -125,8 +124,8 @@ function drag(event: MouseEvent, machineId: number) {
 
 const move = (event: MouseEvent) => {
   if (dragginMachine.value) {
-    dragginMachine.value.position_x = roundTo(event.offsetX - draggingOffset.x, 5)
-    dragginMachine.value.position_y = roundTo(event.offsetY - draggingOffset.y, 5)
+    dragginMachine.value.position_x = snap(event.offsetX - draggingOffset.x)
+    dragginMachine.value.position_y = snap(event.offsetY - draggingOffset.y)
   }
 }
 
@@ -137,15 +136,15 @@ function drop(event: MouseEvent) {
 }
 
 function setupPanZoom() {
-  if (svgElement.value && svgContainer.value) {
-    const pz = Panzoom(svgElement.value, {
+  if (mainSvg.value && mainSvgContainer.value) {
+    const pz = Panzoom(mainSvg.value, {
       canvas: true,
-      minScale: 0.5,
+      minScale: 0.3,
       maxScale: 5,
     })
 
     panzoomInstance.value = pz
-    svgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
+    mainSvgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
   }
 }
 
@@ -153,34 +152,108 @@ function destroyPanZoom() {
   panzoomInstance.value?.destroy()
 }
 
-onMounted(() => {
-  const parser = new DOMParser()
+function addEventHandlerToMove(element: SVGLineElement) {
+  let isDragging = false
 
-  const doc = parser.parseFromString(map, "text/html")
-  const svgElement = doc.querySelector("svg")
-  const inner = svgElement?.innerHTML
-  svgContent.value = inner
-  machineService.get().then(async (res) => {
-    machines.value = res.map((m) => ({ ...m, is_origin: false }))
-    if (props.id) {
-      const originMachine = machines.value.find((m) => m.id === Number(props.id))
-      if (!originMachine) return
-      originMachine.is_origin = true
+  // These offsets will now be in SVG coordinates
+  let dragOffsetX1 = 0
+  let dragOffsetY1 = 0
+
+  // The difference between endpoints, also in SVG coordinates
+  let diffX = 0
+  let diffY = 0
+
+  // Helper function to convert screen coords to SVG coords
+  const getSVGPoint = (event: MouseEvent) => {
+    const scale = panzoomInstance.value?.getScale()
+    const pan = panzoomInstance.value?.getPan()
+    return {
+      x: (event.clientX - pan!.x) / scale!,
+      y: (event.clientY - pan!.y) / scale!,
     }
+  }
 
-    await nextTick()
-    if (!mapContainer.value) return
-    console.log(mapContainer.value)
+  const move = (event: MouseEvent) => {
+    if (!isDragging) return
 
-    const allLines = mapContainer.value.querySelectorAll("line")
-    allLines.forEach((line) => {
-      line.style = "cursor: move"
-      line.addEventListener("click", (e) => {
-        line.setAttribute("y1", String(line.y1.animVal.value + 20))
-      })
+    // Convert current mouse position to SVG coordinates
+    const svgPoint = getSVGPoint(event)
+
+    // Calculate new positions using SVG coordinates only
+    const newX1 = snap(svgPoint.x - dragOffsetX1)
+    const newY1 = snap(svgPoint.y - dragOffsetY1)
+    const newX2 = snap(newX1 - diffX)
+    const newY2 = snap(newY1 - diffY)
+
+    element.setAttribute("x1", newX1.toString())
+    element.setAttribute("y1", newY1.toString())
+    element.setAttribute("x2", newX2.toString())
+    element.setAttribute("y2", newY2.toString())
+  }
+
+  const stopDrag = () => {
+    isDragging = false
+    window.removeEventListener("mousemove", move)
+    window.removeEventListener("mouseup", stopDrag)
+  }
+
+  element.addEventListener("mousedown", (event: MouseEvent) => {
+    isDragging = true
+
+    // Get initial mouse position in SVG coordinates
+    const svgPoint = getSVGPoint(event)
+
+    const x1 = element.x1.animVal.value
+    const y1 = element.y1.animVal.value
+    const x2 = element.x2.animVal.value
+    const y2 = element.y2.animVal.value
+
+    // Calculate initial offsets in SVG coordinates
+    dragOffsetX1 = svgPoint.x - x1
+    dragOffsetY1 = svgPoint.y - y1
+
+    // Store the difference between the two endpoints
+    diffX = x1 - x2
+    diffY = y1 - y2
+
+    window.addEventListener("mousemove", move)
+    window.addEventListener("mouseup", stopDrag)
+  })
+}
+
+function addWall() {
+  const newWall = document.createElementNS("http://www.w3.org/2000/svg", "line")
+  newWall.setAttribute("id", "svg_1")
+  newWall.setAttribute("y2", (MAP_HEIGHT / 3).toString())
+  newWall.setAttribute("x2", (MAP_WIDTH / 2).toString())
+  newWall.setAttribute("y1", "0")
+  newWall.setAttribute("x1", (MAP_WIDTH / 2).toString())
+  newWall.setAttribute("stroke-width", "15")
+  newWall.setAttribute("stroke", "#000")
+  addEventHandlerToMove(newWall)
+
+  bgSvgGroup.value?.appendChild(newWall)
+}
+
+onMounted(() => {
+  mapFileService.getMap().then((map) => {
+    // Setup svgContent
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(map, "text/html")
+    const gElement = doc.querySelector("g")
+    bgSvgData.value = gElement?.innerHTML
+
+    machineService.get().then(async (res) => {
+      machines.value = res.map((m) => ({ ...m, is_origin: false }))
+      if (props.id) {
+        const originMachine = machines.value.find((m) => m.id === Number(props.id))
+        if (!originMachine) return
+        originMachine.is_origin = true
+      }
+
+      await nextTick()
+      setupPanZoom()
     })
-    await nextTick()
-    setupPanZoom()
   })
 })
 
@@ -217,11 +290,19 @@ onUnmounted(() => destroyPanZoom())
       <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
       <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
+      <v-spacer></v-spacer>
+      <v-btn @click="addWall"> Add wall </v-btn>
     </div>
 
-    <div ref="svgContainer" class="svg-container">
-      <svg ref="svgElement" width="1800" height="1206" view-box="0 0 1800 2412" class="svg-map">
-        <g v-if="svgContent" v-html="svgContent" ref="mapContainer"></g>
+    <div ref="mainSvgContainer" class="svg-container">
+      <svg
+        ref="mainSvg"
+        :width="MAP_WIDTH"
+        :height="MAP_HEIGHT"
+        view-box="0 0 1800 3200"
+        class="svg-map"
+      >
+        <g v-if="bgSvgData" v-html="bgSvgData" ref="bgSvgGroup"></g>
         <g v-for="machine in machines" :key="machine.name">
           <rect
             :id="getMachineHtmlId(machine)"
@@ -271,7 +352,7 @@ onUnmounted(() => destroyPanZoom())
 .svg-map {
   border-color: #ced4da;
   border-style: solid;
-  border-width: 1px;
+  border-width: 3px;
 
   display: block;
   margin: auto;

@@ -1,3 +1,4 @@
-export function roundTo(value: number, roundTo: number) {
-  return Math.round(value / roundTo) * roundTo
+export function roundTo(value: number) {
+  const roundToNum = 5
+  return Math.round(value / roundToNum) * roundToNum
 }
