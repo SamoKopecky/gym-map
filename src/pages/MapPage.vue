@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
-import Panzoom from "@panzoom/panzoom"
-import type { PanzoomObject } from "@panzoom/panzoom"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
 import { machineService } from "@/services/machine"
@@ -12,6 +10,7 @@ import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
 import { roundTo as snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
+import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
 
 const MAP_WIDTH = 1800
@@ -40,8 +39,11 @@ const draggingOffset = reactive({
 
 const mainSvgContainer = ref<HTMLElement | null>(null)
 const mainSvg = ref<SVGElement | null>(null)
-const panzoomInstance = ref<PanzoomObject | null>(null)
 const bgSvgGroup = ref<SVGElement | null>(null)
+const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
+  mainSvg,
+  mainSvgContainer,
+)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -52,33 +54,9 @@ const machinePosition = reactive<Position>({
 
 watch(editMode, (newVal) => {
   if (newVal) {
-    const visibleLines = bgSvgGroup.value?.querySelectorAll("line")
-
-    visibleLines?.forEach((visibleLine) => {
-      // 1. Create the hitbox by cloning the visible line
-      const hitbox = visibleLine.cloneNode() as SVGLineElement
-
-      // 2. Style the hitbox to be wide and invisible
-      hitbox.style.stroke = "transparent" // Makes the line see-through
-      hitbox.style.strokeWidth = "20px" // A large, easy-to-click area
-      hitbox.style.cursor = "pointer" // Shows a pointer on hover for better UX
-
-      // 3. Add the hitbox to the SVG
-      // It's good practice to add it right after the visible line.
-      visibleLine.parentNode?.insertBefore(hitbox, visibleLine.nextSibling)
-
-      // 4. Attach your drag handler to the HITBOX, not the visible line.
-      // We need to modify it to move both lines.
-      addEventHandlerToMove(hitbox)
-    })
-    destroyPanZoom()
+    setupPanzoomOnKeydown()
   } else {
-    const lines = bgSvgGroup.value?.querySelectorAll("line")
-    lines?.forEach((line) => {
-      console.log(line)
-      line.setAttribute("stroke-width", "15")
-    })
-    setupPanZoom()
+    setupPanzoomNoKey()
   }
 })
 
@@ -118,8 +96,7 @@ function drag(event: MouseEvent, machineId: number) {
   draggingOffset.x = event.offsetX - dragginMachine.value.position_x
   draggingOffset.y = event.offsetY - dragginMachine.value.position_y
 
-  //@ts-expect-error correct type
-  event.target?.addEventListener("mousemove", move)
+  document.addEventListener("mousemove", move)
 }
 
 const move = (event: MouseEvent) => {
@@ -129,27 +106,9 @@ const move = (event: MouseEvent) => {
   }
 }
 
-function drop(event: MouseEvent) {
+function drop() {
   dragginMachine.value = undefined
-  //@ts-expect-error correct type
-  event.target?.removeEventListener("mousemove", move)
-}
-
-function setupPanZoom() {
-  if (mainSvg.value && mainSvgContainer.value) {
-    const pz = Panzoom(mainSvg.value, {
-      canvas: true,
-      minScale: 0.3,
-      maxScale: 5,
-    })
-
-    panzoomInstance.value = pz
-    mainSvgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
-  }
-}
-
-function destroyPanZoom() {
-  panzoomInstance.value?.destroy()
+  document.removeEventListener("mousemove", move)
 }
 
 function addEventHandlerToMove(element: SVGLineElement) {
@@ -230,6 +189,7 @@ function addWall() {
   newWall.setAttribute("x1", (MAP_WIDTH / 2).toString())
   newWall.setAttribute("stroke-width", "15")
   newWall.setAttribute("stroke", "#000")
+  newWall.classList.add("panzoom-exclude")
   addEventHandlerToMove(newWall)
 
   bgSvgGroup.value?.appendChild(newWall)
@@ -252,7 +212,7 @@ onMounted(() => {
       }
 
       await nextTick()
-      setupPanZoom()
+      setupPanzoomNoKey()
     })
   })
 })
@@ -280,7 +240,7 @@ onUnmounted(() => destroyPanZoom())
       >
         {{
           editMode
-            ? "Click a machine to edit its position & size (drag to move)"
+            ? "Click a machine to edit its position & size (drag to move), hold space to drag the map"
             : "Click a machine to see its exercises"
         }}
       </v-alert>
@@ -315,8 +275,9 @@ onUnmounted(() => destroyPanZoom())
             style="cursor: pointer"
             @click="selectMachine(machine)"
             @mousedown="drag($event, machine.id)"
-            @mouseup="drop($event)"
+            @mouseup="drop"
             rx="8"
+            class="panzoom-exclude"
           />
 
           <foreignObject
@@ -359,7 +320,6 @@ onUnmounted(() => destroyPanZoom())
 }
 .svg-container {
   width: 100%;
-  overflow: hidden; /* Panzoom handles the panning, so we hide native scrollbars */
 }
 
 /* Give a visual cue that the SVG is interactive */
