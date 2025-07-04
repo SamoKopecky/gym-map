@@ -2,19 +2,18 @@
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
+import { MAP_HEIGHT, MAP_WIDTH } from "@/constants"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { type Machine, type Position } from "@/types/machine"
 import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
-import { roundTo as snap } from "@/utils/drag"
+import { snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
 import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
-
-const MAP_WIDTH = 1800
-const MAP_HEIGHT = 3200
+import { useMap } from "@/composables/useMap"
 
 const props = defineProps({
   id: {
@@ -44,6 +43,10 @@ const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoo
   mainSvg,
   mainSvgContainer,
 )
+const { addWall, addEventHandlerToMove, removeEventHandlerToMove } = useMap(
+  panzoomInstance,
+  bgSvgGroup,
+)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -54,9 +57,17 @@ const machinePosition = reactive<Position>({
 
 watch(editMode, (newVal) => {
   if (newVal) {
+    // Edit mode
     setupPanzoomOnKeydown()
+    bgSvgGroup.value?.querySelectorAll("line").forEach((line) => {
+      addEventHandlerToMove(line)
+    })
   } else {
+    // View mode
     setupPanzoomNoKey()
+    bgSvgGroup.value?.querySelectorAll("line").forEach((line) => {
+      removeEventHandlerToMove(line)
+    })
   }
 })
 
@@ -91,12 +102,14 @@ const updatePositionDebounce = useDebounceFn((position: Position) => {
 }, 500)
 
 function drag(event: MouseEvent, machineId: number) {
-  dragginMachine.value = machines.value?.find((m) => m.id === machineId)
-  if (!dragginMachine.value) return
-  draggingOffset.x = event.offsetX - dragginMachine.value.position_x
-  draggingOffset.y = event.offsetY - dragginMachine.value.position_y
+  if (editMode.value) {
+    dragginMachine.value = machines.value?.find((m) => m.id === machineId)
+    if (!dragginMachine.value) return
+    draggingOffset.x = event.offsetX - dragginMachine.value.position_x
+    draggingOffset.y = event.offsetY - dragginMachine.value.position_y
 
-  document.addEventListener("mousemove", move)
+    document.addEventListener("mousemove", move)
+  }
 }
 
 const move = (event: MouseEvent) => {
@@ -107,99 +120,28 @@ const move = (event: MouseEvent) => {
 }
 
 function drop() {
-  dragginMachine.value = undefined
-  document.removeEventListener("mousemove", move)
+  if (editMode.value) {
+    dragginMachine.value = undefined
+    document.removeEventListener("mousemove", move)
+  }
 }
 
-function addEventHandlerToMove(element: SVGLineElement) {
-  let isDragging = false
+function saveMap() {
+  if (!bgSvgGroup.value) return
 
-  // These offsets will now be in SVG coordinates
-  let dragOffsetX1 = 0
-  let dragOffsetY1 = 0
+  const serializer = new XMLSerializer()
+  const serializedSvg = serializer.serializeToString(bgSvgGroup.value)
 
-  // The difference between endpoints, also in SVG coordinates
-  let diffX = 0
-  let diffY = 0
+  const formData = new FormData()
+  formData.append("file", serializedSvg)
 
-  // Helper function to convert screen coords to SVG coords
-  const getSVGPoint = (event: MouseEvent) => {
-    const scale = panzoomInstance.value?.getScale()
-    const pan = panzoomInstance.value?.getPan()
-    return {
-      x: (event.clientX - pan!.x) / scale!,
-      y: (event.clientY - pan!.y) / scale!,
-    }
-  }
-
-  const move = (event: MouseEvent) => {
-    if (!isDragging) return
-
-    // Convert current mouse position to SVG coordinates
-    const svgPoint = getSVGPoint(event)
-
-    // Calculate new positions using SVG coordinates only
-    const newX1 = snap(svgPoint.x - dragOffsetX1)
-    const newY1 = snap(svgPoint.y - dragOffsetY1)
-    const newX2 = snap(newX1 - diffX)
-    const newY2 = snap(newY1 - diffY)
-
-    element.setAttribute("x1", newX1.toString())
-    element.setAttribute("y1", newY1.toString())
-    element.setAttribute("x2", newX2.toString())
-    element.setAttribute("y2", newY2.toString())
-  }
-
-  const stopDrag = () => {
-    isDragging = false
-    window.removeEventListener("mousemove", move)
-    window.removeEventListener("mouseup", stopDrag)
-  }
-
-  element.addEventListener("mousedown", (event: MouseEvent) => {
-    isDragging = true
-
-    // Get initial mouse position in SVG coordinates
-    const svgPoint = getSVGPoint(event)
-
-    const x1 = element.x1.animVal.value
-    const y1 = element.y1.animVal.value
-    const x2 = element.x2.animVal.value
-    const y2 = element.y2.animVal.value
-
-    // Calculate initial offsets in SVG coordinates
-    dragOffsetX1 = svgPoint.x - x1
-    dragOffsetY1 = svgPoint.y - y1
-
-    // Store the difference between the two endpoints
-    diffX = x1 - x2
-    diffY = y1 - y2
-
-    window.addEventListener("mousemove", move)
-    window.addEventListener("mouseup", stopDrag)
-  })
-}
-
-function addWall() {
-  const newWall = document.createElementNS("http://www.w3.org/2000/svg", "line")
-  newWall.setAttribute("id", "svg_1")
-  newWall.setAttribute("y2", (MAP_HEIGHT / 3).toString())
-  newWall.setAttribute("x2", (MAP_WIDTH / 2).toString())
-  newWall.setAttribute("y1", "0")
-  newWall.setAttribute("x1", (MAP_WIDTH / 2).toString())
-  newWall.setAttribute("stroke-width", "15")
-  newWall.setAttribute("stroke", "#000")
-  newWall.classList.add("panzoom-exclude")
-  addEventHandlerToMove(newWall)
-
-  bgSvgGroup.value?.appendChild(newWall)
+  mapFileService.postFile(formData)
 }
 
 onMounted(() => {
-  mapFileService.getMap().then((map) => {
-    // Setup svgContent
+  mapFileService.getMap().then(async (map) => {
     const parser = new DOMParser()
-    const doc = parser.parseFromString(map, "text/html")
+    const doc = parser.parseFromString(map, "image/svg+xml")
     const gElement = doc.querySelector("g")
     bgSvgData.value = gElement?.innerHTML
 
@@ -214,6 +156,7 @@ onMounted(() => {
       await nextTick()
       setupPanzoomNoKey()
     })
+    await nextTick()
   })
 })
 
@@ -252,6 +195,7 @@ onUnmounted(() => destroyPanZoom())
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
       <v-spacer></v-spacer>
       <v-btn @click="addWall"> Add wall </v-btn>
+      <v-btn @click="saveMap">save</v-btn>
     </div>
 
     <div ref="mainSvgContainer" class="svg-container">

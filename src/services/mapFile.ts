@@ -12,6 +12,14 @@ class MapFileService extends ServiceBase<PatchBase, object, object> {
       route: this.route,
     })
   }
+
+  public postFile(data: FormData): Promise<void> {
+    return this.handleRequest({
+      method: Method.PUT,
+      route: this.route,
+      postBody: data,
+    })
+  }
 }
 
 export const mapFileService = new MapFileService()
