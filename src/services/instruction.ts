@@ -1,3 +1,4 @@
+import type { AxiosProgressEvent } from "axios"
 import { Method, Route, ServiceBase, type PatchBase } from "./base"
 import { type Instruction } from "@/types/instruction"
 
@@ -37,12 +38,17 @@ class InstructionService extends ServiceBase<
     })
   }
 
-  public postFile(id: number, data: FormData): Promise<InstructionMediaPostResponse> {
+  public postFile(
+    id: number,
+    data: FormData,
+    onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
+  ): Promise<InstructionMediaPostResponse> {
     return this.handleRequest({
       method: Method.POST,
       route: `${this.route}/:id/media`,
       pathParams: { id },
       postBody: data,
+      onUploadProgress,
     })
   }
 }

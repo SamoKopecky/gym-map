@@ -1,2 +1,5 @@
-export const MAP_WIDTH = 1800
-export const MAP_HEIGHT = 3200
+export const MAP_WIDTH = 4400
+export const MAP_HEIGHT = 6400
+export const MAX_ZOOM = 5
+export const MIN_ZOOM = 0.15
+export const GRID_SIZE = 20

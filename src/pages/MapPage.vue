@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
-import { MAP_HEIGHT, MAP_WIDTH } from "@/constants"
+import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH } from "@/constants"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { type Machine, type Position } from "@/types/machine"
@@ -13,7 +13,6 @@ import { snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
 import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
-import { useMap } from "@/composables/useMap"
 
 const props = defineProps({
   id: {
@@ -39,13 +38,9 @@ const draggingOffset = reactive({
 const mainSvgContainer = ref<HTMLElement | null>(null)
 const mainSvg = ref<SVGElement | null>(null)
 const bgSvgGroup = ref<SVGElement | null>(null)
-const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
+const { setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
   mainSvg,
   mainSvgContainer,
-)
-const { addWall, addEventHandlerToMove, removeEventHandlerToMove } = useMap(
-  panzoomInstance,
-  bgSvgGroup,
 )
 
 const machinePosition = reactive<Position>({
@@ -59,15 +54,9 @@ watch(editMode, (newVal) => {
   if (newVal) {
     // Edit mode
     setupPanzoomOnKeydown()
-    bgSvgGroup.value?.querySelectorAll("line").forEach((line) => {
-      addEventHandlerToMove(line)
-    })
   } else {
     // View mode
     setupPanzoomNoKey()
-    bgSvgGroup.value?.querySelectorAll("line").forEach((line) => {
-      removeEventHandlerToMove(line)
-    })
   }
 })
 
@@ -126,23 +115,35 @@ function drop() {
   }
 }
 
-function saveMap() {
-  if (!bgSvgGroup.value) return
+// Define a unique ID for the style tag to easily find and remove it.
+const styleTagId = "global-overflow-hidden-style"
 
-  const serializer = new XMLSerializer()
-  const serializedSvg = serializer.serializeToString(bgSvgGroup.value)
-
-  const formData = new FormData()
-  formData.append("file", serializedSvg)
-
-  mapFileService.postFile(formData)
-}
+// The CSS rules you want to apply.
+const cssRules = `
+  html,
+  body,
+  .v-application,
+  .v-application__wrap,
+  .v-layout,
+  .v-main,
+  .v-main__wrap {
+    overflow: hidden !important;
+  }
+`
 
 onMounted(() => {
+  if (!document.getElementById(styleTagId)) {
+    const styleElement = document.createElement("style")
+    styleElement.id = styleTagId
+    styleElement.textContent = cssRules
+
+    document.head.appendChild(styleElement)
+  }
+
   mapFileService.getMap().then(async (map) => {
     const parser = new DOMParser()
     const doc = parser.parseFromString(map, "image/svg+xml")
-    const gElement = doc.querySelector("g")
+    const gElement = doc.querySelector("svg")
     bgSvgData.value = gElement?.innerHTML
 
     machineService.get().then(async (res) => {
@@ -160,7 +161,14 @@ onMounted(() => {
   })
 })
 
-onUnmounted(() => destroyPanZoom())
+onUnmounted(() => {
+  const styleElement = document.getElementById(styleTagId)
+
+  if (styleElement) {
+    document.head.removeChild(styleElement)
+  }
+  destroyPanZoom()
+})
 </script>
 
 <template>
@@ -184,28 +192,24 @@ onUnmounted(() => destroyPanZoom())
         {{
           editMode
             ? "Click a machine to edit its position & size (drag to move), hold space to drag the map"
-            : "Click a machine to see its exercises"
+            : "Click a machine to see its exercises, use scroll whell to zoom in & out"
         }}
       </v-alert>
     </div>
 
     <div v-if="editMode">
-      <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
-      <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
+      <NumberSlider v-model="machinePosition.width" :step="5" :max="MAP_WIDTH / 2" label="Width" />
+      <NumberSlider
+        v-model="machinePosition.height"
+        :step="GRID_SIZE"
+        :max="MAP_HEIGHT / 2"
+        label="Heigth"
+      />
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
-      <v-spacer></v-spacer>
-      <v-btn @click="addWall"> Add wall </v-btn>
-      <v-btn @click="saveMap">save</v-btn>
     </div>
 
     <div ref="mainSvgContainer" class="svg-container">
-      <svg
-        ref="mainSvg"
-        :width="MAP_WIDTH"
-        :height="MAP_HEIGHT"
-        view-box="0 0 1800 3200"
-        class="svg-map"
-      >
+      <svg ref="mainSvg" :width="MAP_WIDTH" :height="MAP_HEIGHT" class="svg-map">
         <g v-if="bgSvgData" v-html="bgSvgData" ref="bgSvgGroup"></g>
         <g v-for="machine in machines" :key="machine.name">
           <rect
@@ -235,6 +239,7 @@ onUnmounted(() => destroyPanZoom())
               xmlns="http://www.w3.org/1999/xhtml"
               class="pa-1"
               :style="{
+                fontSize: '4em',
                 color: machine.is_origin ? 'yellow' : 'white',
                 height: '100%',
                 display: 'flex',
@@ -257,7 +262,7 @@ onUnmounted(() => destroyPanZoom())
 .svg-map {
   border-color: #ced4da;
   border-style: solid;
-  border-width: 3px;
+  border-width: 20px;
 
   display: block;
   margin: auto;

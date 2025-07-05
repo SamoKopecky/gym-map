@@ -21,5 +21,5 @@ export interface MediaBlob {
 export interface FileInfo {
   data?: File
   name?: string
-  loading: boolean
+  uploadProgress?: number
 }

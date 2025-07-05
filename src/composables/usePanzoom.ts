@@ -1,3 +1,4 @@
+import { MAX_ZOOM, MIN_ZOOM } from "@/constants"
 import Panzoom, { type PanzoomOptions, type PanzoomObject } from "@panzoom/panzoom"
 import { ref, type Ref } from "vue"
 
@@ -9,14 +10,14 @@ export function usePanzoom(
 
   function onKeydown(e: KeyboardEvent) {
     if (e.code === "Space" && panzoomInstance.value) {
-      e.preventDefault()
+      // Prevent repeating last action
       panzoomInstance.value.setOptions({ disablePan: false })
     }
   }
 
   function onKeyup(e: KeyboardEvent) {
     if (e.code === "Space" && panzoomInstance.value) {
-      e.preventDefault()
+      // Prevent repeating last action
       panzoomInstance.value.setOptions({ disablePan: true })
     }
   }
@@ -34,8 +35,8 @@ export function usePanzoom(
     panzoomInstance.value?.destroy()
     setupPanzoom({
       canvas: true,
-      minScale: 0.3,
-      maxScale: 5,
+      minScale: MIN_ZOOM,
+      maxScale: MAX_ZOOM,
       disablePan: true,
     })
 
@@ -50,8 +51,8 @@ export function usePanzoom(
     panzoomInstance.value?.destroy()
     setupPanzoom({
       canvas: true,
-      minScale: 0.3,
-      maxScale: 5,
+      minScale: MIN_ZOOM,
+      maxScale: MAX_ZOOM,
     })
   }
 

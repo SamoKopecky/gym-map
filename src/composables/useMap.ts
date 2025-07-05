@@ -1,5 +1,5 @@
 import { type PanzoomObject } from "@panzoom/panzoom"
-import { type Ref } from "vue"
+import { ref, type Ref } from "vue"
 import { MAP_HEIGHT, MAP_WIDTH } from "@/constants"
 import { randomNumberId } from "@/utils/other"
 import { snap } from "@/utils/drag"
@@ -9,8 +9,9 @@ export function useMap(
   bgSvgGroup: Ref<SVGElement | null>,
 ) {
   const moveEventHandlers = new Map<SVGLineElement, (event: MouseEvent) => void>()
+  const activeLine = ref<SVGLineElement>()
 
-  function addWall() {
+  function addLine() {
     const newWall = document.createElementNS("http://www.w3.org/2000/svg", "line")
     newWall.setAttribute("id", `svg_${randomNumberId()}`)
     newWall.setAttribute("y2", (MAP_HEIGHT / 3).toString())
@@ -38,7 +39,6 @@ export function useMap(
 
     // Helper function to convert screen coords to SVG coords
     const getSVGPoint = (event: MouseEvent) => {
-      // Assuming panzoomInstance is available in this scope
       const scale = panzoomInstance.value?.getScale()
       const pan = panzoomInstance.value?.getPan()
       return {
@@ -46,9 +46,6 @@ export function useMap(
         y: (event.clientY - pan!.y) / scale!,
       }
     }
-
-    // Assuming snap function is available
-    // const snap = (value: number) => value;
 
     const move = (event: MouseEvent) => {
       if (!isDragging) return
@@ -75,6 +72,7 @@ export function useMap(
 
     // Define the mousedown handler as a named function
     const startDrag = (event: MouseEvent) => {
+      activeLine.value = element
       isDragging = true
 
       const svgPoint = getSVGPoint(event)
@@ -101,7 +99,6 @@ export function useMap(
   }
 
   function removeEventHandlerToMove(element: SVGLineElement) {
-    // Retrieve the specific handler function for this element from the Map
     const handlerToRemove = moveEventHandlers.get(element)
 
     if (handlerToRemove) {
@@ -113,5 +110,5 @@ export function useMap(
     }
   }
 
-  return { addWall, addEventHandlerToMove, removeEventHandlerToMove }
+  return { activeLine, addLine, addEventHandlerToMove, removeEventHandlerToMove }
 }

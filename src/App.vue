@@ -91,15 +91,3 @@ function login() {
     </v-layout>
   </v-app>
 </template>
-
-<style>
-html,
-body,
-.v-application,
-.v-application__wrap,
-.v-layout,
-.v-main,
-.v-main__wrap {
-  overflow: hidden !important;
-}
-</style>
