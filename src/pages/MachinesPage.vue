@@ -310,5 +310,12 @@ function instructionCreation(instruction: Instruction) {
       v-model="selectedInstruction"
       @delete:instruction="handleInstructionUnselect"
     />
+    <div
+      v-else-if="selectedExerciseCard && instructions.length === 0"
+      class="text-center text-grey mt-4"
+    >
+      <v-icon size="64">mdi-information-off-outline</v-icon>
+      <p class="mt-2">No instruction has been created for this exercise yet.</p>
+    </div>
   </div>
 </template>
