@@ -1,5 +1,6 @@
 import { isArray } from "@/utils/other"
 import { useKeycloak } from "@dsb-norge/vue-keycloak-js"
+import type { AxiosProgressEvent } from "axios"
 import axios, {
   AxiosError,
   type AxiosRequestConfig,
@@ -14,6 +15,7 @@ export enum Route {
   Instructions = "/instructions",
   Users = "/users",
   Media = "/media",
+  Map = "/map",
 }
 
 export interface PatchBase {
@@ -63,6 +65,7 @@ export abstract class ServiceBase<
     jsonParams,
     postBody,
     responseType,
+    onUploadProgress,
     route,
   }: {
     method: Method
@@ -71,6 +74,7 @@ export abstract class ServiceBase<
     jsonParams?: JsonParamsT
     postBody?: FormData
     responseType?: ResponseType
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
     route: string
   }): Promise<ResponseT> {
     let url = this.get_api_url(route)
@@ -88,10 +92,11 @@ export abstract class ServiceBase<
 
     const request: AxiosRequestConfig = {
       method: method.toString().toLowerCase(),
-      headers: headers,
-      data: data,
-      url: url,
-      responseType: responseType,
+      headers,
+      data,
+      url,
+      responseType,
+      onUploadProgress,
     }
 
     return axios(request)

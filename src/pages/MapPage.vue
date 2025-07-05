@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
-import Panzoom from "@panzoom/panzoom"
-import type { PanzoomObject } from "@panzoom/panzoom"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
+import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH } from "@/constants"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { type Machine, type Position } from "@/types/machine"
 import { useDebounceFn } from "@vueuse/core"
 import { useRouter } from "vue-router"
 import { pushToMachinesPage } from "@/utils/router"
-import { roundTo } from "@/utils/drag"
+import { snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
+import { usePanzoom } from "@/composables/usePanzoom"
+import { mapFileService } from "@/services/mapFile"
 
 const props = defineProps({
   id: {
@@ -24,6 +25,7 @@ const props = defineProps({
 const router = useRouter()
 const { isAdmin } = useUser()
 
+const bgSvgData = ref<string>()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
 const machineEdit = ref<MapMachine>()
@@ -33,9 +35,13 @@ const draggingOffset = reactive({
   y: 0,
 })
 
-const svgContainer = ref<HTMLElement | null>(null)
-const svgElement = ref<SVGElement | null>(null)
-const panzoomInstance = ref<PanzoomObject | null>(null)
+const mainSvgContainer = ref<HTMLElement | null>(null)
+const mainSvg = ref<SVGElement | null>(null)
+const bgSvgGroup = ref<SVGElement | null>(null)
+const { setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
+  mainSvg,
+  mainSvgContainer,
+)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -46,9 +52,11 @@ const machinePosition = reactive<Position>({
 
 watch(editMode, (newVal) => {
   if (newVal) {
-    destroyPanZoom()
+    // Edit mode
+    setupPanzoomOnKeydown()
   } else {
-    setupPanZoom()
+    // View mode
+    setupPanzoomNoKey()
   }
 })
 
@@ -83,60 +91,84 @@ const updatePositionDebounce = useDebounceFn((position: Position) => {
 }, 500)
 
 function drag(event: MouseEvent, machineId: number) {
-  dragginMachine.value = machines.value?.find((m) => m.id === machineId)
-  if (!dragginMachine.value) return
-  draggingOffset.x = event.offsetX - dragginMachine.value.position_x
-  draggingOffset.y = event.offsetY - dragginMachine.value.position_y
+  if (editMode.value) {
+    dragginMachine.value = machines.value?.find((m) => m.id === machineId)
+    if (!dragginMachine.value) return
+    draggingOffset.x = event.offsetX - dragginMachine.value.position_x
+    draggingOffset.y = event.offsetY - dragginMachine.value.position_y
 
-  //@ts-expect-error correct type
-  event.target?.addEventListener("mousemove", move)
+    document.addEventListener("mousemove", move)
+  }
 }
 
 const move = (event: MouseEvent) => {
   if (dragginMachine.value) {
-    dragginMachine.value.position_x = roundTo(event.offsetX - draggingOffset.x, 5)
-    dragginMachine.value.position_y = roundTo(event.offsetY - draggingOffset.y, 5)
+    dragginMachine.value.position_x = snap(event.offsetX - draggingOffset.x)
+    dragginMachine.value.position_y = snap(event.offsetY - draggingOffset.y)
   }
 }
 
-function drop(event: MouseEvent) {
-  dragginMachine.value = undefined
-  //@ts-expect-error correct type
-  event.target?.removeEventListener("mousemove", move)
+function drop() {
+  if (editMode.value) {
+    dragginMachine.value = undefined
+    document.removeEventListener("mousemove", move)
+  }
 }
 
-function setupPanZoom() {
-  if (svgElement.value && svgContainer.value) {
-    const pz = Panzoom(svgElement.value, {
-      canvas: true,
-      minScale: 0.5,
-      maxScale: 5,
+// Define a unique ID for the style tag to easily find and remove it.
+const styleTagId = "global-overflow-hidden-style"
+
+// The CSS rules you want to apply.
+const cssRules = `
+  html,
+  body,
+  .v-application,
+  .v-application__wrap,
+  .v-layout,
+  .v-main,
+  .v-main__wrap {
+    overflow: hidden !important;
+  }
+`
+
+onMounted(() => {
+  if (!document.getElementById(styleTagId)) {
+    const styleElement = document.createElement("style")
+    styleElement.id = styleTagId
+    styleElement.textContent = cssRules
+
+    document.head.appendChild(styleElement)
+  }
+
+  mapFileService.getMap().then(async (map) => {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(map, "image/svg+xml")
+    const gElement = doc.querySelector("svg")
+    bgSvgData.value = gElement?.innerHTML
+
+    machineService.get().then(async (res) => {
+      machines.value = res.map((m) => ({ ...m, is_origin: false }))
+      if (props.id) {
+        const originMachine = machines.value.find((m) => m.id === Number(props.id))
+        if (!originMachine) return
+        originMachine.is_origin = true
+      }
+
+      await nextTick()
+      setupPanzoomNoKey()
     })
-
-    panzoomInstance.value = pz
-    svgContainer.value.addEventListener("wheel", pz.zoomWithWheel)
-  }
-}
-
-function destroyPanZoom() {
-  panzoomInstance.value?.destroy()
-}
-
-onMounted(() =>
-  machineService.get().then(async (res) => {
-    machines.value = res.map((m) => ({ ...m, is_origin: false }))
-    if (props.id) {
-      const originMachine = machines.value.find((m) => m.id === Number(props.id))
-      if (!originMachine) return
-      originMachine.is_origin = true
-    }
-
     await nextTick()
-    setupPanZoom()
-  }),
-)
+  })
+})
 
-onUnmounted(() => destroyPanZoom())
+onUnmounted(() => {
+  const styleElement = document.getElementById(styleTagId)
+
+  if (styleElement) {
+    document.head.removeChild(styleElement)
+  }
+  destroyPanZoom()
+})
 </script>
 
 <template>
@@ -159,21 +191,26 @@ onUnmounted(() => destroyPanZoom())
       >
         {{
           editMode
-            ? "Click a machine to edit its position & size (drag to move)"
-            : "Click a machine to see its exercises"
+            ? "Click a machine to edit its position & size (drag to move), hold space to drag the map"
+            : "Click a machine to see its exercises, use scroll whell to zoom in & out"
         }}
       </v-alert>
     </div>
 
     <div v-if="editMode">
-      <NumberSlider v-model="machinePosition.width" :step="5" :max="500" label="Width" />
-      <NumberSlider v-model="machinePosition.height" :step="5" :max="500" label="Heigth" />
+      <NumberSlider v-model="machinePosition.width" :step="5" :max="MAP_WIDTH / 2" label="Width" />
+      <NumberSlider
+        v-model="machinePosition.height"
+        :step="GRID_SIZE"
+        :max="MAP_HEIGHT / 2"
+        label="Heigth"
+      />
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
     </div>
 
-    <div ref="svgContainer" class="svg-container">
-      <svg ref="svgElement" width="900" height="1206" view-box="0 0 900 1206" class="svg-map">
-        <image href="../assets/map.svg" x="0" y="0" width="100%" height="100%" />
+    <div ref="mainSvgContainer" class="svg-container">
+      <svg ref="mainSvg" :width="MAP_WIDTH" :height="MAP_HEIGHT" class="svg-map">
+        <g v-if="bgSvgData" v-html="bgSvgData" ref="bgSvgGroup"></g>
         <g v-for="machine in machines" :key="machine.name">
           <rect
             :id="getMachineHtmlId(machine)"
@@ -186,8 +223,9 @@ onUnmounted(() => destroyPanZoom())
             style="cursor: pointer"
             @click="selectMachine(machine)"
             @mousedown="drag($event, machine.id)"
-            @mouseup="drop($event)"
+            @mouseup="drop"
             rx="8"
+            class="panzoom-exclude"
           />
 
           <foreignObject
@@ -201,6 +239,7 @@ onUnmounted(() => destroyPanZoom())
               xmlns="http://www.w3.org/1999/xhtml"
               class="pa-1"
               :style="{
+                fontSize: '4em',
                 color: machine.is_origin ? 'yellow' : 'white',
                 height: '100%',
                 display: 'flex',
@@ -223,14 +262,13 @@ onUnmounted(() => destroyPanZoom())
 .svg-map {
   border-color: #ced4da;
   border-style: solid;
-  border-width: 1px;
+  border-width: 20px;
 
   display: block;
   margin: auto;
 }
 .svg-container {
   width: 100%;
-  overflow: hidden; /* Panzoom handles the panning, so we hide native scrollbars */
 }
 
 /* Give a visual cue that the SVG is interactive */
