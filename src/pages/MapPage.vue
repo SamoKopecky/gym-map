@@ -35,11 +35,6 @@ const draggingOffset = reactive({
   x: 0,
   y: 0,
 })
-const panX = ref<number>()
-const test = ref<number>()
-const panY = ref<number>()
-const zoom = ref<number>()
-const origY = ref<number>()
 
 const mainSvgContainer = ref<HTMLElement | null>(null)
 const mainSvg = ref<SVGElement | null>(null)
@@ -148,7 +143,8 @@ onMounted(() => {
 
   mapFileService
     .getMap()
-    .then(async (map) => {
+    .then((map) => {
+      mainSvg.value!.style.visibility = "hidden"
       const parser = new DOMParser()
       const doc = parser.parseFromString(map, "image/svg+xml")
       const gElement = doc.querySelector("svg")
@@ -164,13 +160,14 @@ onMounted(() => {
           originMachine.is_origin = true
         }
 
-        await nextTick()
         setupPanzoomNoKey()
       })
     })
-    .finally(async () => {
-      await nextTick()
-      resetMap()
+    .finally(() => {
+      setTimeout(() => {
+        resetMap()
+        mainSvg.value!.style.visibility = "visible"
+      }, 50)
     })
 })
 
@@ -191,11 +188,7 @@ function calulcateScaledTopLeftCorner(scale: number, maxDim: number) {
 function resetMap() {
   if (!startY.value) return
   const scale = Math.max(window.innerWidth / MAP_WIDTH, MIN_ZOOM)
-  // const scale = 0.4
-  // works for scale 1
   panzoomInstance.value?.zoom(scale)
-  // getPan()
-  // works for scale 1
   const additionalY = (MAP_HEIGHT * scale - window.innerHeight + startY.value) / scale
 
   panzoomInstance.value?.pan(
@@ -207,8 +200,9 @@ function resetMap() {
 
 <template>
   <div>
-    <v-fab position="absolute" location="bottom right" absolute size="large" icon>
-      <v-icon>mdi-cross</v-icon>
+    <v-fab location="top right" app size="large" icon style="z-index: 1000">
+      <v-icon>mdi-close</v-icon>
+      <v-speed-dial> </v-speed-dial>
     </v-fab>
     <div class="d-flex justify-center align-center">
       <v-btn @click="resetMap" class="mx-2"> Reset map </v-btn>
@@ -304,13 +298,11 @@ function resetMap() {
 
   display: block;
   margin: auto;
+  z-index: 1;
 }
 .svg-container {
   width: 100%;
-}
-
-/* Give a visual cue that the SVG is interactive */
-.svg-container svg {
+  z-index: 1;
   cursor: move;
 }
 </style>
