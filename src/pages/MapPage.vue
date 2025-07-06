@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
-import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH } from "@/constants"
+import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH, MAX_ZOOM, MIN_ZOOM } from "@/constants"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { type Machine, type Position } from "@/types/machine"
@@ -25,6 +25,7 @@ const props = defineProps({
 const router = useRouter()
 const { isAdmin } = useUser()
 
+const startY = ref<number>()
 const bgSvgData = ref<string>()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
@@ -34,11 +35,16 @@ const draggingOffset = reactive({
   x: 0,
   y: 0,
 })
+const panX = ref<number>()
+const test = ref<number>()
+const panY = ref<number>()
+const zoom = ref<number>()
+const origY = ref<number>()
 
 const mainSvgContainer = ref<HTMLElement | null>(null)
 const mainSvg = ref<SVGElement | null>(null)
 const bgSvgGroup = ref<SVGElement | null>(null)
-const { setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
+const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
   mainSvg,
   mainSvgContainer,
 )
@@ -140,25 +146,32 @@ onMounted(() => {
     document.head.appendChild(styleElement)
   }
 
-  mapFileService.getMap().then(async (map) => {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(map, "image/svg+xml")
-    const gElement = doc.querySelector("svg")
-    bgSvgData.value = gElement?.innerHTML
+  mapFileService
+    .getMap()
+    .then(async (map) => {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(map, "image/svg+xml")
+      const gElement = doc.querySelector("svg")
+      bgSvgData.value = gElement?.innerHTML
 
-    machineService.get().then(async (res) => {
-      machines.value = res.map((m) => ({ ...m, is_origin: false }))
-      if (props.id) {
-        const originMachine = machines.value.find((m) => m.id === Number(props.id))
-        if (!originMachine) return
-        originMachine.is_origin = true
-      }
+      startY.value = mainSvg.value?.getBoundingClientRect().y
 
-      await nextTick()
-      setupPanzoomNoKey()
+      machineService.get().then(async (res) => {
+        machines.value = res.map((m) => ({ ...m, is_origin: false }))
+        if (props.id) {
+          const originMachine = machines.value.find((m) => m.id === Number(props.id))
+          if (!originMachine) return
+          originMachine.is_origin = true
+        }
+
+        await nextTick()
+        setupPanzoomNoKey()
+      })
     })
-    await nextTick()
-  })
+    .finally(async () => {
+      await nextTick()
+      resetMap()
+    })
 })
 
 onUnmounted(() => {
@@ -169,11 +182,36 @@ onUnmounted(() => {
   }
   destroyPanZoom()
 })
+
+function calulcateScaledTopLeftCorner(scale: number, maxDim: number) {
+  const res = ((maxDim / 2) * (1 - scale)) / scale
+  return res
+}
+
+function resetMap() {
+  if (!startY.value) return
+  const scale = Math.max(window.innerWidth / MAP_WIDTH, MIN_ZOOM)
+  // const scale = 0.4
+  // works for scale 1
+  panzoomInstance.value?.zoom(scale)
+  // getPan()
+  // works for scale 1
+  const additionalY = (MAP_HEIGHT * scale - window.innerHeight + startY.value) / scale
+
+  panzoomInstance.value?.pan(
+    -calulcateScaledTopLeftCorner(scale, MAP_WIDTH),
+    -calulcateScaledTopLeftCorner(scale, MAP_HEIGHT) - additionalY,
+  )
+}
 </script>
 
 <template>
   <div>
+    <v-fab position="absolute" location="bottom right" absolute size="large" icon>
+      <v-icon>mdi-cross</v-icon>
+    </v-fab>
     <div class="d-flex justify-center align-center">
+      <v-btn @click="resetMap" class="mx-2"> Reset map </v-btn>
       <v-switch
         v-if="isAdmin"
         label="Edit machines"
