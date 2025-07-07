@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
+import { onMounted, onUnmounted, ref, watch, reactive } from "vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
 import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH } from "@/constants"
@@ -13,6 +13,7 @@ import { snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
 import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
+import { usePanning } from "@/composables/usePanning"
 
 const props = defineProps({
   id: {
@@ -25,6 +26,7 @@ const props = defineProps({
 const router = useRouter()
 const { isAdmin } = useUser()
 
+const startY = ref<number>()
 const bgSvgData = ref<string>()
 const machines = ref<MapMachine[]>()
 const editMode = ref<boolean>(false)
@@ -38,10 +40,11 @@ const draggingOffset = reactive({
 const mainSvgContainer = ref<HTMLElement | null>(null)
 const mainSvg = ref<SVGElement | null>(null)
 const bgSvgGroup = ref<SVGElement | null>(null)
-const { setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
+const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoom } = usePanzoom(
   mainSvg,
   mainSvgContainer,
 )
+const { resetMap, panToMachine } = usePanning(mainSvg, startY, panzoomInstance)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -140,25 +143,37 @@ onMounted(() => {
     document.head.appendChild(styleElement)
   }
 
-  mapFileService.getMap().then(async (map) => {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(map, "image/svg+xml")
-    const gElement = doc.querySelector("svg")
-    bgSvgData.value = gElement?.innerHTML
+  mapFileService
+    .getMap()
+    .then((map) => {
+      mainSvg.value!.style.visibility = "hidden"
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(map, "image/svg+xml")
+      const gElement = doc.querySelector("svg")
+      bgSvgData.value = gElement?.innerHTML
 
-    machineService.get().then(async (res) => {
-      machines.value = res.map((m) => ({ ...m, is_origin: false }))
-      if (props.id) {
-        const originMachine = machines.value.find((m) => m.id === Number(props.id))
-        if (!originMachine) return
-        originMachine.is_origin = true
-      }
+      startY.value = mainSvg.value?.getBoundingClientRect().y
 
-      await nextTick()
-      setupPanzoomNoKey()
+      machineService.get().then((res) => {
+        machines.value = res.map((m) => ({ ...m, is_origin: false }))
+        if (props.id) {
+          const originMachine = machines.value.find((m) => m.id === Number(props.id))
+          if (!originMachine) return
+          originMachine.is_origin = true
+          setTimeout(() => {
+            panToMachine(originMachine)
+          }, 50)
+        }
+
+        setupPanzoomNoKey()
+      })
     })
-    await nextTick()
-  })
+    .finally(() => {
+      setTimeout(() => {
+        if (!props.id) resetMap()
+        mainSvg.value!.style.visibility = "visible"
+      }, 50)
+    })
 })
 
 onUnmounted(() => {
@@ -174,6 +189,7 @@ onUnmounted(() => {
 <template>
   <div>
     <div class="d-flex justify-center align-center">
+      <v-btn @click="resetMap" class="mx-2"> Reset map</v-btn>
       <v-switch
         v-if="isAdmin"
         label="Edit machines"
@@ -181,6 +197,7 @@ onUnmounted(() => {
         hide-details
         color="yellow"
         class="mr-2 mb-0"
+        @keydown.space.prevent
       />
       <v-alert
         :type="editMode ? 'warning' : 'info'"
@@ -215,6 +232,7 @@ onUnmounted(() => {
           <rect
             :id="getMachineHtmlId(machine)"
             :stroke="machine.is_origin ? 'yellow' : ''"
+            :class="{ 'origin-machine-glow': machine.is_origin }"
             fill="#000000"
             :x="machine.position_x"
             :y="machine.position_y"
@@ -266,13 +284,35 @@ onUnmounted(() => {
 
   display: block;
   margin: auto;
+  z-index: 1;
 }
 .svg-container {
   width: 100%;
+  z-index: 1;
+  cursor: move;
 }
 
-/* Give a visual cue that the SVG is interactive */
-.svg-container svg {
-  cursor: move;
+@keyframes glowing-border {
+  0% {
+    stroke: yellow;
+    stroke-width: 16px; /* Start with a visible border */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5)); /* Subtle initial glow */
+  }
+  50% {
+    stroke: gold;
+    stroke-width: 24px; /* Thicker border */
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); /* Brighter, wider glow */
+  }
+  100% {
+    stroke: yellow;
+    stroke-width: 16px;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5));
+  }
+}
+
+.origin-machine-glow {
+  animation: glowing-border 2s infinite alternate; /* Apply the animation */
+  stroke-linejoin: round; /* Optional: Makes the corners smoother for the stroke */
+  stroke-linecap: round; /* Optional: Makes the line caps smoother */
 }
 </style>
