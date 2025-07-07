@@ -277,7 +277,6 @@ onUnmounted(() => {
 
 <style scoped>
 .svg-map {
-  /* Softer, rounded corners */
   border-radius: 24px;
 
   /* A very thin, subtle border to define the edge */
