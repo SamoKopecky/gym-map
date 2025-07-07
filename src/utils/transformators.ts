@@ -43,7 +43,7 @@ export function instructionToCard(instruction: Instruction): Card {
 }
 
 export function getMachineHtmlId(machine: Machine): string {
-  return `${machine.name}-${machine.id}`
+  return `${machine.name.toLowerCase().replace(/ /g, "-")}-${machine.id}`
 }
 
 export function difficultyToString(difficulty: Difficulty): string {

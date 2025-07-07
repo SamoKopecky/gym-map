@@ -5,7 +5,6 @@ import type { PanzoomObject } from "@panzoom/panzoom"
 import type { Ref } from "vue"
 
 export function usePanning(
-  mainSvg: Ref<SVGElement | null>,
   startY: Ref<number | undefined>,
   panzoomInstance: Ref<PanzoomObject | null>,
 ) {
@@ -38,7 +37,7 @@ export function usePanning(
   function panToMachine(machine: Machine) {
     if (!startY.value) return
 
-    const machineEl = mainSvg.value?.querySelector(`#${getMachineHtmlId(machine)}`) as SVGSVGElement
+    const machineEl = document.getElementById(getMachineHtmlId(machine)) as unknown as SVGSVGElement
     if (!machineEl) return
 
     const scale = getTargetScale()

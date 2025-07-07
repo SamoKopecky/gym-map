@@ -44,7 +44,7 @@ const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoo
   mainSvg,
   mainSvgContainer,
 )
-const { resetMap, panToMachine } = usePanning(mainSvg, startY, panzoomInstance)
+const { resetMap, panToMachine } = usePanning(startY, panzoomInstance)
 
 const machinePosition = reactive<Position>({
   width: 0,
