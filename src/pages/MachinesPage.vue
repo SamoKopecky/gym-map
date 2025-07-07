@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Card, type CardPanelName } from "@/types/card"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import InstructionDetail from "@/components/InstructionDetail.vue"
@@ -52,6 +52,11 @@ const selectedInstruction = computed(() => {
 })
 
 const { userId } = useUser()
+
+watch(
+  () => searchData.difficulties,
+  () => (panelsShow.value = ["Exercises"]),
+)
 
 function handleCardSelect(card: Card, panelName: CardPanelName) {
   if (panelName === "Machines") {
