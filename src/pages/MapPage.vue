@@ -209,7 +209,7 @@ onUnmounted(() => {
         {{
           editMode
             ? "Click a machine to edit its position & size (drag to move), hold space to drag the map"
-            : "Click a machine to see its exercises, use scroll whell to zoom in & out"
+            : "Click a machine to see its exercises"
         }}
       </v-alert>
     </div>
@@ -231,9 +231,7 @@ onUnmounted(() => {
         <g v-for="machine in machines" :key="machine.name">
           <rect
             :id="getMachineHtmlId(machine)"
-            :stroke="machine.is_origin ? 'yellow' : ''"
-            :class="{ 'origin-machine-glow': machine.is_origin }"
-            fill="#000000"
+            :class="['machine-rect', { 'origin-machine-highlight': machine.is_origin }]"
             :x="machine.position_x"
             :y="machine.position_y"
             :width="machine.width"
@@ -258,13 +256,14 @@ onUnmounted(() => {
               class="pa-1"
               :style="{
                 fontSize: '4em',
-                color: machine.is_origin ? 'yellow' : 'white',
+                color: machine.is_origin ? '#1976D2' : 'white',
                 height: '100%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
                 wordBreak: 'normal',
+                fontWeight: machine.is_origin ? 500 : 400,
               }"
             >
               {{ machine.name }}
@@ -278,41 +277,49 @@ onUnmounted(() => {
 
 <style scoped>
 .svg-map {
-  border-color: #ced4da;
-  border-style: solid;
-  border-width: 20px;
+  /* Softer, rounded corners */
+  border-radius: 24px;
 
+  /* A very thin, subtle border to define the edge */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  /* A modern shadow to give depth and a "floating" effect */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+  /* Keep other styles */
   display: block;
   margin: auto;
-  z-index: 1;
 }
+
 .svg-container {
   width: 100%;
-  z-index: 1;
   cursor: move;
 }
 
-@keyframes glowing-border {
-  0% {
-    stroke: yellow;
-    stroke-width: 16px; /* Start with a visible border */
-    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5)); /* Subtle initial glow */
+/* Base style for all machines for a softer look */
+.machine-rect {
+  fill: rgba(25, 25, 25, 0.8);
+  stroke-width: 6px;
+  stroke: transparent;
+  transition:
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+/* Subtle "breathing" animation for the border */
+@keyframes breathing-animation {
+  from {
+    stroke-opacity: 1;
   }
-  50% {
-    stroke: gold;
-    stroke-width: 24px; /* Thicker border */
-    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); /* Brighter, wider glow */
-  }
-  100% {
-    stroke: yellow;
-    stroke-width: 16px;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5));
+  to {
+    stroke-opacity: 0.4;
   }
 }
 
-.origin-machine-glow {
-  animation: glowing-border 2s infinite alternate; /* Apply the animation */
-  stroke-linejoin: round; /* Optional: Makes the corners smoother for the stroke */
-  stroke-linecap: round; /* Optional: Makes the line caps smoother */
+/* Tonal highlight for the origin machine */
+.origin-machine-highlight {
+  fill: rgba(25, 118, 210, 0.2); /* Semi-transparent primary color (tonal) */
+  stroke: #1976d2; /* Solid primary color */
+  animation: breathing-animation 1.5s infinite alternate ease-in-out;
 }
 </style>
