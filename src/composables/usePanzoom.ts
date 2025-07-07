@@ -1,5 +1,6 @@
 import { MAX_ZOOM, MIN_ZOOM } from "@/constants"
 import Panzoom, { type PanzoomOptions, type PanzoomObject } from "@panzoom/panzoom"
+import { onMounted } from "vue"
 import { ref, type Ref } from "vue"
 
 export function usePanzoom(
@@ -7,6 +8,14 @@ export function usePanzoom(
   mainSvgContainer: Ref<HTMLElement | null>,
 ) {
   const panzoomInstance = ref<PanzoomObject | null>(null)
+
+  onMounted(() => {
+    setupPanzoom({
+      canvas: true,
+      minScale: MIN_ZOOM,
+      maxScale: MAX_ZOOM,
+    })
+  })
 
   function onKeydown(e: KeyboardEvent) {
     if (e.code === "Space" && panzoomInstance.value) {
@@ -32,28 +41,16 @@ export function usePanzoom(
   }
 
   function setupPanzoomOnKeydown() {
-    panzoomInstance.value?.destroy()
-    setupPanzoom({
-      canvas: true,
-      minScale: MIN_ZOOM,
-      maxScale: MAX_ZOOM,
-      disablePan: true,
-    })
+    panzoomInstance.value?.setOptions({ disablePan: true })
 
     document.addEventListener("keydown", onKeydown)
     document.addEventListener("keyup", onKeyup)
   }
 
   function setupPanzoomNoKey() {
+    panzoomInstance.value?.setOptions({ disablePan: false })
     document.removeEventListener("keydown", onKeydown)
     document.removeEventListener("keyup", onKeyup)
-
-    panzoomInstance.value?.destroy()
-    setupPanzoom({
-      canvas: true,
-      minScale: MIN_ZOOM,
-      maxScale: MAX_ZOOM,
-    })
   }
 
   function destroyPanZoom() {

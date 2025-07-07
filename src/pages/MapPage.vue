@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue"
+import { onMounted, onUnmounted, ref, watch, reactive } from "vue"
 import NumberSlider from "@/components/NumberSlider.vue"
 import type { MapMachine } from "@/types/machine"
-import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH, MAX_ZOOM, MIN_ZOOM } from "@/constants"
+import { GRID_SIZE, MAP_HEIGHT, MAP_WIDTH } from "@/constants"
 import { machineService } from "@/services/machine"
 import { getMachineHtmlId } from "@/utils/transformators"
 import { type Machine, type Position } from "@/types/machine"
@@ -13,6 +13,7 @@ import { snap } from "@/utils/drag"
 import { useUser } from "@/composables/useUser"
 import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
+import { usePanning } from "@/composables/usePanning"
 
 const props = defineProps({
   id: {
@@ -43,6 +44,7 @@ const { panzoomInstance, setupPanzoomNoKey, setupPanzoomOnKeydown, destroyPanZoo
   mainSvg,
   mainSvgContainer,
 )
+const { resetMap, panToMachine } = usePanning(mainSvg, startY, panzoomInstance)
 
 const machinePosition = reactive<Position>({
   width: 0,
@@ -152,12 +154,15 @@ onMounted(() => {
 
       startY.value = mainSvg.value?.getBoundingClientRect().y
 
-      machineService.get().then(async (res) => {
+      machineService.get().then((res) => {
         machines.value = res.map((m) => ({ ...m, is_origin: false }))
         if (props.id) {
           const originMachine = machines.value.find((m) => m.id === Number(props.id))
           if (!originMachine) return
           originMachine.is_origin = true
+          setTimeout(() => {
+            panToMachine(originMachine)
+          }, 50)
         }
 
         setupPanzoomNoKey()
@@ -165,7 +170,7 @@ onMounted(() => {
     })
     .finally(() => {
       setTimeout(() => {
-        resetMap()
+        if (!props.id) resetMap()
         mainSvg.value!.style.visibility = "visible"
       }, 50)
     })
@@ -179,33 +184,12 @@ onUnmounted(() => {
   }
   destroyPanZoom()
 })
-
-function calulcateScaledTopLeftCorner(scale: number, maxDim: number) {
-  const res = ((maxDim / 2) * (1 - scale)) / scale
-  return res
-}
-
-function resetMap() {
-  if (!startY.value) return
-  const scale = Math.max(window.innerWidth / MAP_WIDTH, MIN_ZOOM)
-  panzoomInstance.value?.zoom(scale)
-  const additionalY = (MAP_HEIGHT * scale - window.innerHeight + startY.value) / scale
-
-  panzoomInstance.value?.pan(
-    -calulcateScaledTopLeftCorner(scale, MAP_WIDTH),
-    -calulcateScaledTopLeftCorner(scale, MAP_HEIGHT) - additionalY,
-  )
-}
 </script>
 
 <template>
   <div>
-    <v-fab location="top right" app size="large" icon style="z-index: 1000">
-      <v-icon>mdi-close</v-icon>
-      <v-speed-dial> </v-speed-dial>
-    </v-fab>
     <div class="d-flex justify-center align-center">
-      <v-btn @click="resetMap" class="mx-2"> Reset map </v-btn>
+      <v-btn @click="resetMap" class="mx-2"> Reset map</v-btn>
       <v-switch
         v-if="isAdmin"
         label="Edit machines"
@@ -213,6 +197,7 @@ function resetMap() {
         hide-details
         color="yellow"
         class="mr-2 mb-0"
+        @keydown.space.prevent
       />
       <v-alert
         :type="editMode ? 'warning' : 'info'"
@@ -247,6 +232,7 @@ function resetMap() {
           <rect
             :id="getMachineHtmlId(machine)"
             :stroke="machine.is_origin ? 'yellow' : ''"
+            :class="{ 'origin-machine-glow': machine.is_origin }"
             fill="#000000"
             :x="machine.position_x"
             :y="machine.position_y"
@@ -304,5 +290,29 @@ function resetMap() {
   width: 100%;
   z-index: 1;
   cursor: move;
+}
+
+@keyframes glowing-border {
+  0% {
+    stroke: yellow;
+    stroke-width: 16px; /* Start with a visible border */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5)); /* Subtle initial glow */
+  }
+  50% {
+    stroke: gold;
+    stroke-width: 24px; /* Thicker border */
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); /* Brighter, wider glow */
+  }
+  100% {
+    stroke: yellow;
+    stroke-width: 16px;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.5));
+  }
+}
+
+.origin-machine-glow {
+  animation: glowing-border 2s infinite alternate; /* Apply the animation */
+  stroke-linejoin: round; /* Optional: Makes the corners smoother for the stroke */
+  stroke-linecap: round; /* Optional: Makes the line caps smoother */
 }
 </style>
