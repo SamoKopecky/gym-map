@@ -162,7 +162,7 @@ onMounted(() => {
           originMachine.is_origin = true
           setTimeout(() => {
             panToMachine(originMachine)
-          }, 50)
+          }, 100)
         }
 
         setupPanzoomNoKey()
@@ -172,7 +172,7 @@ onMounted(() => {
       setTimeout(() => {
         if (!props.id) resetMap()
         mainSvg.value!.style.visibility = "visible"
-      }, 50)
+      }, 100)
     })
 })
 
