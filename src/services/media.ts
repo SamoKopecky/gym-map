@@ -6,11 +6,11 @@ class MediaService extends ServiceBase<PatchBase, object, Media> {
     super(Route.Media)
   }
 
-  public getMetadata(id: number): Promise<Media> {
+  public getMetadataMany(ids: number[]): Promise<Media[]> {
     return this.handleRequest({
       method: Method.GET,
-      route: `${this.route}/:id/metadata`,
-      pathParams: { id },
+      route: `${this.route}/metadata`,
+      queryParams: { ids },
     })
   }
 }

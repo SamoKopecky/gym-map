@@ -3,7 +3,7 @@ import { useUser } from "@/composables/useUser"
 import { instructionService } from "@/services/instruction"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type Instruction } from "@/types/instruction"
-import { type FileInfo, type MediaBlob } from "@/types/other"
+import { type FileInfo, type MediaInfo } from "@/types/other"
 import { isArray } from "@/utils/other"
 import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
@@ -17,9 +17,8 @@ const emit = defineEmits(["delete:instruction"])
 
 const instruction = defineModel<Instruction>({ required: true })
 
-const media = reactive<MediaBlob>({
-  loading: false,
-})
+const medias = ref<MediaInfo[]>([])
+const mediaLoading = ref(false)
 const file = reactive<FileInfo>({})
 const uplodFileInput = useTemplateRef("file-upload-input")
 const deleteActive = ref(false)
@@ -58,17 +57,21 @@ watchDebounced(
 
 function getMedia() {
   if (instruction.value.media_ids.length > 0) {
-    media.loading = true
+    mediaLoading.value = true
     mediaService
-      .getMetadata(instruction.value.media_ids[0])
+      .getMetadataMany(instruction.value.media_ids)
       .then((res) => {
-        file.name = res.original_file_name
-        media.url = `${API_BASE_URL}/media/${res.id}`
-        media.type = res.content_type
+        file.name = res[0].original_file_name
+        medias.value = res.map((r) => {
+          return {
+            url: `${API_BASE_URL}/media/${r.id}`,
+            type: r.content_type,
+          }
+        })
       })
-      .finally(() => (media.loading = false))
+      .finally(() => (mediaLoading.value = false))
   } else {
-    media.url = undefined
+    medias.value = []
   }
 }
 
@@ -178,16 +181,20 @@ function deleteInstruction() {
       </div>
 
       <div class="d-flex justify-center mt-2">
-        <v-progress-circular size="100" v-if="media.loading" indeterminate />
-        <div v-else-if="media.url">
-          <v-responsive v-show="media.url" aspect-ratio="16/9" max-width="500px">
-            <video
-              controls
-              :src="media.url"
-              :type="media.type"
-              style="width: 100%; height: 100%; display: block"
-            />
-          </v-responsive>
+        <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
+        <div v-else-if="medias.length > 0">
+          <v-carousel hide-delimiters>
+            <v-carousel-item v-for="m in medias" :key="m.url">
+              <v-responsive aspect-ratio="16/9" max-width="500px">
+                <video
+                  controls
+                  :src="m.url"
+                  :type="m.type"
+                  style="width: 100%; height: 100%; display: block"
+                />
+              </v-responsive>
+            </v-carousel-item>
+          </v-carousel>
         </div>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>
