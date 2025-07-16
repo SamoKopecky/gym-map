@@ -57,10 +57,10 @@ watchDebounced(
 )
 
 function getMedia() {
-  if (instruction.value.media_id) {
+  if (instruction.value.media_ids.length > 0) {
     media.loading = true
     mediaService
-      .getMetadata(instruction.value.media_id)
+      .getMetadata(instruction.value.media_ids[0])
       .then((res) => {
         file.name = res.original_file_name
         media.url = `${API_BASE_URL}/media/${res.id}`
@@ -77,10 +77,11 @@ function uploadFile(uploadFile: File | File[]) {
   const formData = new FormData()
 
   if (isArray(uploadFile)) {
-    addNotification("Uploading multiple files not supported", "error")
-    return
+    uploadFile.forEach((uf, i) => {
+      formData.append(`file_${i}`, uf)
+    })
   } else {
-    formData.append("file", uploadFile)
+    formData.append("file_0", uploadFile)
   }
 
   file.uploadProgress = 0
@@ -89,7 +90,7 @@ function uploadFile(uploadFile: File | File[]) {
       file.uploadProgress = Math.round((100 * event.loaded) / event.total!)
     })
     .then((res) => {
-      instruction.value.media_id = res.media_id
+      instruction.value.media_ids = res.media_ids
       getMedia()
       addNotification("File uploaded succesfully", "success")
     })

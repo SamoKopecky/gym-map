@@ -33,7 +33,7 @@ function uploadNewAvatar(uploadFile: File | File[]) {
     addNotification("Uploading multiple files not supported", "error")
     return
   } else {
-    formData.append("file", uploadFile)
+    formData.append("file_0", uploadFile)
   }
   userService
     .postFile(formData)

@@ -42,5 +42,6 @@ export function instructionFactory(firstName?: string, lastName?: string): Instr
     first_name: firstName ?? "foo",
     last_name: lastName ?? "bar",
     name: "foo bar",
+    media_ids: [],
   }
 }
