@@ -23,6 +23,7 @@ const file = reactive<FileInfo>({})
 const uplodFileInput = useTemplateRef("file-upload-input")
 const deleteActive = ref(false)
 const isStoring = ref(false)
+const carouselIndex = ref<number>(0)
 
 const { isTrainer, userId, isAdmin } = useUser()
 const { addNotification } = useNotificationStore()
@@ -31,6 +32,15 @@ const canEdit = computed(() => {
   const trainerOwns = isTrainer.value && userId === instruction.value.user_id
   // True if either train owns the instruction or its an admin
   return trainerOwns || isAdmin.value
+})
+
+const currentFileName = computed(() => {
+  if (medias.value.length === 0) return
+
+  const currentMedia = medias.value.at(carouselIndex.value)
+  if (!currentMedia) return
+
+  return currentMedia.name
 })
 
 watch(
@@ -66,6 +76,7 @@ function getMedia() {
           return {
             url: `${API_BASE_URL}/media/${r.id}`,
             type: r.content_type,
+            name: r.original_file_name,
           }
         })
       })
@@ -93,7 +104,7 @@ function uploadFile(uploadFile: File | File[]) {
       file.uploadProgress = Math.round((100 * event.loaded) / event.total!)
     })
     .then((res) => {
-      instruction.value.media_ids = res.media_ids
+      instruction.value.media_ids.push(...res.media_ids)
       getMedia()
       addNotification("File uploaded succesfully", "success")
     })
@@ -150,22 +161,29 @@ function deleteInstruction() {
           </div>
         </template>
       </v-textarea>
-      <v-file-input
-        v-if="canEdit"
-        v-model="file.data"
-        @update:model-value="uploadFile"
-        :hint="file.name ?? 'No file found'"
-        ref="file-upload-input"
-        label="Upload new file"
-        variant="outlined"
-        show-size
-        accept="video/*"
-        placeholder="Chose a video file to uplad"
-        prepend-icon=""
-        prepend-inner-icon="mdi-video"
-        persistent-hint
-      >
-      </v-file-input>
+
+      <v-row v-if="canEdit">
+        <v-col cols="12" sm="10">
+          <v-file-input
+            v-model="file.data"
+            @update:model-value="uploadFile"
+            :hint="currentFileName ?? 'No file found'"
+            ref="file-upload-input"
+            label="Upload new file"
+            variant="outlined"
+            show-size
+            accept="video/*"
+            placeholder="Chose a video file to uplad"
+            prepend-icon=""
+            prepend-inner-icon="mdi-video"
+            persistent-hint
+          >
+          </v-file-input>
+        </v-col>
+        <v-col cols="12" sm="2" class="d-flex align-center">
+          <v-btn color="red">Delete media</v-btn>
+        </v-col>
+      </v-row>
       <div v-if="file.uploadProgress" class="d-flex justify-center mt-2">
         <v-progress-circular
           :model-value="file.uploadProgress"
@@ -180,21 +198,38 @@ function deleteInstruction() {
         </v-progress-circular>
       </div>
 
-      <div class="d-flex justify-center mt-2">
+      <div class="d-flex justify-center mt-4">
         <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
         <div v-else-if="medias.length > 0">
-          <v-carousel hide-delimiters>
-            <v-carousel-item v-for="m in medias" :key="m.url">
-              <v-responsive aspect-ratio="16/9" max-width="500px">
-                <video
-                  controls
-                  :src="m.url"
-                  :type="m.type"
-                  style="width: 100%; height: 100%; display: block"
+          <v-sheet class="overflow-hidden" rounded="xl">
+            <v-carousel hide-delimiters hide-delimiter-background v-model="carouselIndex">
+              <v-carousel-item v-for="m in medias" :key="m.url">
+                <v-responsive max-width="500px">
+                  <video
+                    controls
+                    :src="m.url"
+                    :type="m.type"
+                    style="width: 100%; height: 100%; display: block"
+                  />
+                </v-responsive>
+              </v-carousel-item>
+              <v-overlay
+                :scrim="false"
+                content-class="w-100 h-100 d-flex flex-column align-center justify-space-between pointer-pass-through py-3"
+                contained
+                model-value
+                no-click-animation
+                persistent
+              >
+                <v-chip
+                  :text="`${carouselIndex + 1} / ${medias.length}`"
+                  color="#eee"
+                  size="small"
+                  variant="flat"
                 />
-              </v-responsive>
-            </v-carousel-item>
-          </v-carousel>
+              </v-overlay>
+            </v-carousel>
+          </v-sheet>
         </div>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>

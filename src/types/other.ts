@@ -15,6 +15,7 @@ export interface SearchData {
 export interface MediaInfo {
   url: string
   type: string
+  name: string
 }
 
 export interface FileInfo {
