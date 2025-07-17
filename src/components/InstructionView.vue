@@ -21,7 +21,8 @@ const medias = ref<MediaInfo[]>([])
 const mediaLoading = ref(false)
 const file = reactive<FileInfo>({})
 const uplodFileInput = useTemplateRef("file-upload-input")
-const deleteActive = ref(false)
+const deleteInstructionActive = ref(false)
+const deleteMediaActive = ref(false)
 const isStoring = ref(false)
 const carouselIndex = ref<number>(0)
 
@@ -34,13 +35,13 @@ const canEdit = computed(() => {
   return trainerOwns || isAdmin.value
 })
 
-const currentFileName = computed(() => {
+const currentMedia = computed(() => {
   if (medias.value.length === 0) return
 
   const currentMedia = medias.value.at(carouselIndex.value)
   if (!currentMedia) return
 
-  return currentMedia.name
+  return currentMedia
 })
 
 watch(
@@ -77,6 +78,7 @@ function getMedia() {
             url: `${API_BASE_URL}/media/${r.id}`,
             type: r.content_type,
             name: r.original_file_name,
+            id: r.id,
           }
         })
       })
@@ -124,15 +126,41 @@ function deleteInstruction() {
     })
     .catch(() => addNotification("Deletion failed", "error"))
 }
+
+function deleteMedia() {
+  if (!currentMedia.value) {
+    addNotification("No media to delete", "info")
+    return
+  }
+
+  mediaService
+    .delete(currentMedia.value.id)
+    .then(() => {
+      medias.value = medias.value.filter((el, index) => index !== carouselIndex.value)
+      // Move to next media
+      carouselIndex.value = (carouselIndex.value + 1) % medias.value.length
+      addNotification("Media file deleted", "success")
+    })
+    .catch(() => addNotification("Deletion failed", "error"))
+}
 </script>
 
 <template>
   <DeleteConfirmationDialog
-    v-model="deleteActive"
+    v-model="deleteInstructionActive"
     confirm-text="Delete"
     @confirm="deleteInstruction"
   >
     Do you really want to delete this instruction? This action cannot be undone.
+  </DeleteConfirmationDialog>
+
+  <DeleteConfirmationDialog
+    v-model="deleteMediaActive"
+    confirm-text="Delete"
+    @confirm="deleteMedia"
+  >
+    Do you really want to delete file <b>{{ currentMedia?.name }}</b
+    >? This action cannot be undone.
   </DeleteConfirmationDialog>
 
   <v-card variant="flat">
@@ -141,7 +169,7 @@ function deleteInstruction() {
       <v-spacer></v-spacer>
       <v-btn
         v-if="canEdit"
-        @click="deleteActive = true"
+        @click="deleteInstructionActive = true"
         color="error"
         icon="mdi-delete"
         variant="text"
@@ -163,16 +191,17 @@ function deleteInstruction() {
       </v-textarea>
 
       <v-row v-if="canEdit">
-        <v-col cols="12" sm="10">
+        <v-col cols="12" md="10" xl="11">
           <v-file-input
             v-model="file.data"
             @update:model-value="uploadFile"
-            :hint="currentFileName ?? 'No file found'"
+            :hint="currentMedia?.name"
             ref="file-upload-input"
             label="Upload new file"
             variant="outlined"
             show-size
             accept="video/*"
+            hide-details="auto"
             placeholder="Chose a video file to uplad"
             prepend-icon=""
             prepend-inner-icon="mdi-video"
@@ -180,8 +209,8 @@ function deleteInstruction() {
           >
           </v-file-input>
         </v-col>
-        <v-col cols="12" sm="2" class="d-flex align-center">
-          <v-btn color="red">Delete media</v-btn>
+        <v-col cols="12" md="2" xl="1" class="d-flex align-center">
+          <v-btn color="red" @click="deleteMediaActive = true" width="100%">Delete media</v-btn>
         </v-col>
       </v-row>
       <div v-if="file.uploadProgress" class="d-flex justify-center mt-2">

@@ -16,6 +16,7 @@ export interface MediaInfo {
   url: string
   type: string
   name: string
+  id: number
 }
 
 export interface FileInfo {
