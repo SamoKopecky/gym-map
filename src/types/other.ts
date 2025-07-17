@@ -12,14 +12,14 @@ export interface SearchData {
   difficulties: Difficulty[]
 }
 
-export interface MediaBlob {
-  url?: string
-  type?: string
-  loading: boolean
+export interface MediaInfo {
+  url: string
+  type: string
+  name: string
+  id: number
 }
 
 export interface FileInfo {
   data?: File
-  name?: string
   uploadProgress?: number
 }

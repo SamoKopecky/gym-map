@@ -18,7 +18,7 @@ export interface InstructionQueryParams {
 }
 
 export interface InstructionMediaPostResponse {
-  media_id: number
+  media_ids: number[]
 }
 
 class InstructionService extends ServiceBase<
