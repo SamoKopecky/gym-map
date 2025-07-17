@@ -21,6 +21,5 @@ export interface MediaInfo {
 
 export interface FileInfo {
   data?: File
-  name?: string
   uploadProgress?: number
 }

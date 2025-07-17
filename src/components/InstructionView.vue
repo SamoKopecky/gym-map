@@ -45,7 +45,7 @@ const currentMedia = computed(() => {
 })
 
 watch(
-  instruction,
+  () => instruction.value.id,
   () => {
     getMedia()
   },
@@ -72,7 +72,6 @@ function getMedia() {
     mediaService
       .getMetadataMany(instruction.value.media_ids)
       .then((res) => {
-        file.name = res[0].original_file_name
         medias.value = res.map((r) => {
           return {
             url: `${API_BASE_URL}/media/${r.id}`,
@@ -84,6 +83,7 @@ function getMedia() {
       })
       .finally(() => (mediaLoading.value = false))
   } else {
+    console.log("reset")
     medias.value = []
   }
 }
@@ -136,7 +136,7 @@ function deleteMedia() {
   mediaService
     .delete(currentMedia.value.id)
     .then(() => {
-      medias.value = medias.value.filter((el, index) => index !== carouselIndex.value)
+      medias.value = medias.value.filter((_, index) => index !== carouselIndex.value)
       // Move to next media
       carouselIndex.value = (carouselIndex.value + 1) % medias.value.length
       addNotification("Media file deleted", "success")
@@ -195,9 +195,8 @@ function deleteMedia() {
           <v-file-input
             v-model="file.data"
             @update:model-value="uploadFile"
-            :hint="currentMedia?.name"
             ref="file-upload-input"
-            label="Upload new file"
+            :label="currentMedia?.name ?? 'Upload new file'"
             variant="outlined"
             show-size
             accept="video/*"
