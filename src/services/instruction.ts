@@ -21,6 +21,10 @@ export interface InstructionMediaPostResponse {
   media_ids: number[]
 }
 
+export interface InstructionMediaPostRequest {
+  youtube_video_id: string
+}
+
 class InstructionService extends ServiceBase<
   InterfacePatchRequest,
   InterfacePostRequest,
@@ -40,14 +44,16 @@ class InstructionService extends ServiceBase<
 
   public postFile(
     id: number,
-    data: FormData,
-    onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void,
+    postBody?: FormData,
+    jsonParams?: InstructionMediaPostRequest,
   ): Promise<InstructionMediaPostResponse> {
     return this.handleRequest({
       method: Method.POST,
       route: `${this.route}/:id/media`,
       pathParams: { id },
-      postBody: data,
+      jsonParams,
+      postBody,
       onUploadProgress,
     })
   }

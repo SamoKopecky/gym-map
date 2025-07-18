@@ -4,14 +4,16 @@ import { instructionService } from "@/services/instruction"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type Instruction } from "@/types/instruction"
 import { type FileInfo, type MediaInfo } from "@/types/other"
-import { isArray } from "@/utils/other"
+import { isArray, extractYouTubeId } from "@/utils/other"
 import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import YoutubeEmbed from "@/components/YoutubeEmbed.vue"
 import { API_BASE_URL } from "@/services/base"
 import { mediaService } from "@/services/media"
 import type { AxiosProgressEvent } from "axios"
+import { MediaType } from "@/types/media"
 
 const emit = defineEmits(["delete:instruction"])
 
@@ -25,6 +27,8 @@ const deleteInstructionActive = ref(false)
 const deleteMediaActive = ref(false)
 const isStoring = ref(false)
 const carouselIndex = ref<number>(0)
+const mediaUploadType = ref<MediaType>(MediaType.File)
+const youtubeLinkRef = ref<string>()
 
 const { isTrainer, userId, isAdmin } = useUser()
 const { addNotification } = useNotificationStore()
@@ -53,6 +57,23 @@ watch(
 )
 
 watchDebounced(
+  youtubeLinkRef,
+  () => {
+    if (!youtubeLinkRef.value) return
+    const youtubeId = extractYouTubeId(youtubeLinkRef.value)
+    if (!youtubeId) return
+
+    instructionService
+      .postFile(instruction.value.id, undefined, undefined, {
+        youtube_video_id: youtubeId,
+      })
+      .then(() => addNotification("Link saved", "success"))
+      .catch(() => addNotification("Can't savelink", "error"))
+  },
+  { debounce: 1000 },
+)
+
+watchDebounced(
   () => instruction.value.description,
   (newDescription) => {
     if (canEdit.value) {
@@ -74,9 +95,9 @@ function getMedia() {
       .then((res) => {
         medias.value = res.map((r) => {
           return {
-            url: `${API_BASE_URL}/media/${r.id}`,
+            url: r.content_type === MediaType.Youtube ? r.path : `${API_BASE_URL}/media/${r.id}`,
             type: r.content_type,
-            name: r.original_file_name,
+            name: r.name,
             id: r.id,
           }
         })
@@ -102,9 +123,13 @@ function uploadFile(uploadFile: File | File[]) {
 
   file.uploadProgress = 0
   instructionService
-    .postFile(instruction.value.id, formData, (event: AxiosProgressEvent) => {
-      file.uploadProgress = Math.round((100 * event.loaded) / event.total!)
-    })
+    .postFile(
+      instruction.value.id,
+      (event: AxiosProgressEvent) => {
+        file.uploadProgress = Math.round((100 * event.loaded) / event.total!)
+      },
+      formData,
+    )
     .then((res) => {
       instruction.value.media_ids.push(...res.media_ids)
       getMedia()
@@ -190,28 +215,61 @@ function deleteMedia() {
         </template>
       </v-textarea>
 
-      <v-row v-if="canEdit">
-        <v-col cols="12" md="10" xl="11">
-          <v-file-input
-            v-model="file.data"
-            @update:model-value="uploadFile"
-            ref="file-upload-input"
-            :label="currentMedia?.name ?? 'Upload new file'"
-            variant="outlined"
-            show-size
-            accept="video/*"
-            hide-details="auto"
-            placeholder="Chose a video file to uplad"
-            prepend-icon=""
-            prepend-inner-icon="mdi-video"
-            persistent-hint
-          >
-          </v-file-input>
-        </v-col>
-        <v-col cols="12" md="2" xl="1" class="d-flex align-center">
-          <v-btn color="red" @click="deleteMediaActive = true" width="100%">Delete media</v-btn>
-        </v-col>
-      </v-row>
+      <div v-if="canEdit">
+        <v-btn-toggle
+          v-model="mediaUploadType"
+          mandatory
+          variant="outlined"
+          density="compact"
+          divided
+          class="mb-4 d-flex"
+        >
+          <v-btn :value="MediaType.File" class="flex-grow-1">
+            <v-icon start>mdi-upload</v-icon>
+            Media File
+          </v-btn>
+          <v-btn :value="MediaType.Youtube" class="flex-grow-1">
+            <v-icon start>mdi-youtube</v-icon>
+            YouTube Link
+          </v-btn>
+        </v-btn-toggle>
+
+        <v-row>
+          <v-col cols="12" md="10" xl="11">
+            <v-file-input
+              v-if="mediaUploadType === MediaType.File"
+              v-model="file.data"
+              @update:model-value="uploadFile"
+              ref="file-upload-input"
+              :label="currentMedia?.name ?? 'Upload new file'"
+              variant="outlined"
+              show-size
+              accept="video/*"
+              hide-details="auto"
+              placeholder="Chose a video file to uplad"
+              prepend-icon=""
+              prepend-inner-icon="mdi-video"
+              persistent-hint
+            />
+
+            <v-text-field
+              v-else
+              label="YouTube Link"
+              variant="outlined"
+              v-model="youtubeLinkRef"
+              hide-details="auto"
+              clearable
+              placeholder="Paste YouTube video URL..."
+              prepend-inner-icon="mdi-youtube"
+            />
+          </v-col>
+
+          <v-col cols="12" md="2" xl="1" class="d-flex align-center">
+            <v-btn color="red" @click="deleteMediaActive = true" width="100%">Delete media</v-btn>
+          </v-col>
+        </v-row>
+      </div>
+
       <div v-if="file.uploadProgress" class="d-flex justify-center mt-2">
         <v-progress-circular
           :model-value="file.uploadProgress"
@@ -228,17 +286,16 @@ function deleteMedia() {
 
       <div class="d-flex justify-center mt-4">
         <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
-        <div v-else-if="medias.length > 0">
+
+        <div v-else-if="medias.length > 0" class="w-100">
           <v-sheet class="overflow-hidden" rounded="xl">
             <v-carousel hide-delimiters hide-delimiter-background v-model="carouselIndex">
               <v-carousel-item v-for="m in medias" :key="m.url">
-                <v-responsive max-width="500px">
-                  <video
-                    controls
-                    :src="m.url"
-                    :type="m.type"
-                    style="width: 100%; height: 100%; display: block"
-                  />
+                <v-responsive v-if="m.type !== MediaType.Youtube" max-width="500px">
+                  <video controls :src="m.url" :type="m.type" />
+                </v-responsive>
+                <v-responsive v-else :aspect-ratio="16 / 9">
+                  <YoutubeEmbed :video-id="m.url"></YoutubeEmbed>
                 </v-responsive>
               </v-carousel-item>
               <v-overlay
@@ -267,3 +324,12 @@ function deleteMedia() {
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+/* This is the crucial part */
+.responsive-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0; /* Optional: removes the default iframe border */
+}
+</style>
