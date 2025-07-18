@@ -16,14 +16,4 @@ const embedUrl = computed(() => {
 // Compute the aspect ratio padding
 </script>
 
-<template>
-  <iframe
-    height="100%"
-    width="100%"
-    class="responsive-iframe"
-    :src="`https://www.youtube.com/embed/${props.videoId}?rel=0`"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen
-  ></iframe>
-</template>
+<template></template>

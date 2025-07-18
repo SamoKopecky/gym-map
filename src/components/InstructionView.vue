@@ -9,7 +9,6 @@ import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
-import YoutubeEmbed from "@/components/YoutubeEmbed.vue"
 import { API_BASE_URL } from "@/services/base"
 import { mediaService } from "@/services/media"
 import type { AxiosProgressEvent } from "axios"
@@ -291,11 +290,17 @@ function deleteMedia() {
           <v-sheet class="overflow-hidden" rounded="xl">
             <v-carousel hide-delimiters hide-delimiter-background v-model="carouselIndex">
               <v-carousel-item v-for="m in medias" :key="m.url">
-                <v-responsive v-if="m.type !== MediaType.Youtube" max-width="500px">
-                  <video controls :src="m.url" :type="m.type" />
+                <v-responsive v-if="m.type !== MediaType.Youtube">
+                  <video controls :src="m.url" :type="m.type" class="w-100 h-100" />
                 </v-responsive>
-                <v-responsive v-else :aspect-ratio="16 / 9">
-                  <YoutubeEmbed :video-id="m.url"></YoutubeEmbed>
+                <v-responsive v-else>
+                  <iframe
+                    class="w-100 h-100"
+                    :src="`https://www.youtube.com/embed/${m.url}?rel=0`"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
                 </v-responsive>
               </v-carousel-item>
               <v-overlay
