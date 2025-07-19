@@ -14,9 +14,6 @@ import { mediaService } from "@/services/media"
 import type { AxiosProgressEvent } from "axios"
 import { MediaType } from "@/types/media"
 
-const VIDEO_HEIGHT = 675
-const VIDEO_WIDTH = 1200
-
 const emit = defineEmits(["delete:instruction"])
 
 const instruction = defineModel<Instruction>({ required: true })
@@ -48,13 +45,6 @@ const currentMedia = computed(() => {
   if (!currentMedia) return
 
   return currentMedia
-})
-
-const videoWidth = computed(() => {
-  if (VIDEO_WIDTH < window.innerWidth) {
-    return VIDEO_WIDTH
-  }
-  return window.innerWidth - 20
 })
 
 watch(currentMedia, (newMedia) => {
@@ -307,35 +297,36 @@ function deleteMedia() {
       <div class="d-flex justify-center mt-4">
         <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
 
-        <div v-else-if="medias.length > 0">
+        <v-responsive
+          v-else-if="medias.length > 0"
+          :aspect-ratio="16 / 9"
+          max-width="1440"
+          class="mx-auto"
+        >
           <v-carousel
             hide-delimiters
             hide-delimiter-background
             v-model="carouselIndex"
-            :height="VIDEO_HEIGHT"
+            style="height: 100%"
+            class="video-carousel"
           >
             <v-carousel-item v-for="m in medias" :key="m.url">
-              <v-responsive v-if="m.type !== MediaType.Youtube">
-                <video
-                  controls
-                  style="background-color: black"
-                  :src="m.url"
-                  :type="m.type"
-                  :width="videoWidth"
-                  :height="VIDEO_HEIGHT"
-                />
-              </v-responsive>
-              <div v-else>
-                <iframe
-                  :width="videoWidth"
-                  :height="VIDEO_HEIGHT"
-                  class="fill-video"
-                  :src="`https://www.youtube.com/embed/${m.url}?rel=0`"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                ></iframe>
-              </div>
+              <video
+                v-if="m.type !== MediaType.Youtube"
+                controls
+                :src="m.url"
+                :type="m.type"
+                style="background-color: black"
+                class="responsive-video"
+              />
+              <iframe
+                v-else
+                :src="`https://www.youtube-nocookie.com/embed/${m.url}?rel=0`"
+                class="responsive-video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
             </v-carousel-item>
             <v-overlay
               :scrim="false"
@@ -353,7 +344,7 @@ function deleteMedia() {
               />
             </v-overlay>
           </v-carousel>
-        </div>
+        </v-responsive>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>
           <p class="mt-2">No video has been uploaded for this instruction.</p>
@@ -362,3 +353,28 @@ function deleteMedia() {
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+/*
+  This makes the slide itself a "containing block"
+  for our absolutely positioned video.
+*/
+.video-carousel .v-carousel-item {
+  position: relative;
+}
+
+/*
+  This takes the video out of the normal layout flow and
+  stretches it to cover its containing block (the v-carousel-item).
+*/
+.responsive-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Keep object-fit to prevent the video from stretching/distorting */
+  object-fit: contain;
+}
+</style>
