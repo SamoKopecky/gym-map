@@ -14,6 +14,7 @@ import { useUser } from "@/composables/useUser"
 import { usePanzoom } from "@/composables/usePanzoom"
 import { mapFileService } from "@/services/mapFile"
 import { usePanning } from "@/composables/usePanning"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   id: {
@@ -25,6 +26,7 @@ const props = defineProps({
 
 const router = useRouter()
 const { isAdmin } = useUser()
+const { t } = useI18n()
 
 const startY = ref<number>()
 const bgSvgData = ref<string>()
@@ -189,10 +191,10 @@ onUnmounted(() => {
 <template>
   <div>
     <div class="d-flex justify-center align-center">
-      <v-btn @click="resetMap" class="mx-2"> Reset map</v-btn>
+      <v-btn @click="resetMap" class="mx-2">{{ t("button.resetMap") }}</v-btn>
       <v-switch
         v-if="isAdmin"
-        label="Edit machines"
+        :label="t('map.editMachines')"
         v-model="editMode"
         hide-details
         color="yellow"
@@ -206,21 +208,22 @@ onUnmounted(() => {
         density="compact"
         class="ma-0"
       >
-        {{
-          editMode
-            ? "Click a machine to edit its position & size (drag to move), hold space to drag the map"
-            : "Click a machine to see its exercises"
-        }}
+        {{ editMode ? t("map.editModeInstruction") : t("map.viewModeInstruction") }}
       </v-alert>
     </div>
 
     <div v-if="editMode">
-      <NumberSlider v-model="machinePosition.width" :step="5" :max="MAP_WIDTH / 2" label="Width" />
+      <NumberSlider
+        v-model="machinePosition.width"
+        :step="5"
+        :max="MAP_WIDTH / 2"
+        :label="t('form.width')"
+      />
       <NumberSlider
         v-model="machinePosition.height"
         :step="GRID_SIZE"
         :max="MAP_HEIGHT / 2"
-        label="Heigth"
+        :label="t('form.height')"
       />
       X: {{ machinePosition.position_x }} Y: {{ machinePosition.position_y }}
     </div>

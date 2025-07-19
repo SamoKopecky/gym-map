@@ -49,11 +49,11 @@ export function getMachineHtmlId(machine: Machine): string {
 export function difficultyToString(difficulty: Difficulty): string {
   switch (difficulty) {
     case Difficulty.Easy:
-      return "Easy"
+      return "difficulty.easy"
     case Difficulty.Normal:
-      return "Normal"
+      return "difficulty.normal"
     case Difficulty.Hard:
-      return "Hard"
+      return "difficulty.hard"
   }
 }
 

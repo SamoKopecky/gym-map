@@ -27,6 +27,7 @@ import { useUser } from "@/composables/useUser"
 import type { Machine } from "@/types/machine"
 import type { Exercise } from "@/types/exercise"
 import type { Instruction } from "@/types/instruction"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   id: {
@@ -40,7 +41,7 @@ const searchData = reactive<SearchData>({
   difficulties: [],
   text: "",
 })
-const panelsShow = ref<CardPanelName[]>(["Machines", "Exercises"])
+const panelsShow = ref<CardPanelName[]>(["machines", "exercises"])
 const selectedMachineCard = ref<Card>()
 const selectedExerciseCard = ref<Card>()
 const selectedInstructionCard = ref<Card>()
@@ -52,18 +53,19 @@ const selectedInstruction = computed(() => {
 })
 
 const { userId } = useUser()
+const { t } = useI18n()
 
 watch(
   () => searchData.difficulties,
-  () => (panelsShow.value = ["Exercises"]),
+  () => (panelsShow.value = ["exercises"]),
 )
 
 function handleCardSelect(card: Card, panelName: CardPanelName) {
-  if (panelName === "Machines") {
+  if (panelName === "machines") {
     handleMachinesCardSelect(card)
-  } else if (panelName === "Exercises") {
+  } else if (panelName === "exercises") {
     handleExerciseCardSelect(card)
-  } else if (panelName === "Instructions") {
+  } else if (panelName === "instructions") {
     handleInstructionCardSelect()
   }
 }
@@ -73,7 +75,7 @@ function handleInstructionCardSelect() {
 }
 
 function handleExerciseCardSelect(card: Card) {
-  panelsShow.value = ["Instructions"]
+  panelsShow.value = ["instructions"]
 
   const exercise = exercises.value.find((m) => m.id === card.id)
   if (!exercise) return
@@ -86,7 +88,7 @@ function handleExerciseCardSelect(card: Card) {
 }
 
 function handleMachinesCardSelect(card: Card) {
-  panelsShow.value = ["Exercises"]
+  panelsShow.value = ["exercises"]
 
   exerciseService.get({ machine_id: card.id }).then((res) => (exercises.value = res))
   selectedExerciseCard.value = undefined
@@ -154,7 +156,7 @@ function handleExerciseUnselect() {
 }
 
 function handleInstructionUnselect() {
-  panelsShow.value = ["Instructions"]
+  panelsShow.value = ["instructions"]
   instructions.value = instructions.value.filter((i) => i.id !== selectedInstructionCard.value?.id)
   selectedInstructionCard.value = undefined
 }
@@ -218,8 +220,8 @@ function instructionCreation(instruction: Instruction) {
         prepend-icon="mdi-magnify"
         v-model="searchData.text"
         class="mt-2 mx-2"
-        label="Search"
-        placeholder="Search name or muscle groups..."
+        :label="t('form.search')"
+        :placeholder="t('form.searchPlaceholder')"
         variant="outlined"
         clearable
         hide-details="auto"
@@ -233,7 +235,7 @@ function instructionCreation(instruction: Instruction) {
             :value="difficulty"
             :color="difficultyToColor(difficulty)"
           >
-            {{ difficultyToString(difficulty) }}
+            {{ t(difficultyToString(difficulty)) }}
           </v-chip>
         </v-chip-group>
       </div>
@@ -241,7 +243,7 @@ function instructionCreation(instruction: Instruction) {
 
     <v-expansion-panels v-model="panelsShow" multiple variant="accordion">
       <CardPanel
-        name="Machines"
+        name="machines"
         :can-edit="isAdmin"
         :cards="machineCards"
         v-model="selectedMachineCard"
@@ -253,17 +255,17 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>The following will be permanently deleted:</p>
+            <p>{{ t("warning.followingWillBeDeleted") }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>The machine</v-list-item-title>
+                <v-list-item-title>{{ t("warning.theMachine") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of its associated exercises</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allAssociatedExercises") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of the exercises' associated instructions</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allExerciseInstructions") }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -271,7 +273,7 @@ function instructionCreation(instruction: Instruction) {
       </CardPanel>
 
       <CardPanel
-        name="Exercises"
+        name="exercises"
         :can-edit="isAdmin"
         :cards="exerciseCards"
         v-model="selectedExerciseCard"
@@ -283,14 +285,14 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>The following will be permanently deleted:</p>
+            <p>{{ t("warning.followingWillBeDeleted") }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>The exercise</v-list-item-title>
+                <v-list-item-title>{{ t("warning.theExercise") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of associated instructions</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allAssociatedInstructions") }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -299,7 +301,7 @@ function instructionCreation(instruction: Instruction) {
 
       <CardPanel
         v-if="selectedExerciseCard"
-        name="Instructions"
+        name="instructions"
         :can-edit="isTrainer"
         :are-instructions="true"
         :cards="instructionCards"
@@ -320,7 +322,7 @@ function instructionCreation(instruction: Instruction) {
       class="text-center text-grey mt-4"
     >
       <v-icon size="64">mdi-information-off-outline</v-icon>
-      <p class="mt-2">No instruction has been created for this exercise yet.</p>
+      <p class="mt-2">{{ t("instructions.noInstructionCreated") }}</p>
     </div>
   </div>
 </template>

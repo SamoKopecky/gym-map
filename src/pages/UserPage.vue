@@ -9,6 +9,7 @@ import { computed } from "vue"
 import { useTemplateRef } from "vue"
 import { onMounted } from "vue"
 import { ref } from "vue"
+import { useI18n } from "vue-i18n"
 
 const { userId } = useUser()
 const user = ref<User>()
@@ -21,6 +22,7 @@ const avatarUrl = computed(() => {
 })
 
 const { addNotification } = useNotificationStore()
+const { t } = useI18n()
 
 function editAvatar() {
   fileInput.value?.click()
@@ -30,7 +32,7 @@ function uploadNewAvatar(uploadFile: File | File[]) {
   const formData = new FormData()
 
   if (isArray(uploadFile)) {
-    addNotification("Uploading multiple files not supported", "error")
+    addNotification(t("notification.uploadingMultipleFilesNotSupported"), "error")
     return
   } else {
     formData.append("file_0", uploadFile)
@@ -40,9 +42,9 @@ function uploadNewAvatar(uploadFile: File | File[]) {
     .then((res) => {
       if (!user.value) return
       user.value.avatar_id = res.avatar_id
-      addNotification("Avatar updated", "success")
+      addNotification(t("notification.avatarUpdated"), "success")
     })
-    .catch(() => addNotification("Avatar update failed", "error"))
+    .catch(() => addNotification(t("notification.avatarUpdateFailed"), "error"))
 }
 
 onMounted(() => {
@@ -54,7 +56,7 @@ onMounted(() => {
 <template>
   <v-container class="d-flex justify-center align-center fill-height" v-if="user">
     <v-card class="pa-4" width="400">
-      <v-card-title class="text-h5 text-center"> User Profile </v-card-title>
+      <v-card-title class="text-h5 text-center">{{ t("navigation.userProfile") }}</v-card-title>
       <v-card-text>
         <div class="d-flex justify-center">
           <div class="avatar-container" @click="editAvatar">
@@ -70,13 +72,18 @@ onMounted(() => {
 
         <v-text-field
           v-model="user.name"
-          label="Name"
+          :label="t('form.name')"
           readonly
           variant="outlined"
           class="mt-6 mb-2"
         ></v-text-field>
 
-        <v-text-field v-model="user.email" label="Email" readonly variant="outlined"></v-text-field>
+        <v-text-field
+          v-model="user.email"
+          :label="t('form.email')"
+          readonly
+          variant="outlined"
+        ></v-text-field>
       </v-card-text>
 
       <v-file-input

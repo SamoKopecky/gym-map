@@ -5,6 +5,7 @@ import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type MachineState, type Machine } from "@/types/machine"
 import { reactive } from "vue"
 import { ref, watch } from "vue"
+import { useI18n } from "vue-i18n"
 
 const MAX_NAME_CHARS = 255
 
@@ -17,6 +18,7 @@ const isFormValid = ref(false)
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
+const { t } = useI18n()
 
 const formData = reactive<MachineState>({
   name: "",
@@ -25,7 +27,7 @@ const formData = reactive<MachineState>({
 })
 
 const nameRules = [
-  (value: string) => !!value || "Machine name is required.",
+  (value: string) => !!value || t("validation.machineNameRequired"),
   (value: string) =>
     (value && value.length <= MAX_NAME_CHARS) ||
     `Name must be less than ${MAX_NAME_CHARS} characters.`,
@@ -54,13 +56,13 @@ function saveMachine() {
       .then((res) => {
         emit("create:machine", res)
         active.value = false
-        addNotification("Machine succesfully saved", "success")
+        addNotification(t("notification.machineSuccessfullySaved"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Machine failed to save", "error")
+        addNotification(t("notification.machineFailedToSave"), "error")
       })
   } else {
     machineService
@@ -71,13 +73,13 @@ function saveMachine() {
       .then(() => {
         Object.assign(machine.value!, formData)
         active.value = false
-        addNotification("Machine edited", "success")
+        addNotification(t("notification.machineEdited"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Machine failed to save", "error")
+        addNotification(t("notification.machineFailedToSave"), "error")
       })
   }
 }
@@ -87,7 +89,7 @@ function saveMachine() {
   <v-dialog v-model="active" max-width="800px">
     <v-card>
       <v-card-title class="pa-4">
-        <span class="text-h5">Add New Machine</span>
+        <span class="text-h5">{{ t("dialog.addNewMachine") }}</span>
       </v-card-title>
 
       <v-divider />
@@ -97,7 +99,7 @@ function saveMachine() {
           <v-text-field
             :readonly="!isAdmin"
             v-model="formData.name"
-            label="Machine name"
+            :label="t('form.machineName')"
             variant="outlined"
             :rules="nameRules"
             :counter="MAX_NAME_CHARS"
@@ -108,7 +110,7 @@ function saveMachine() {
           <v-textarea
             :readonly="!isAdmin"
             v-model="formData.description"
-            label="Machine description"
+            :label="t('form.machineDescription')"
             variant="outlined"
             rows="3"
             auto-grow
@@ -119,12 +121,12 @@ function saveMachine() {
           <v-combobox
             :readonly="!isAdmin"
             v-model="formData.muscle_groups"
-            label="Muscle groups"
+            :label="t('form.muscleGroups')"
             chips
             multiple
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
-            :hint="isAdmin ? 'Type and press Enter to add a new muscle group' : undefined"
+            :hint="isAdmin ? t('form.muscleGroupsHint') : undefined"
             persistent-hint
           />
         </v-card-text>
@@ -132,7 +134,7 @@ function saveMachine() {
         <v-divider />
 
         <v-card-actions class="pa-4">
-          <v-btn variant="text" @click="active = false"> Cancel </v-btn>
+          <v-btn variant="text" @click="active = false">{{ t("button.cancel") }}</v-btn>
           <v-spacer />
           <v-btn
             v-if="isAdmin"
@@ -142,7 +144,7 @@ function saveMachine() {
             :disabled="!isFormValid"
             :loading="isLoading"
           >
-            Save
+            {{ t("button.save") }}
           </v-btn>
         </v-card-actions>
       </v-form>

@@ -2,8 +2,10 @@
 import type { Card, CardPanelName } from "@/types/card"
 import { computed, ref, type PropType } from "vue"
 import { useRouter } from "vue-router"
+import { useI18n } from "vue-i18n"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 import { API_BASE_URL } from "@/services/base"
+import { capitalizeFirstLetter } from "@/utils/other"
 
 const deleteDialogActive = ref(false)
 const deleteCard = ref<Card>()
@@ -19,6 +21,7 @@ const emit = defineEmits([
 const selectedCard = defineModel<Card>()
 
 const router = useRouter()
+const { t } = useI18n()
 
 const { name } = defineProps({
   name: {
@@ -43,26 +46,24 @@ const { name } = defineProps({
 
 const panelTitle = computed(() => {
   if (!selectedCard.value) {
-    return name
+    return t(`panel.${name}`)
   } else {
-    return `Selected: ${selectedCard.value.name}`
+    return `${t("panel.selected")}${selectedCard.value.name}`
   }
 })
 
 const panelIcon = computed(() => {
-  if (name === "Machines") return "mdi-dumbbell"
-  if (name === "Exercises") return "mdi-weight-lifter"
-  if (name === "Instructions") return "mdi-information-outline"
+  if (name === "machines") return "mdi-dumbbell"
+  if (name === "exercises") return "mdi-weight-lifter"
+  if (name === "instructions") return "mdi-information-outline"
   return "mdi-view-grid"
 })
 
 const countIcon = computed(() => {
-  if (name === "Machines") return "mdi-weight-lifter"
-  if (name === "Exercises") return "mdi-information-outline"
+  if (name === "machines") return "mdi-weight-lifter"
+  if (name === "exercises") return "mdi-information-outline"
   return "mdi-view-grid"
 })
-
-const singularName = computed(() => name.slice(0, -1))
 
 function updateCardId(card: Card) {
   if (selectedCard.value?.id === card.id) {
@@ -90,8 +91,8 @@ function imageIdToUrl(id: string) {
     confirm-text="Delete"
     @confirm="emit('delete:card', deleteCard)"
   >
-    Do you really want to delete <strong>{{ deleteCard?.name }}</strong
-    >? This action cannot be undone.
+    {{ t("dialog.confirmDelete") }} <strong>{{ deleteCard?.name }}</strong
+    >{{ t("dialog.actionCannotBeUndone") }}
 
     <slot name="deletionWarning" />
   </DeleteConfirmationDialog>
@@ -101,8 +102,8 @@ function imageIdToUrl(id: string) {
       <v-icon :icon="panelIcon" start />
       <span class="font-weight-medium">{{ panelTitle }}</span>
       <v-btn
-        v-if="selectedCard && name === 'Machines'"
-        v-tooltip:top="'Highlight on map'"
+        v-if="selectedCard && name === 'machines'"
+        v-tooltip:top="t('button.highlightOnMap')"
         class="me-2"
         variant="text"
         size="small"
@@ -114,7 +115,7 @@ function imageIdToUrl(id: string) {
     <v-expansion-panel-text class="bg-grey-lighten-5">
       <v-btn v-if="canEdit" variant="tonal" color="primary" @click="emit('create:card')">
         <v-icon start>mdi-plus-circle-outline</v-icon>
-        Add New {{ singularName }}
+        {{ t(`dialog.addNew${capitalizeFirstLetter(name).substring(0, name.length - 1)}`) }}
       </v-btn>
 
       <v-container fluid>
@@ -141,7 +142,7 @@ function imageIdToUrl(id: string) {
                   <div @click.stop v-if="!areInstructions">
                     <v-btn
                       v-if="canEdit"
-                      v-tooltip:bottom="'Delete card'"
+                      v-tooltip:bottom="t('button.deleteCard')"
                       size="small"
                       variant="text"
                       color="error"
@@ -149,7 +150,7 @@ function imageIdToUrl(id: string) {
                       @click="initialDeletion(card)"
                     />
                     <v-btn
-                      v-tooltip:bottom="canEdit ? 'Edit Card' : 'More Info'"
+                      v-tooltip:bottom="canEdit ? t('button.editCard') : t('button.moreInfo')"
                       :icon="canEdit ? 'mdi-pencil-outline' : 'mdi-open-in-new'"
                       size="small"
                       variant="text"
@@ -173,11 +174,12 @@ function imageIdToUrl(id: string) {
                   <v-chip
                     v-for="chip in card.chips"
                     :key="chip.text"
-                    :text="chip.text"
                     :color="chip.color"
                     variant="outlined"
                     class="me-1 mb-1"
-                  />
+                  >
+                    {{ t(chip.text) }}
+                  </v-chip>
                 </div>
                 <div class="text-body-2 text-medium-emphasis text-truncate">
                   {{ card.description }}

@@ -1,7 +1,9 @@
 import "vuetify/styles"
 import "@mdi/font/css/materialdesignicons.css"
 import VueKeyCloak from "@dsb-norge/vue-keycloak-js"
+import { messages } from "@/messages"
 import { createVuetify } from "vuetify"
+import { createVueI18nAdapter } from "vuetify/locale/adapters/vue-i18n"
 import {
   VAlert,
   VApp,
@@ -78,8 +80,20 @@ import App from "./App.vue"
 import router from "./router"
 import { createPinia } from "pinia"
 import { tokenInterceptor } from "./services/base"
+import { createI18n, useI18n } from "vue-i18n"
+import { LOCALE_STORAGE_KEY } from "./constants"
+
+const i18n = createI18n({
+  legacy: false,
+  locale: window.localStorage.getItem(LOCALE_STORAGE_KEY) ?? "en",
+  fallbackLocale: "en",
+  messages: messages,
+})
 
 const vuetify = createVuetify({
+  locale: {
+    adapter: createVueI18nAdapter({ i18n, useI18n }),
+  },
   components: {
     VSelect,
     VTabs,
@@ -164,6 +178,7 @@ app
   .use(vuetify)
   .use(router)
   .use(pinia)
+  .use(i18n)
   .use(VueKeyCloak, {
     config: {
       url: viteKeycloakUrl,

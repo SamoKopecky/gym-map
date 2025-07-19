@@ -6,6 +6,7 @@ import { computed } from "vue"
 import { onMounted } from "vue"
 import { ref } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import { useI18n } from "vue-i18n"
 
 const users = ref<User[]>([])
 const search = ref<string>()
@@ -17,15 +18,16 @@ const confirmDeleteActive = ref(false)
 const unregisterUser = ref<User>()
 
 const { addNotification } = useNotificationStore()
+const { t } = useI18n()
 
 const unregisterUserName = computed(() => unregisterUser.value?.name ?? unregisterUser.value?.email)
 
-const emailRules = [(value: string) => /.+@.+\..+/.test(value) || "E-mail must be valid."]
+const emailRules = [(value: string) => /.+@.+\..+/.test(value) || t("validation.emailMustBeValid")]
 
 const headers = [
-  { key: "name", title: "Name" },
-  { key: "email", title: "Email" },
-  { key: "actions", title: "Actions" },
+  { key: "name", title: t("form.name") },
+  { key: "email", title: t("form.email") },
+  { key: "actions", title: t("table.actions") },
 ]
 
 function addNew() {
@@ -34,11 +36,11 @@ function addNew() {
   userService
     .post({ email: email.value })
     .then(() => {
-      addNotification("User registered sucesfully", "success")
+      addNotification(t("notification.userRegisteredSuccessfully"), "success")
       loadUsers()
     })
     .catch(() => {
-      addNotification("User registration failed", "error")
+      addNotification(t("notification.userRegistrationFailed"), "error")
     })
     .finally(() => (emailLoading.value = false))
 }
@@ -49,9 +51,9 @@ function unregisterUserFn() {
     .deleteUser(unregisterUser.value?.id)
     .then(() => {
       loadUsers()
-      addNotification("User unregistered succesfuly", "success")
+      addNotification(t("notification.userUnregisteredSuccessfully"), "success")
     })
-    .catch(() => addNotification("User unregistration failed", "error"))
+    .catch(() => addNotification(t("notification.userUnregistrationFailed"), "error"))
     .finally(() => (confirmDeleteActive.value = false))
 }
 
@@ -70,22 +72,22 @@ onMounted(() => loadUsers())
 <template>
   <DeleteConfirmationDialog
     v-model="confirmDeleteActive"
-    confirm-text="Unregister"
+    :confirm-text="t('button.unregister')"
     @confirm="unregisterUserFn"
   >
-    Do you really want to unregister <strong>{{ unregisterUserName }}</strong
-    >? This action cannot be undone.
+    {{ t("dialog.confirmUnregister") }} <strong>{{ unregisterUserName }}</strong
+    >{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <v-card>
     <v-card-title class="d-flex align-center">
-      <v-icon icon="mdi-account-group"></v-icon> &nbsp; Trainers
+      <v-icon icon="mdi-account-group"></v-icon> &nbsp; {{ t("table.trainers") }}
 
       <v-text-field
         class="ml-3"
         v-model="search"
         density="compact"
-        label="Search"
+        :label="t('form.search')"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
         flat
@@ -102,7 +104,7 @@ onMounted(() => loadUsers())
         <v-btn
           variant="text"
           color="grey-darken-1"
-          v-tooltip:bottom="'Unregister'"
+          :v-tooltip:bottom="t('button.unregister')"
           icon="mdi-close-circle-outline"
           @click="confirmUserUnregistration(item)"
         ></v-btn>
@@ -122,8 +124,8 @@ onMounted(() => loadUsers())
               density="compact"
               hide-details="auto"
               clearable
-              placeholder="Enter email of new trainer"
-              label="New Trainer Email"
+              :placeholder="t('form.newTrainerEmailPlaceholder')"
+              :label="t('form.newTrainerEmail')"
               prepend-inner-icon="mdi-email-plus-outline"
             ></v-text-field>
           </v-col>
@@ -137,7 +139,7 @@ onMounted(() => loadUsers())
               variant="tonal"
             >
               <v-icon start icon="mdi-account-plus"></v-icon>
-              Register Trainer
+              {{ t("button.registerTrainer") }}
             </v-btn>
           </v-col>
         </v-row>
