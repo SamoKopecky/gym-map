@@ -14,6 +14,9 @@ import { mediaService } from "@/services/media"
 import type { AxiosProgressEvent } from "axios"
 import { MediaType } from "@/types/media"
 
+const VIDEO_HEIGHT = 675
+const VIDEO_WIDTH = 1200
+
 const emit = defineEmits(["delete:instruction"])
 
 const instruction = defineModel<Instruction>({ required: true })
@@ -47,6 +50,20 @@ const currentMedia = computed(() => {
   return currentMedia
 })
 
+const videoWidth = computed(() => {
+  if (VIDEO_WIDTH < window.innerWidth) {
+    return VIDEO_WIDTH
+  }
+  return window.innerWidth - 20
+})
+
+watch(currentMedia, (newMedia) => {
+  if (!newMedia) return
+
+  if (newMedia.type === MediaType.Youtube) mediaUploadType.value = MediaType.Youtube
+  else mediaUploadType.value = MediaType.File
+})
+
 watch(
   () => instruction.value.id,
   () => {
@@ -66,7 +83,11 @@ watchDebounced(
       .postFile(instruction.value.id, undefined, undefined, {
         youtube_video_id: youtubeId,
       })
-      .then(() => addNotification("Link saved", "success"))
+      .then((res) => {
+        instruction.value.media_ids.push(...res.media_ids)
+        getMedia()
+        addNotification("Link saved", "success")
+      })
       .catch(() => addNotification("Can't savelink", "error"))
   },
   { debounce: 1000 },
@@ -286,40 +307,52 @@ function deleteMedia() {
       <div class="d-flex justify-center mt-4">
         <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
 
-        <div v-else-if="medias.length > 0" class="w-100">
-          <v-sheet class="overflow-hidden" rounded="xl">
-            <v-carousel hide-delimiters hide-delimiter-background v-model="carouselIndex">
-              <v-carousel-item v-for="m in medias" :key="m.url">
-                <v-responsive v-if="m.type !== MediaType.Youtube">
-                  <video controls :src="m.url" :type="m.type" class="w-100 h-100" />
-                </v-responsive>
-                <v-responsive v-else>
-                  <iframe
-                    class="w-100 h-100"
-                    :src="`https://www.youtube.com/embed/${m.url}?rel=0`"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  ></iframe>
-                </v-responsive>
-              </v-carousel-item>
-              <v-overlay
-                :scrim="false"
-                content-class="w-100 h-100 d-flex flex-column align-center justify-space-between pointer-pass-through py-3"
-                contained
-                model-value
-                no-click-animation
-                persistent
-              >
-                <v-chip
-                  :text="`${carouselIndex + 1} / ${medias.length}`"
-                  color="#eee"
-                  size="small"
-                  variant="flat"
+        <div v-else-if="medias.length > 0">
+          <v-carousel
+            hide-delimiters
+            hide-delimiter-background
+            v-model="carouselIndex"
+            :height="VIDEO_HEIGHT"
+          >
+            <v-carousel-item v-for="m in medias" :key="m.url">
+              <v-responsive v-if="m.type !== MediaType.Youtube">
+                <video
+                  controls
+                  style="background-color: black"
+                  :src="m.url"
+                  :type="m.type"
+                  :width="videoWidth"
+                  :height="VIDEO_HEIGHT"
                 />
-              </v-overlay>
-            </v-carousel>
-          </v-sheet>
+              </v-responsive>
+              <div v-else>
+                <iframe
+                  :width="videoWidth"
+                  :height="VIDEO_HEIGHT"
+                  class="fill-video"
+                  :src="`https://www.youtube.com/embed/${m.url}?rel=0`"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </v-carousel-item>
+            <v-overlay
+              :scrim="false"
+              content-class="w-100 h-100 d-flex flex-column align-center justify-space-between pointer-pass-through py-3"
+              contained
+              model-value
+              no-click-animation
+              persistent
+            >
+              <v-chip
+                :text="`${carouselIndex + 1} / ${medias.length}`"
+                color="#eee"
+                size="small"
+                variant="flat"
+              />
+            </v-overlay>
+          </v-carousel>
         </div>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>
@@ -329,12 +362,3 @@ function deleteMedia() {
     </v-card-text>
   </v-card>
 </template>
-
-<style scoped>
-/* This is the crucial part */
-.responsive-iframe {
-  width: 100%;
-  height: 100%;
-  border: 0; /* Optional: removes the default iframe border */
-}
-</style>
