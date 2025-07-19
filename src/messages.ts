@@ -3,6 +3,7 @@ export const messages = {
     message: {
       logout: "Odhlásit",
       login: "Přihlásit",
+      changelog: "Seznam změn",
     },
     navigation: {
       map: "Mapa",
@@ -60,6 +61,7 @@ export const messages = {
       trainers: "Trenéři",
     },
     $vuetify: {
+      badge: "badge",
       input: {
         clear: "clear",
       },
@@ -171,6 +173,7 @@ export const messages = {
     message: {
       logout: "Logout",
       login: "Login",
+      changelog: "Changelog",
     },
     navigation: {
       map: "Map",
@@ -228,6 +231,7 @@ export const messages = {
       trainers: "Trainers",
     },
     $vuetify: {
+      badge: "badge",
       input: {
         clear: "clear",
       },
@@ -339,6 +343,7 @@ export const messages = {
     message: {
       logout: "Odhlásiť sa",
       login: "Prihlásiť sa",
+      changelog: "Zoznam zmien",
     },
     navigation: {
       map: "Mapa",
@@ -396,6 +401,7 @@ export const messages = {
       trainers: "Tréneri",
     },
     $vuetify: {
+      badge: "badge",
       input: {
         clear: "vymazať",
       },
