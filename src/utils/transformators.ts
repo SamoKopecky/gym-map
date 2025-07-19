@@ -57,14 +57,14 @@ export function difficultyToString(difficulty: Difficulty, t?: (key: string) => 
         return "Hard"
     }
   }
-  
+
   switch (difficulty) {
     case Difficulty.Easy:
-      return t('difficulty.easy')
+      return t("difficulty.easy")
     case Difficulty.Normal:
-      return t('difficulty.normal')
+      return t("difficulty.normal")
     case Difficulty.Hard:
-      return t('difficulty.hard')
+      return t("difficulty.hard")
   }
 }
 

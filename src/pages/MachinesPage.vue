@@ -255,17 +255,17 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>{{ t('warning.followingWillBeDeleted') }}</p>
+            <p>{{ t("warning.followingWillBeDeleted") }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>{{ t('warning.theMachine') }}</v-list-item-title>
+                <v-list-item-title>{{ t("warning.theMachine") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>{{ t('warning.allAssociatedExercises') }}</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allAssociatedExercises") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>{{ t('warning.allExerciseInstructions') }}</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allExerciseInstructions") }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -285,14 +285,14 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>{{ t('warning.followingWillBeDeleted') }}</p>
+            <p>{{ t("warning.followingWillBeDeleted") }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>{{ t('warning.theExercise') }}</v-list-item-title>
+                <v-list-item-title>{{ t("warning.theExercise") }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>{{ t('warning.allAssociatedInstructions') }}</v-list-item-title>
+                <v-list-item-title>{{ t("warning.allAssociatedInstructions") }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -322,7 +322,7 @@ function instructionCreation(instruction: Instruction) {
       class="text-center text-grey mt-4"
     >
       <v-icon size="64">mdi-information-off-outline</v-icon>
-      <p class="mt-2">{{ t('instructions.noInstructionCreated') }}</p>
+      <p class="mt-2">{{ t("instructions.noInstructionCreated") }}</p>
     </div>
   </div>
 </template>

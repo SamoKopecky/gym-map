@@ -200,7 +200,8 @@ function deleteMedia() {
     :confirm-text="t('button.delete')"
     @confirm="deleteInstruction"
   >
-    {{ t("dialog.confirmDelete") }} {{ t("instructions.instructions").toLowerCase() }}{{ t("dialog.actionCannotBeUndone") }}
+    {{ t("dialog.confirmDelete") }} {{ t("instructions.instructions").toLowerCase()
+    }}{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <DeleteConfirmationDialog
@@ -208,7 +209,9 @@ function deleteMedia() {
     :confirm-text="t('button.delete')"
     @confirm="deleteMedia"
   >
-    {{ t("dialog.confirmDelete") }} {{ t("instructions.mediaFile").toLowerCase() }} <b>{{ currentMedia?.name }}</b>{{ t("dialog.actionCannotBeUndone") }}
+    {{ t("dialog.confirmDelete") }} {{ t("instructions.mediaFile").toLowerCase() }}
+    <b>{{ currentMedia?.name }}</b
+    >{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <v-card variant="flat">
@@ -289,7 +292,9 @@ function deleteMedia() {
           </v-col>
 
           <v-col cols="12" md="2" xl="1" class="d-flex align-center">
-            <v-btn color="red" @click="deleteMediaActive = true" width="100%">{{ t("button.deleteMedia") }}</v-btn>
+            <v-btn color="red" @click="deleteMediaActive = true" width="100%">{{
+              t("button.deleteMedia")
+            }}</v-btn>
           </v-col>
         </v-row>
       </div>

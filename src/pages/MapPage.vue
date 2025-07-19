@@ -191,7 +191,7 @@ onUnmounted(() => {
 <template>
   <div>
     <div class="d-flex justify-center align-center">
-      <v-btn @click="resetMap" class="mx-2">{{ t('button.resetMap') }}</v-btn>
+      <v-btn @click="resetMap" class="mx-2">{{ t("button.resetMap") }}</v-btn>
       <v-switch
         v-if="isAdmin"
         :label="t('map.editMachines')"
@@ -208,16 +208,17 @@ onUnmounted(() => {
         density="compact"
         class="ma-0"
       >
-        {{
-          editMode
-            ? t('map.editModeInstruction')
-            : t('map.viewModeInstruction')
-        }}
+        {{ editMode ? t("map.editModeInstruction") : t("map.viewModeInstruction") }}
       </v-alert>
     </div>
 
     <div v-if="editMode">
-      <NumberSlider v-model="machinePosition.width" :step="5" :max="MAP_WIDTH / 2" :label="t('form.width')" />
+      <NumberSlider
+        v-model="machinePosition.width"
+        :step="5"
+        :max="MAP_WIDTH / 2"
+        :label="t('form.width')"
+      />
       <NumberSlider
         v-model="machinePosition.height"
         :step="GRID_SIZE"

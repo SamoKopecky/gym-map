@@ -27,7 +27,7 @@ const formData = reactive<MachineState>({
 })
 
 const nameRules = [
-  (value: string) => !!value || t('validation.machineNameRequired'),
+  (value: string) => !!value || t("validation.machineNameRequired"),
   (value: string) =>
     (value && value.length <= MAX_NAME_CHARS) ||
     `Name must be less than ${MAX_NAME_CHARS} characters.`,
@@ -56,13 +56,13 @@ function saveMachine() {
       .then((res) => {
         emit("create:machine", res)
         active.value = false
-        addNotification(t('notification.machineSuccessfullySaved'), "success")
+        addNotification(t("notification.machineSuccessfullySaved"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification(t('notification.machineFailedToSave'), "error")
+        addNotification(t("notification.machineFailedToSave"), "error")
       })
   } else {
     machineService
@@ -73,13 +73,13 @@ function saveMachine() {
       .then(() => {
         Object.assign(machine.value!, formData)
         active.value = false
-        addNotification(t('notification.machineEdited'), "success")
+        addNotification(t("notification.machineEdited"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification(t('notification.machineFailedToSave'), "error")
+        addNotification(t("notification.machineFailedToSave"), "error")
       })
   }
 }
@@ -89,7 +89,7 @@ function saveMachine() {
   <v-dialog v-model="active" max-width="800px">
     <v-card>
       <v-card-title class="pa-4">
-        <span class="text-h5">{{ t('dialog.addNewMachine') }}</span>
+        <span class="text-h5">{{ t("dialog.addNewMachine") }}</span>
       </v-card-title>
 
       <v-divider />
@@ -134,7 +134,7 @@ function saveMachine() {
         <v-divider />
 
         <v-card-actions class="pa-4">
-          <v-btn variant="text" @click="active = false">{{ t('button.cancel') }}</v-btn>
+          <v-btn variant="text" @click="active = false">{{ t("button.cancel") }}</v-btn>
           <v-spacer />
           <v-btn
             v-if="isAdmin"
@@ -144,7 +144,7 @@ function saveMachine() {
             :disabled="!isFormValid"
             :loading="isLoading"
           >
-            {{ t('button.save') }}
+            {{ t("button.save") }}
           </v-btn>
         </v-card-actions>
       </v-form>

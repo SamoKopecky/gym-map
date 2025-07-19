@@ -32,7 +32,7 @@ function uploadNewAvatar(uploadFile: File | File[]) {
   const formData = new FormData()
 
   if (isArray(uploadFile)) {
-    addNotification(t('notification.uploadingMultipleFilesNotSupported'), "error")
+    addNotification(t("notification.uploadingMultipleFilesNotSupported"), "error")
     return
   } else {
     formData.append("file_0", uploadFile)
@@ -42,9 +42,9 @@ function uploadNewAvatar(uploadFile: File | File[]) {
     .then((res) => {
       if (!user.value) return
       user.value.avatar_id = res.avatar_id
-      addNotification(t('notification.avatarUpdated'), "success")
+      addNotification(t("notification.avatarUpdated"), "success")
     })
-    .catch(() => addNotification(t('notification.avatarUpdateFailed'), "error"))
+    .catch(() => addNotification(t("notification.avatarUpdateFailed"), "error"))
 }
 
 onMounted(() => {
@@ -56,7 +56,7 @@ onMounted(() => {
 <template>
   <v-container class="d-flex justify-center align-center fill-height" v-if="user">
     <v-card class="pa-4" width="400">
-      <v-card-title class="text-h5 text-center">{{ t('navigation.userProfile') }}</v-card-title>
+      <v-card-title class="text-h5 text-center">{{ t("navigation.userProfile") }}</v-card-title>
       <v-card-text>
         <div class="d-flex justify-center">
           <div class="avatar-container" @click="editAvatar">
@@ -78,7 +78,12 @@ onMounted(() => {
           class="mt-6 mb-2"
         ></v-text-field>
 
-        <v-text-field v-model="user.email" :label="t('form.email')" readonly variant="outlined"></v-text-field>
+        <v-text-field
+          v-model="user.email"
+          :label="t('form.email')"
+          readonly
+          variant="outlined"
+        ></v-text-field>
       </v-card-text>
 
       <v-file-input

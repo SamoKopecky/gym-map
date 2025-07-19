@@ -29,7 +29,9 @@ function confirm() {
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue-darken-1" variant="text" @click="active = false">{{ t("button.cancel") }}</v-btn>
+        <v-btn color="blue-darken-1" variant="text" @click="active = false">{{
+          t("button.cancel")
+        }}</v-btn>
         <v-btn color="red-darken-1" variant="tonal" @click="confirm"> {{ confirmText }}</v-btn>
         <v-spacer />
       </v-card-actions>

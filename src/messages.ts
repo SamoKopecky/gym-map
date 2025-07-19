@@ -69,7 +69,8 @@ export const messages = {
     },
     map: {
       editMachines: "Upravit stroje",
-      editModeInstruction: "Klikněte na stroj pro úpravu jeho pozice a velikosti (táhněte pro přesunutí), držte mezerník pro tažení mapy",
+      editModeInstruction:
+        "Klikněte na stroj pro úpravu jeho pozice a velikosti (táhněte pro přesunutí), držte mezerník pro tažení mapy",
       viewModeInstruction: "Klikněte na stroj pro zobrazení jeho cviků",
     },
     panel: {
@@ -197,7 +198,8 @@ export const messages = {
     },
     map: {
       editMachines: "Edit machines",
-      editModeInstruction: "Click a machine to edit its position & size (drag to move), hold space to drag the map",
+      editModeInstruction:
+        "Click a machine to edit its position & size (drag to move), hold space to drag the map",
       viewModeInstruction: "Click a machine to see its exercises",
     },
     panel: {

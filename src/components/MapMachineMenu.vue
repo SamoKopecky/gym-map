@@ -28,7 +28,9 @@ const { t } = useI18n()
       </v-card-title>
       <v-card-subtitle> {{ machine.muscle_groups?.join(", ") }} </v-card-subtitle>
       <v-card-text>
-        <v-btn @click="pushToMachinesPage(router, machine.id)">{{ t("navigation.moreDetails") }}</v-btn>
+        <v-btn @click="pushToMachinesPage(router, machine.id)">{{
+          t("navigation.moreDetails")
+        }}</v-btn>
       </v-card-text>
     </v-card>
   </div>

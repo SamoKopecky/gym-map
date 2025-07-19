@@ -12,7 +12,16 @@ const { isAdmin } = useUser()
 const route = useRoute()
 const router = useRouter()
 const tab = ref<string>()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+const availableLocales = [
+  { code: "cs", name: "Čeština", flag: "🇨🇿" },
+  { code: "en", name: "English", flag: "🇺🇸" },
+]
+
+function switchLocale(localeCode: string) {
+  locale.value = localeCode
+}
 
 const getTabFromPath = (path: string) => {
   if (path.startsWith("/machines")) {
@@ -66,6 +75,28 @@ function login() {
         </div>
 
         <template #append>
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn icon="mdi-translate" variant="text" v-bind="props"></v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="loc in availableLocales"
+                :key="loc.code"
+                @click="switchLocale(loc.code)"
+              >
+                <template #prepend>
+                  <span class="me-3">{{ loc.flag }}</span>
+                </template>
+                <v-list-item-title>{{ loc.name }}</v-list-item-title>
+                <template #append v-if="locale === loc.code">
+                  <v-icon>mdi-check</v-icon>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
           <v-menu>
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>

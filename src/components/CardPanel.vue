@@ -47,7 +47,7 @@ const panelTitle = computed(() => {
   if (!selectedCard.value) {
     return name
   } else {
-    return `${t('panel.selected')}${selectedCard.value.name}`
+    return `${t("panel.selected")}${selectedCard.value.name}`
   }
 })
 
@@ -92,7 +92,8 @@ function imageIdToUrl(id: string) {
     confirm-text="Delete"
     @confirm="emit('delete:card', deleteCard)"
   >
-    {{ t('dialog.confirmDelete') }} <strong>{{ deleteCard?.name }}</strong>{{ t('dialog.actionCannotBeUndone') }}
+    {{ t("dialog.confirmDelete") }} <strong>{{ deleteCard?.name }}</strong
+    >{{ t("dialog.actionCannotBeUndone") }}
 
     <slot name="deletionWarning" />
   </DeleteConfirmationDialog>
@@ -115,7 +116,7 @@ function imageIdToUrl(id: string) {
     <v-expansion-panel-text class="bg-grey-lighten-5">
       <v-btn v-if="canEdit" variant="tonal" color="primary" @click="emit('create:card')">
         <v-icon start>mdi-plus-circle-outline</v-icon>
-        {{ t('panel.addNew') }}{{ singularName }}
+        {{ t("panel.addNew") }}{{ singularName }}
       </v-btn>
 
       <v-container fluid>

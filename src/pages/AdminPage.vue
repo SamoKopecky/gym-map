@@ -22,12 +22,12 @@ const { t } = useI18n()
 
 const unregisterUserName = computed(() => unregisterUser.value?.name ?? unregisterUser.value?.email)
 
-const emailRules = [(value: string) => /.+@.+\..+/.test(value) || t('validation.emailMustBeValid')]
+const emailRules = [(value: string) => /.+@.+\..+/.test(value) || t("validation.emailMustBeValid")]
 
 const headers = [
-  { key: "name", title: t('form.name') },
-  { key: "email", title: t('form.email') },
-  { key: "actions", title: t('table.actions') },
+  { key: "name", title: t("form.name") },
+  { key: "email", title: t("form.email") },
+  { key: "actions", title: t("table.actions") },
 ]
 
 function addNew() {
@@ -36,11 +36,11 @@ function addNew() {
   userService
     .post({ email: email.value })
     .then(() => {
-      addNotification(t('notification.userRegisteredSuccessfully'), "success")
+      addNotification(t("notification.userRegisteredSuccessfully"), "success")
       loadUsers()
     })
     .catch(() => {
-      addNotification(t('notification.userRegistrationFailed'), "error")
+      addNotification(t("notification.userRegistrationFailed"), "error")
     })
     .finally(() => (emailLoading.value = false))
 }
@@ -51,9 +51,9 @@ function unregisterUserFn() {
     .deleteUser(unregisterUser.value?.id)
     .then(() => {
       loadUsers()
-      addNotification(t('notification.userUnregisteredSuccessfully'), "success")
+      addNotification(t("notification.userUnregisteredSuccessfully"), "success")
     })
-    .catch(() => addNotification(t('notification.userUnregistrationFailed'), "error"))
+    .catch(() => addNotification(t("notification.userUnregistrationFailed"), "error"))
     .finally(() => (confirmDeleteActive.value = false))
 }
 
@@ -75,13 +75,13 @@ onMounted(() => loadUsers())
     :confirm-text="t('button.unregister')"
     @confirm="unregisterUserFn"
   >
-    {{ t('dialog.confirmUnregister') }} <strong>{{ unregisterUserName }}</strong
-    >{{ t('dialog.actionCannotBeUndone') }}
+    {{ t("dialog.confirmUnregister") }} <strong>{{ unregisterUserName }}</strong
+    >{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <v-card>
     <v-card-title class="d-flex align-center">
-      <v-icon icon="mdi-account-group"></v-icon> &nbsp; {{ t('table.trainers') }}
+      <v-icon icon="mdi-account-group"></v-icon> &nbsp; {{ t("table.trainers") }}
 
       <v-text-field
         class="ml-3"
@@ -139,7 +139,7 @@ onMounted(() => loadUsers())
               variant="tonal"
             >
               <v-icon start icon="mdi-account-plus"></v-icon>
-              {{ t('button.registerTrainer') }}
+              {{ t("button.registerTrainer") }}
             </v-btn>
           </v-col>
         </v-row>
