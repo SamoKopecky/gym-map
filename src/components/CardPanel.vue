@@ -2,6 +2,7 @@
 import type { Card, CardPanelName } from "@/types/card"
 import { computed, ref, type PropType } from "vue"
 import { useRouter } from "vue-router"
+import { useI18n } from "vue-i18n"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 import { API_BASE_URL } from "@/services/base"
 
@@ -19,6 +20,7 @@ const emit = defineEmits([
 const selectedCard = defineModel<Card>()
 
 const router = useRouter()
+const { t } = useI18n()
 
 const { name } = defineProps({
   name: {
@@ -45,7 +47,7 @@ const panelTitle = computed(() => {
   if (!selectedCard.value) {
     return name
   } else {
-    return `Selected: ${selectedCard.value.name}`
+    return `${t('panel.selected')}${selectedCard.value.name}`
   }
 })
 
@@ -90,8 +92,7 @@ function imageIdToUrl(id: string) {
     confirm-text="Delete"
     @confirm="emit('delete:card', deleteCard)"
   >
-    Do you really want to delete <strong>{{ deleteCard?.name }}</strong
-    >? This action cannot be undone.
+    {{ t('dialog.confirmDelete') }} <strong>{{ deleteCard?.name }}</strong>{{ t('dialog.actionCannotBeUndone') }}
 
     <slot name="deletionWarning" />
   </DeleteConfirmationDialog>
@@ -102,7 +103,7 @@ function imageIdToUrl(id: string) {
       <span class="font-weight-medium">{{ panelTitle }}</span>
       <v-btn
         v-if="selectedCard && name === 'Machines'"
-        v-tooltip:top="'Highlight on map'"
+        v-tooltip:top="t('button.highlightOnMap')"
         class="me-2"
         variant="text"
         size="small"
@@ -114,7 +115,7 @@ function imageIdToUrl(id: string) {
     <v-expansion-panel-text class="bg-grey-lighten-5">
       <v-btn v-if="canEdit" variant="tonal" color="primary" @click="emit('create:card')">
         <v-icon start>mdi-plus-circle-outline</v-icon>
-        Add New {{ singularName }}
+        {{ t('panel.addNew') }}{{ singularName }}
       </v-btn>
 
       <v-container fluid>
@@ -141,7 +142,7 @@ function imageIdToUrl(id: string) {
                   <div @click.stop v-if="!areInstructions">
                     <v-btn
                       v-if="canEdit"
-                      v-tooltip:bottom="'Delete card'"
+                      v-tooltip:bottom="t('button.deleteCard')"
                       size="small"
                       variant="text"
                       color="error"
@@ -149,7 +150,7 @@ function imageIdToUrl(id: string) {
                       @click="initialDeletion(card)"
                     />
                     <v-btn
-                      v-tooltip:bottom="canEdit ? 'Edit Card' : 'More Info'"
+                      v-tooltip:bottom="canEdit ? t('button.editCard') : t('button.moreInfo')"
                       :icon="canEdit ? 'mdi-pencil-outline' : 'mdi-open-in-new'"
                       size="small"
                       variant="text"

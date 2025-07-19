@@ -1,5 +1,6 @@
 import { computed, ref, type Ref } from "vue"
 import type { ServiceBase } from "@/services/base"
+import { useI18n } from "vue-i18n"
 import type { Entity } from "@/types/base"
 import type { Card } from "@/types/card"
 import type { SearchData } from "@/types/other"
@@ -17,6 +18,7 @@ export function useDetail<T extends Entity>(
   const isEntityDetailActive = ref<boolean>(false)
 
   const { addNotification } = useNotificationStore()
+  const { t } = useI18n()
 
   const searchedEntities = computed(() => {
     return entities.value.filter((e) => searchFunction(searchData, e))
@@ -51,9 +53,9 @@ export function useDetail<T extends Entity>(
       .delete(id)
       .then(() => {
         entities.value = entities.value.filter((e) => e.id !== id)
-        addNotification("Deleted succesfully", "success")
+        addNotification(t("notification.deletedSuccessfully"), "success")
       })
-      .catch(() => addNotification("Deletion failed", "error"))
+      .catch(() => addNotification(t("notification.deletionFailed"), "error"))
   }
 
   return {

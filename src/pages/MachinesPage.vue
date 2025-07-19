@@ -27,6 +27,7 @@ import { useUser } from "@/composables/useUser"
 import type { Machine } from "@/types/machine"
 import type { Exercise } from "@/types/exercise"
 import type { Instruction } from "@/types/instruction"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   id: {
@@ -52,6 +53,7 @@ const selectedInstruction = computed(() => {
 })
 
 const { userId } = useUser()
+const { t } = useI18n()
 
 watch(
   () => searchData.difficulties,
@@ -218,8 +220,8 @@ function instructionCreation(instruction: Instruction) {
         prepend-icon="mdi-magnify"
         v-model="searchData.text"
         class="mt-2 mx-2"
-        label="Search"
-        placeholder="Search name or muscle groups..."
+        :label="t('form.search')"
+        :placeholder="t('form.searchPlaceholder')"
         variant="outlined"
         clearable
         hide-details="auto"
@@ -233,7 +235,7 @@ function instructionCreation(instruction: Instruction) {
             :value="difficulty"
             :color="difficultyToColor(difficulty)"
           >
-            {{ difficultyToString(difficulty) }}
+            {{ difficultyToString(difficulty, t) }}
           </v-chip>
         </v-chip-group>
       </div>
@@ -253,17 +255,17 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>The following will be permanently deleted:</p>
+            <p>{{ t('warning.followingWillBeDeleted') }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>The machine</v-list-item-title>
+                <v-list-item-title>{{ t('warning.theMachine') }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of its associated exercises</v-list-item-title>
+                <v-list-item-title>{{ t('warning.allAssociatedExercises') }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of the exercises' associated instructions</v-list-item-title>
+                <v-list-item-title>{{ t('warning.allExerciseInstructions') }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -283,14 +285,14 @@ function instructionCreation(instruction: Instruction) {
       >
         <template #deletionWarning>
           <div class="text-start mt-2">
-            <p>The following will be permanently deleted:</p>
+            <p>{{ t('warning.followingWillBeDeleted') }}</p>
 
             <v-list density="compact" bg-color="transparent">
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>The exercise</v-list-item-title>
+                <v-list-item-title>{{ t('warning.theExercise') }}</v-list-item-title>
               </v-list-item>
               <v-list-item prepend-icon="mdi-circle-small" class="pa-0">
-                <v-list-item-title>All of associated instructions</v-list-item-title>
+                <v-list-item-title>{{ t('warning.allAssociatedInstructions') }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </div>
@@ -320,7 +322,7 @@ function instructionCreation(instruction: Instruction) {
       class="text-center text-grey mt-4"
     >
       <v-icon size="64">mdi-information-off-outline</v-icon>
-      <p class="mt-2">No instruction has been created for this exercise yet.</p>
+      <p class="mt-2">{{ t('instructions.noInstructionCreated') }}</p>
     </div>
   </div>
 </template>

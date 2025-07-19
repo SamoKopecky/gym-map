@@ -9,6 +9,7 @@ import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import { useI18n } from "vue-i18n"
 import { API_BASE_URL } from "@/services/base"
 import { mediaService } from "@/services/media"
 import type { AxiosProgressEvent } from "axios"
@@ -18,7 +19,7 @@ const emit = defineEmits(["delete:instruction"])
 
 const instruction = defineModel<Instruction>({ required: true })
 
-const youtubeRules = [(value: string) => isYouTubeUrl(value) || "YouTube link is invalid"]
+const youtubeRules = [(value: string) => isYouTubeUrl(value) || t("validation.youtubeLinkInvalid")]
 
 const medias = ref<MediaInfo[]>([])
 const mediaLoading = ref(false)
@@ -33,6 +34,7 @@ const youtubeLinkRef = ref<string>()
 
 const { isTrainer, userId, isAdmin } = useUser()
 const { addNotification } = useNotificationStore()
+const { t } = useI18n()
 
 const canEdit = computed(() => {
   const trainerOwns = isTrainer.value && userId === instruction.value.user_id
@@ -86,9 +88,9 @@ watchDebounced(
         instruction.value.media_ids.push(...res.media_ids)
         getMedia().then(() => (carouselIndex.value = medias.value.length - 1))
         youtubeLinkRef.value = undefined
-        addNotification("Link saved", "success")
+        addNotification(t("notification.linkSaved"), "success")
       })
-      .catch(() => addNotification("Can't savelink", "error"))
+      .catch(() => addNotification(t("notification.cantSaveLink"), "error"))
   },
   { debounce: 100 },
 )
@@ -100,7 +102,7 @@ watchDebounced(
       isStoring.value = true
       instructionService
         .patch({ id: instruction.value.id, description: newDescription })
-        .catch(() => addNotification("Error saving description", "error"))
+        .catch(() => addNotification(t("notification.errorSavingDescription"), "error"))
         .finally(() => (isStoring.value = false))
     }
   },
@@ -155,9 +157,9 @@ function uploadFile(uploadFile: File | File[]) {
     .then((res) => {
       instruction.value.media_ids.push(...res.media_ids)
       getMedia().then(() => (carouselIndex.value = medias.value.length - 1))
-      addNotification("File uploaded succesfully", "success")
+      addNotification(t("notification.fileUploadedSuccessfully"), "success")
     })
-    .catch(() => addNotification("File upload failed", "error"))
+    .catch(() => addNotification(t("notification.fileUploadFailed"), "error"))
     .finally(() => {
       file.uploadProgress = undefined
       file.data = undefined
@@ -169,14 +171,14 @@ function deleteInstruction() {
     .delete(instruction.value.id)
     .then(() => {
       emit("delete:instruction")
-      addNotification("Instruction succefully deleted", "success")
+      addNotification(t("notification.instructionSuccessfullyDeleted"), "success")
     })
-    .catch(() => addNotification("Deletion failed", "error"))
+    .catch(() => addNotification(t("notification.deletionFailed"), "error"))
 }
 
 function deleteMedia() {
   if (!currentMedia.value) {
-    addNotification("No media to delete", "info")
+    addNotification(t("notification.noMediaToDelete"), "info")
     return
   }
 
@@ -186,33 +188,32 @@ function deleteMedia() {
       medias.value = medias.value.filter((_, index) => index !== carouselIndex.value)
       // Move to next media
       carouselIndex.value = (carouselIndex.value + 1) % (medias.value.length - 2)
-      addNotification("Media file deleted", "success")
+      addNotification(t("notification.mediaFileDeleted"), "success")
     })
-    .catch(() => addNotification("Deletion failed", "error"))
+    .catch(() => addNotification(t("notification.deletionFailed"), "error"))
 }
 </script>
 
 <template>
   <DeleteConfirmationDialog
     v-model="deleteInstructionActive"
-    confirm-text="Delete"
+    :confirm-text="t('button.delete')"
     @confirm="deleteInstruction"
   >
-    Do you really want to delete this instruction? This action cannot be undone.
+    {{ t("dialog.confirmDelete") }} {{ t("instructions.instructions").toLowerCase() }}{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <DeleteConfirmationDialog
     v-model="deleteMediaActive"
-    confirm-text="Delete"
+    :confirm-text="t('button.delete')"
     @confirm="deleteMedia"
   >
-    Do you really want to delete file <b>{{ currentMedia?.name }}</b
-    >? This action cannot be undone.
+    {{ t("dialog.confirmDelete") }} {{ t("instructions.mediaFile").toLowerCase() }} <b>{{ currentMedia?.name }}</b>{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <v-card variant="flat">
     <v-card-title class="d-flex align-center">
-      <span class="text-h6">Instructions</span>
+      <span class="text-h6">{{ t("instructions.instructions") }}</span>
       <v-spacer></v-spacer>
       <v-btn
         v-if="canEdit"
@@ -232,7 +233,7 @@ function deleteMedia() {
         <template #append-inner>
           <div v-if="isStoring">
             <v-progress-circular size="20" indeterminate />
-            <span>Saving...</span>
+            <span>{{ t("instructions.saving") }}</span>
           </div>
         </template>
       </v-textarea>
@@ -248,11 +249,11 @@ function deleteMedia() {
         >
           <v-btn :value="MediaType.File" class="flex-grow-1">
             <v-icon start>mdi-upload</v-icon>
-            Media File
+            {{ t("instructions.mediaFile") }}
           </v-btn>
           <v-btn :value="MediaType.Youtube" class="flex-grow-1">
             <v-icon start>mdi-youtube</v-icon>
-            YouTube Link
+            {{ t("instructions.youtubeLink") }}
           </v-btn>
         </v-btn-toggle>
 
@@ -263,12 +264,12 @@ function deleteMedia() {
               v-model="file.data"
               @update:model-value="uploadFile"
               ref="file-upload-input"
-              label="Upload new file"
+              :label="t('form.uploadFile')"
               variant="outlined"
               show-size
               accept="video/*"
               hide-details="auto"
-              placeholder="Chose a video file to uplad"
+              :placeholder="t('form.uploadFileHint')"
               prepend-icon=""
               prepend-inner-icon="mdi-video"
               persistent-hint
@@ -276,19 +277,19 @@ function deleteMedia() {
 
             <v-text-field
               v-else
-              label="Add new YouTube link"
+              :label="t('form.youtubeLink')"
               variant="outlined"
               v-model="youtubeLinkRef"
               :rules="youtubeRules"
               hide-details="auto"
               clearable
-              placeholder="Paste YouTube video URL..."
+              :placeholder="t('form.youtubeLinkPlaceholder')"
               prepend-inner-icon="mdi-youtube"
             />
           </v-col>
 
           <v-col cols="12" md="2" xl="1" class="d-flex align-center">
-            <v-btn color="red" @click="deleteMediaActive = true" width="100%">Delete media</v-btn>
+            <v-btn color="red" @click="deleteMediaActive = true" width="100%">{{ t("button.deleteMedia") }}</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -363,7 +364,7 @@ function deleteMedia() {
         </v-responsive>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>
-          <p class="mt-2">No video has been uploaded for this instruction.</p>
+          <p class="mt-2">{{ t("instructions.noVideoUploaded") }}</p>
         </div>
       </div>
     </v-card-text>

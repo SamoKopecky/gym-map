@@ -6,6 +6,7 @@ import { reactive } from "vue"
 import { ref, watch } from "vue"
 import { difficultyToString } from "@/utils/transformators"
 import { useUser } from "@/composables/useUser"
+import { useI18n } from "vue-i18n"
 
 const MAX_NAME_CHARS = 255
 
@@ -26,6 +27,7 @@ const isFormValid = ref(false)
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
+const { t } = useI18n()
 
 const formData = reactive<ExerciseState>({
   name: "",
@@ -35,7 +37,7 @@ const formData = reactive<ExerciseState>({
 })
 
 const nameRules = [
-  (value: string) => !!value || "Exercise name is required.",
+  (value: string) => !!value || t("validation.exerciseNameRequired"),
   (value: string) =>
     (value && value.length <= MAX_NAME_CHARS) ||
     `Name must be less than ${MAX_NAME_CHARS} characters.`,
@@ -62,7 +64,7 @@ function saveExercise() {
   isLoading.value = true
   if (!exercise.value) {
     if (!props.machineId) {
-      addNotification("Select a machine first to create an exercise", "info")
+      addNotification(t("notification.selectMachineFirst"), "info")
       isLoading.value = false
       return
     }
@@ -70,14 +72,14 @@ function saveExercise() {
       .post({ ...formData, machine_id: props.machineId })
       .then((res) => {
         emit("create:exercise", res)
-        addNotification("Exercise succesfully saved", "success")
+        addNotification(t("notification.exerciseSuccessfullySaved"), "success")
         active.value = false
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Exercise failed to save", "error")
+        addNotification(t("notification.exerciseFailedToSave"), "error")
       })
   } else {
     exerciseService
@@ -88,13 +90,13 @@ function saveExercise() {
       .then(() => {
         Object.assign(exercise.value!, formData)
         active.value = false
-        addNotification("Exercise edited", "success")
+        addNotification(t("notification.exerciseEdited"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Exercise failed to save", "error")
+        addNotification(t("notification.exerciseFailedToSave"), "error")
       })
   }
 }
@@ -104,7 +106,7 @@ function saveExercise() {
   <v-dialog v-model="active" max-width="800px">
     <v-card>
       <v-card-title class="pa-4">
-        <span class="text-h5">Add New Exercise</span>
+        <span class="text-h5">{{ t("dialog.addNewExercise") }}</span>
       </v-card-title>
 
       <v-divider />
@@ -114,7 +116,7 @@ function saveExercise() {
           <v-text-field
             :readonly="!isAdmin"
             v-model="formData.name"
-            label="Exercise name"
+            :label="t('form.exerciseName')"
             variant="outlined"
             :rules="nameRules"
             :counter="MAX_NAME_CHARS"
@@ -125,7 +127,7 @@ function saveExercise() {
           <v-textarea
             :readonly="!isAdmin"
             v-model="formData.description"
-            label="Exercise description"
+            :label="t('form.exerciseDescription')"
             variant="outlined"
             rows="3"
             auto-grow
@@ -136,12 +138,12 @@ function saveExercise() {
           <v-combobox
             :readonly="!isAdmin"
             v-model="formData.muscle_groups"
-            label="Muscle groups"
+            :label="t('form.muscleGroups')"
             chips
             multiple
             variant="outlined"
             prepend-inner-icon="mdi-weight-lifter"
-            :hint="isAdmin ? 'Type and press Enter to add a new muscle group' : undefined"
+            :hint="isAdmin ? t('form.muscleGroupsHint') : undefined"
             persistent-hint
             :class="[isAdmin ? 'mb-3' : '']"
           />
@@ -151,7 +153,7 @@ function saveExercise() {
             v-model="formData.difficulty"
             :items="Object.values(Difficulty)"
             :item-title="difficultyToString"
-            label="Exercise difficulty"
+            :label="t('form.exerciseDifficulty')"
             return-object
             variant="outlined"
             prepend-inner-icon="mdi-speedometer"
@@ -162,7 +164,7 @@ function saveExercise() {
         <v-divider />
 
         <v-card-actions class="pa-4">
-          <v-btn variant="text" @click="active = false"> Cancel </v-btn>
+          <v-btn variant="text" @click="active = false">{{ t("button.cancel") }}</v-btn>
           <v-spacer />
           <v-btn
             v-if="isAdmin"
@@ -172,7 +174,7 @@ function saveExercise() {
             :disabled="!isFormValid"
             :loading="isLoading"
           >
-            Save
+            {{ t("button.save") }}
           </v-btn>
         </v-card-actions>
       </v-form>

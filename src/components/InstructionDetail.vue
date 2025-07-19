@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUser } from "@/composables/useUser"
 import { instructionService } from "@/services/instruction"
+import { useI18n } from "vue-i18n"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type InstructionState, type Instruction } from "@/types/instruction.ts"
 import { reactive } from "vue"
@@ -28,6 +29,7 @@ const isFormValid = ref(false)
 
 const { addNotification } = useNotificationStore()
 const { isTrainer } = useUser()
+const { t } = useI18n()
 
 const formData = reactive<InstructionState>({
   description: "",
@@ -48,7 +50,7 @@ function saveInstruction() {
   isLoading.value = true
   if (!instruction.value) {
     if (!props.exerciseId || !props.userId) {
-      addNotification("Select an exercise first to create an instruction", "info")
+      addNotification(t("notification.selectExerciseFirst"), "info")
       isLoading.value = false
       return
     }
@@ -57,13 +59,13 @@ function saveInstruction() {
       .then((res) => {
         emit("create:instruction", res)
         active.value = false
-        addNotification("Instruction succesfully saved", "success")
+        addNotification(t("notification.instructionSuccessfullySaved"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Instruction failed to save", "error")
+        addNotification(t("notification.instructionFailedToSave"), "error")
       })
   } else {
     instructionService
@@ -74,13 +76,13 @@ function saveInstruction() {
       .then(() => {
         Object.assign(instruction.value!, formData)
         active.value = false
-        addNotification("Instruction edited", "success")
+        addNotification(t("notification.instructionEdited"), "success")
       })
       .finally(() => {
         isLoading.value = false
       })
       .catch(() => {
-        addNotification("Instruction failed to save", "error")
+        addNotification(t("notification.instructionFailedToSave"), "error")
       })
   }
 }
@@ -90,7 +92,7 @@ function saveInstruction() {
   <v-dialog v-model="active" max-width="800px">
     <v-card>
       <v-card-title class="pa-4">
-        <span class="text-h5">Add New Instruction</span>
+        <span class="text-h5">{{ t("dialog.addNewInstruction") }}</span>
       </v-card-title>
 
       <v-divider />
@@ -100,7 +102,7 @@ function saveInstruction() {
           <v-textarea
             :readonly="!isTrainer"
             v-model="formData.description"
-            label="Instruction description"
+            :label="t('form.instructionDescription')"
             variant="outlined"
             rows="3"
             auto-grow
@@ -112,7 +114,7 @@ function saveInstruction() {
         <v-divider />
 
         <v-card-actions class="pa-4">
-          <v-btn variant="text" @click="active = false"> Cancel </v-btn>
+          <v-btn variant="text" @click="active = false">{{ t("button.cancel") }}</v-btn>
           <v-spacer />
           <v-btn
             v-if="isTrainer"
@@ -122,7 +124,7 @@ function saveInstruction() {
             :disabled="!isFormValid"
             :loading="isLoading"
           >
-            Save
+            {{ t("button.save") }}
           </v-btn>
         </v-card-actions>
       </v-form>
