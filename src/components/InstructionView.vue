@@ -4,7 +4,7 @@ import { instructionService } from "@/services/instruction"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type Instruction } from "@/types/instruction"
 import { type FileInfo, type MediaInfo } from "@/types/other"
-import { isArray, extractYouTubeId } from "@/utils/other"
+import { isArray, extractYouTubeId, isYouTubeUrl } from "@/utils/other"
 import { watchDebounced } from "@vueuse/core"
 import { ref, watch } from "vue"
 import { computed, reactive, useTemplateRef } from "vue"
@@ -17,6 +17,8 @@ import { MediaType } from "@/types/media"
 const emit = defineEmits(["delete:instruction"])
 
 const instruction = defineModel<Instruction>({ required: true })
+
+const youtubeRules = [(value: string) => isYouTubeUrl(value) || "YouTube link is invalid"]
 
 const medias = ref<MediaInfo[]>([])
 const mediaLoading = ref(false)
@@ -47,6 +49,12 @@ const currentMedia = computed(() => {
   return currentMedia
 })
 
+const mediaName = computed(() => {
+  if (!currentMedia.value) return
+
+  return currentMedia.value.name
+})
+
 watch(currentMedia, (newMedia) => {
   if (!newMedia) return
 
@@ -72,15 +80,17 @@ watchDebounced(
     instructionService
       .postFile(instruction.value.id, undefined, undefined, {
         youtube_video_id: youtubeId,
+        name: youtubeLinkRef.value,
       })
       .then((res) => {
         instruction.value.media_ids.push(...res.media_ids)
-        getMedia()
+        getMedia().then(() => (carouselIndex.value = medias.value.length - 1))
+        youtubeLinkRef.value = undefined
         addNotification("Link saved", "success")
       })
       .catch(() => addNotification("Can't savelink", "error"))
   },
-  { debounce: 1000 },
+  { debounce: 100 },
 )
 
 watchDebounced(
@@ -97,10 +107,10 @@ watchDebounced(
   { debounce: 1000 },
 )
 
-function getMedia() {
+async function getMedia(): Promise<void> {
   if (instruction.value.media_ids.length > 0) {
     mediaLoading.value = true
-    mediaService
+    return mediaService
       .getMetadataMany(instruction.value.media_ids)
       .then((res) => {
         medias.value = res.map((r) => {
@@ -114,8 +124,10 @@ function getMedia() {
       })
       .finally(() => (mediaLoading.value = false))
   } else {
-    console.log("reset")
     medias.value = []
+    return new Promise((resolve) => {
+      resolve()
+    })
   }
 }
 
@@ -142,7 +154,7 @@ function uploadFile(uploadFile: File | File[]) {
     )
     .then((res) => {
       instruction.value.media_ids.push(...res.media_ids)
-      getMedia()
+      getMedia().then(() => (carouselIndex.value = medias.value.length - 1))
       addNotification("File uploaded succesfully", "success")
     })
     .catch(() => addNotification("File upload failed", "error"))
@@ -173,7 +185,7 @@ function deleteMedia() {
     .then(() => {
       medias.value = medias.value.filter((_, index) => index !== carouselIndex.value)
       // Move to next media
-      carouselIndex.value = (carouselIndex.value + 1) % medias.value.length
+      carouselIndex.value = (carouselIndex.value + 1) % (medias.value.length - 2)
       addNotification("Media file deleted", "success")
     })
     .catch(() => addNotification("Deletion failed", "error"))
@@ -251,7 +263,7 @@ function deleteMedia() {
               v-model="file.data"
               @update:model-value="uploadFile"
               ref="file-upload-input"
-              :label="currentMedia?.name ?? 'Upload new file'"
+              label="Upload new file"
               variant="outlined"
               show-size
               accept="video/*"
@@ -264,9 +276,10 @@ function deleteMedia() {
 
             <v-text-field
               v-else
-              label="YouTube Link"
+              label="Add new YouTube link"
               variant="outlined"
               v-model="youtubeLinkRef"
+              :rules="youtubeRules"
               hide-details="auto"
               clearable
               placeholder="Paste YouTube video URL..."
@@ -303,6 +316,9 @@ function deleteMedia() {
           max-width="1440"
           class="mx-auto"
         >
+          <p v-if="canEdit" class="text-center text-subtitle-1 font-weight-medium mb-2">
+            {{ mediaName }}
+          </p>
           <v-carousel
             hide-delimiters
             hide-delimiter-background

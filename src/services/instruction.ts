@@ -23,6 +23,7 @@ export interface InstructionMediaPostResponse {
 
 export interface InstructionMediaPostRequest {
   youtube_video_id: string
+  name: string
 }
 
 class InstructionService extends ServiceBase<
