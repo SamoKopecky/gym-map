@@ -235,7 +235,7 @@ function instructionCreation(instruction: Instruction) {
             :value="difficulty"
             :color="difficultyToColor(difficulty)"
           >
-            {{ difficultyToString(difficulty, t) }}
+            {{ t(difficultyToString(difficulty)) }}
           </v-chip>
         </v-chip-group>
       </div>

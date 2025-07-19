@@ -152,7 +152,7 @@ function saveExercise() {
             :readonly="!isAdmin"
             v-model="formData.difficulty"
             :items="Object.values(Difficulty)"
-            :item-title="difficultyToString"
+            :item-title="(item) => t(difficultyToString(item))"
             :label="t('form.exerciseDifficulty')"
             return-object
             variant="outlined"

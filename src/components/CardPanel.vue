@@ -175,11 +175,12 @@ function imageIdToUrl(id: string) {
                   <v-chip
                     v-for="chip in card.chips"
                     :key="chip.text"
-                    :text="chip.text"
                     :color="chip.color"
                     variant="outlined"
                     class="me-1 mb-1"
-                  />
+                  >
+                    {{ t(chip.text) }}
+                  </v-chip>
                 </div>
                 <div class="text-body-2 text-medium-emphasis text-truncate">
                   {{ card.description }}

@@ -46,25 +46,14 @@ export function getMachineHtmlId(machine: Machine): string {
   return `${machine.name.toLowerCase().replace(/ /g, "-")}-${machine.id}`
 }
 
-export function difficultyToString(difficulty: Difficulty, t?: (key: string) => string): string {
-  if (!t) {
-    switch (difficulty) {
-      case Difficulty.Easy:
-        return "Easy"
-      case Difficulty.Normal:
-        return "Normal"
-      case Difficulty.Hard:
-        return "Hard"
-    }
-  }
-
+export function difficultyToString(difficulty: Difficulty): string {
   switch (difficulty) {
     case Difficulty.Easy:
-      return t("difficulty.easy")
+      return "difficulty.easy"
     case Difficulty.Normal:
-      return t("difficulty.normal")
+      return "difficulty.normal"
     case Difficulty.Hard:
-      return t("difficulty.hard")
+      return "difficulty.hard"
   }
 }
 

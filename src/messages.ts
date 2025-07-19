@@ -59,6 +59,35 @@ export const messages = {
       actions: "Akce",
       trainers: "Trenéři",
     },
+    $vuetify: {
+      open: "open",
+      dataTable: {
+        itemsPerPageText: "Položek na stránku:",
+        ariaLabel: {
+          sortDescending: "Seřazeno sestupně.",
+          sortAscending: "Seřazeno vzestupně.",
+          sortNone: "Neseřazeno.",
+          activateNone: "Aktivovat pro odstranění řazení.",
+          activateDescending: "Aktivovat pro sestupné řazení.",
+          activateAscending: "Aktivovat pro vzestupné řazení.",
+        },
+        sortBy: "Řadit podle",
+      },
+      dataFooter: {
+        itemsPerPageText: "Položek na stránku:",
+        itemsPerPageAll: "Vše",
+        nextPage: "Další stránka",
+        prevPage: "Předchozí stránka",
+        firstPage: "První stránka",
+        lastPage: "Poslední stránka",
+        pageText: "{0}-{1} z {2}",
+      },
+      dataIterator: {
+        noResultsText: "Nebyly nalezeny žádné záznamy",
+        loadingText: "Načítání položek...",
+      },
+      noDataText: "Nejsou dostupná žádná data",
+    },
     instructions: {
       instructions: "Instrukce",
       saving: "Ukládání...",
@@ -187,6 +216,34 @@ export const messages = {
     table: {
       actions: "Actions",
       trainers: "Trainers",
+    },
+    $vuetify: {
+      dataTable: {
+        itemsPerPageText: "Items per page:",
+        ariaLabel: {
+          sortDescending: "Sorted descending.",
+          sortAscending: "Sorted ascending.",
+          sortNone: "Not sorted.",
+          activateNone: "Activate to remove sorting.",
+          activateDescending: "Activate to sort descending.",
+          activateAscending: "Activate to sort ascending.",
+        },
+        sortBy: "Sort by",
+      },
+      dataFooter: {
+        itemsPerPageText: "Items per page:",
+        itemsPerPageAll: "All",
+        nextPage: "Next page",
+        prevPage: "Previous page",
+        firstPage: "First page",
+        lastPage: "Last page",
+        pageText: "{0}-{1} of {2}",
+      },
+      dataIterator: {
+        noResultsText: "No matching records found",
+        loadingText: "Loading items...",
+      },
+      noDataText: "No data available",
     },
     instructions: {
       instructions: "Instructions",
