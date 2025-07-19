@@ -1,3 +1,14 @@
+// TODO: Test
+// Regular expression to capture the video ID from various YouTube URL patterns:
+// - youtube.com/watch?v=VIDEO_ID
+// - youtu.be/VIDEO_ID
+// - youtube.com/embed/VIDEO_ID
+// - youtube.com/v/VIDEO_ID
+// - youtube.com/shorts/VIDEO_ID
+// It handles http/https, www optional, and potential query parameters after the ID.
+const youtubeRegex =
+  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+
 export function randomStringId(): string {
   return (Math.random() + 1).toString(36).substring(2)
 }
@@ -23,4 +34,26 @@ export function randomNumberId(): number {
   randomBigInt = randomBigInt & positiveMask
 
   return Number(randomBigInt)
+}
+
+export function isYouTubeUrl(url: string): boolean {
+  if (!url || typeof url !== "string") {
+    return false
+  }
+
+  return youtubeRegex.test(url)
+}
+
+export function extractYouTubeId(url: string): string | null {
+  if (!url || typeof url !== "string") {
+    return null
+  }
+
+  const match = url.match(youtubeRegex)
+
+  if (match && match[1]) {
+    return match[1]
+  }
+
+  return null
 }

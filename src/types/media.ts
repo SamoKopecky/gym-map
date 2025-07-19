@@ -1,7 +1,12 @@
 export interface Media {
   id: number
-  original_file_name: string
-  disk_file_name: string
+  name: string
+  path: string
   content_type: string
   user_id: string
+}
+
+export enum MediaType {
+  Youtube = "youtube",
+  File = "file",
 }
