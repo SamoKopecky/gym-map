@@ -60,7 +60,15 @@ export const messages = {
       trainers: "Trenéři",
     },
     $vuetify: {
-      open: "open",
+      input: {
+        clear: "clear",
+      },
+      pagination: {
+        ariaLabel: {
+          root: "root",
+        },
+      },
+      open: "Otvorit",
       dataTable: {
         itemsPerPageText: "Položek na stránku:",
         ariaLabel: {
@@ -104,7 +112,9 @@ export const messages = {
     },
     panel: {
       selected: "Vybráno: ",
-      addNew: "Přidat nový ",
+      machines: "Stroje",
+      exercises: "Cviky",
+      instructions: "Instrukcie",
     },
     difficulty: {
       easy: "Lehký",
@@ -218,6 +228,15 @@ export const messages = {
       trainers: "Trainers",
     },
     $vuetify: {
+      input: {
+        clear: "clear",
+      },
+      pagination: {
+        ariaLabel: {
+          root: "root",
+        },
+      },
+      open: "Open",
       dataTable: {
         itemsPerPageText: "Items per page:",
         ariaLabel: {
@@ -261,7 +280,9 @@ export const messages = {
     },
     panel: {
       selected: "Selected: ",
-      addNew: "Add New ",
+      machines: "Machines",
+      exercises: "Exercises",
+      instructions: "Instructions",
     },
     difficulty: {
       easy: "Easy",

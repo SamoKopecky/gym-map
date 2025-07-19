@@ -81,10 +81,11 @@ import router from "./router"
 import { createPinia } from "pinia"
 import { tokenInterceptor } from "./services/base"
 import { createI18n, useI18n } from "vue-i18n"
+import { LOCALE_STORAGE_KEY } from "./constants"
 
 const i18n = createI18n({
   legacy: false,
-  locale: "cs",
+  locale: window.localStorage.getItem(LOCALE_STORAGE_KEY) ?? "en",
   fallbackLocale: "en",
   messages: messages,
 })

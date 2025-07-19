@@ -5,6 +5,7 @@ import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 import { API_BASE_URL } from "@/services/base"
+import { capitalizeFirstLetter } from "@/utils/other"
 
 const deleteDialogActive = ref(false)
 const deleteCard = ref<Card>()
@@ -45,26 +46,24 @@ const { name } = defineProps({
 
 const panelTitle = computed(() => {
   if (!selectedCard.value) {
-    return name
+    return t(`panel.${name}`)
   } else {
     return `${t("panel.selected")}${selectedCard.value.name}`
   }
 })
 
 const panelIcon = computed(() => {
-  if (name === "Machines") return "mdi-dumbbell"
-  if (name === "Exercises") return "mdi-weight-lifter"
-  if (name === "Instructions") return "mdi-information-outline"
+  if (name === "machines") return "mdi-dumbbell"
+  if (name === "exercises") return "mdi-weight-lifter"
+  if (name === "instructions") return "mdi-information-outline"
   return "mdi-view-grid"
 })
 
 const countIcon = computed(() => {
-  if (name === "Machines") return "mdi-weight-lifter"
-  if (name === "Exercises") return "mdi-information-outline"
+  if (name === "machines") return "mdi-weight-lifter"
+  if (name === "exercises") return "mdi-information-outline"
   return "mdi-view-grid"
 })
-
-const singularName = computed(() => name.slice(0, -1))
 
 function updateCardId(card: Card) {
   if (selectedCard.value?.id === card.id) {
@@ -103,7 +102,7 @@ function imageIdToUrl(id: string) {
       <v-icon :icon="panelIcon" start />
       <span class="font-weight-medium">{{ panelTitle }}</span>
       <v-btn
-        v-if="selectedCard && name === 'Machines'"
+        v-if="selectedCard && name === 'machines'"
         v-tooltip:top="t('button.highlightOnMap')"
         class="me-2"
         variant="text"
@@ -116,7 +115,7 @@ function imageIdToUrl(id: string) {
     <v-expansion-panel-text class="bg-grey-lighten-5">
       <v-btn v-if="canEdit" variant="tonal" color="primary" @click="emit('create:card')">
         <v-icon start>mdi-plus-circle-outline</v-icon>
-        {{ t("panel.addNew") }}{{ singularName }}
+        {{ t(`dialog.addNew${capitalizeFirstLetter(name).substring(0, name.length - 1)}`) }}
       </v-btn>
 
       <v-container fluid>

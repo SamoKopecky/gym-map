@@ -6,6 +6,7 @@ import { ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useUser } from "./composables/useUser"
 import { useI18n } from "vue-i18n"
+import { LOCALE_STORAGE_KEY } from "./constants"
 
 const keycloak = useKeycloak()
 const { isAdmin } = useUser()
@@ -20,6 +21,7 @@ const availableLocales = [
 ]
 
 function switchLocale(localeCode: string) {
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, localeCode)
   locale.value = localeCode
 }
 
