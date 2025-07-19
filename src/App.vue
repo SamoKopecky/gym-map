@@ -16,8 +16,9 @@ const tab = ref<string>()
 const { t, locale } = useI18n()
 
 const availableLocales = [
-  { code: "cs", name: "Čeština", flag: "🇨🇿" },
   { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "sk", name: "Slovenčina", flag: " 🇸🇰" },
+  { code: "cs", name: "Čeština", flag: "🇨🇿" },
 ]
 
 function switchLocale(localeCode: string) {
