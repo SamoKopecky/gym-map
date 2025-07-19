@@ -99,7 +99,7 @@ export const messages = {
     instructions: {
       instructions: "Instrukce",
       saving: "Ukládání...",
-      mediaFile: "Mediální soubor",
+      mediaFile: "Video",
       youtubeLink: "YouTube odkaz",
       noInstructionCreated: "Pro tento cvik ještě nebyla vytvořena žádná instrukce.",
       noVideoUploaded: "Pro tuto instrukci nebylo nahráno žádné video.",
@@ -435,7 +435,7 @@ export const messages = {
     instructions: {
       instructions: "Inštrukcie",
       saving: "Ukladanie...",
-      mediaFile: "Mediálny súbor",
+      mediaFile: "Video",
       youtubeLink: "YouTube odkaz",
       noInstructionCreated: "Pre tento cvik ešte nebola vytvorená žiadna inštrukcia.",
       noVideoUploaded: "Pre túto inštrukciu nebolo nahrané žiadne video.",
@@ -491,7 +491,7 @@ export const messages = {
       instructionSuccessfullyDeleted: "Inštrukcia bola úspešne zmazaná",
       deletionFailed: "Mazanie zlyhalo",
       noMediaToDelete: "Žiadne médiá na zmazanie",
-      mediaFileDeleted: "Mediálny súbor bol zmazaný",
+      mediaFileDeleted: "Video bolo zmazané",
       deletedSuccessfully: "Úspešne zmazané",
     },
     warning: {
