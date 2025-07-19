@@ -43,13 +43,10 @@ const getTabFromPath = (path: string) => {
 }
 
 const isNewVersion = computed(() => {
-  if (
+  return (
     window.localStorage.getItem(VERSION_STORAGE_KEY) !== version &&
     (isTrainer.value || isAdmin.value)
-  ) {
-    return true
-  }
-  return false
+  )
 })
 
 onMounted(() => (tab.value = getTabFromPath(route.path)))
