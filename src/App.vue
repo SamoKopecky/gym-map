@@ -6,10 +6,12 @@ import { ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useUser } from "./composables/useUser"
 import { useI18n } from "vue-i18n"
-import { LOCALE_STORAGE_KEY } from "./constants"
+import { LOCALE_STORAGE_KEY, VERSION_STORAGE_KEY } from "./constants"
+import { computed } from "vue"
+import { version } from "../package.json"
 
 const keycloak = useKeycloak()
-const { isAdmin } = useUser()
+const { isAdmin, isTrainer } = useUser()
 const route = useRoute()
 const router = useRouter()
 const tab = ref<string>()
@@ -39,6 +41,13 @@ const getTabFromPath = (path: string) => {
 
   return ""
 }
+
+const isNewVersion = computed(() => {
+  return (
+    window.localStorage.getItem(VERSION_STORAGE_KEY) !== version &&
+    (isTrainer.value || isAdmin.value)
+  )
+})
 
 onMounted(() => (tab.value = getTabFromPath(route.path)))
 
@@ -102,7 +111,9 @@ function login() {
 
           <v-menu>
             <template v-slot:activator="{ props }">
-              <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+              <v-badge color="error" v-model="isNewVersion" content="1" offset-x="9" offset-y="10">
+                <v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+              </v-badge>
             </template>
 
             <v-list>
@@ -112,6 +123,11 @@ function login() {
                 prepend-icon="mdi-account"
                 @click="router.push('/user')"
               />
+              <v-list-item v-if="isTrainer || isAdmin" @click="router.push('/changelog')">
+                <v-badge v-model="isNewVersion" color="error" dot offset-y="-2" offset-x="-10">
+                  {{ t("message.changelog") }}
+                </v-badge>
+              </v-list-item>
               <v-list-item
                 @click="keycloak.subject ? logout() : login()"
                 :title="keycloak.subject ? t('message.logout') : t('message.login')"
