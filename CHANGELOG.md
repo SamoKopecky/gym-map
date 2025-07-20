@@ -1,5 +1,9 @@
 # Version 0.2.0
 
+## Added
+
+- Add search help dialog
+
 ## Changed
 
 - Change carousel arrows position, scroll direction and style

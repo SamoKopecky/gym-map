@@ -5,6 +5,7 @@ import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import InstructionDetail from "@/components/InstructionDetail.vue"
 import InstructionView from "@/components/InstructionView.vue"
+import SearchHelp from "@/components/SearchHelp.vue"
 import { onMounted } from "vue"
 import {
   exerciseToCard,
@@ -45,6 +46,7 @@ const panelsShow = ref<CardPanelName[]>(["machines", "exercises"])
 const selectedMachineCard = ref<Card>()
 const selectedExerciseCard = ref<Card>()
 const selectedInstructionCard = ref<Card>()
+const showSearchHelp = ref(false)
 
 const selectedInstruction = computed(() => {
   if (!selectedInstructionCard.value) return
@@ -215,17 +217,28 @@ function instructionCreation(instruction: Instruction) {
       :user-id="userId"
     />
 
+    <SearchHelp v-model="showSearchHelp" />
+
     <v-container fluid>
-      <v-text-field
-        prepend-icon="mdi-magnify"
-        v-model="searchData.text"
-        class="mt-2 mx-2"
-        :label="t('form.search')"
-        :placeholder="t('form.searchPlaceholder')"
-        variant="outlined"
-        clearable
-        hide-details="auto"
-      />
+      <div class="d-flex align-center mt-2 mx-2">
+        <v-text-field
+          prepend-icon="mdi-magnify"
+          v-model="searchData.text"
+          class="flex-grow-1"
+          :label="t('form.search')"
+          :placeholder="t('form.searchPlaceholder')"
+          variant="outlined"
+          clearable
+          hide-details="auto"
+        />
+        <v-btn
+          icon="mdi-help-circle-outline"
+          variant="text"
+          class="ml-2"
+          @click="showSearchHelp = true"
+          :title="t('searchHelp.title')"
+        />
+      </div>
       <div class="d-flex pa-2">
         <v-chip-group v-model="searchData.difficulties" filter multiple>
           <v-chip

@@ -46,6 +46,7 @@ export const messages = {
       editCard: "Upravit kartu",
       deleteCard: "Smazat kartu",
       moreInfo: "Více informací",
+      gotIt: "Rozumím",
     },
     dialog: {
       addNewMachine: "Přidat nový stroj",
@@ -110,7 +111,7 @@ export const messages = {
       editMachines: "Upravit stroje",
       editModeInstruction:
         "Klikněte na stroj pro úpravu jeho pozice a velikosti (táhněte pro přesunutí), držte mezerník pro tažení mapy",
-      viewModeInstruction: "Klikněte na stroj pro zobrazení jeho cviků",
+      viewModeInstruction: "Tip: Klikněte na stroj pro zobrazení jeho cviků",
     },
     panel: {
       selected: "Vybráno: ",
@@ -159,6 +160,17 @@ export const messages = {
       noMediaToDelete: "Žádná média ke smazání",
       mediaFileDeleted: "Mediální soubor byl smazán",
       deletedSuccessfully: "Úspěšně smazáno",
+    },
+    searchHelp: {
+      title: "Nápověda k vyhledávání",
+      description: "Můžete vyhledávat v následujících kategoriích:",
+      machinesSection: "Stroje",
+      exercisesSection: "Cviky",
+      machineName: "Název stroje",
+      exerciseName: "Název cviku",
+      muscleGroups: "Svalové skupiny",
+      difficultyFilter: "Obtížnost (pomocí štítků)",
+      tip: "Tip: Použijte štítky obtížnosti k filtrování cviků podle úrovně.",
     },
     warning: {
       followingWillBeDeleted: "Následující bude trvale smazáno:",
@@ -216,6 +228,7 @@ export const messages = {
       editCard: "Edit Card",
       deleteCard: "Delete card",
       moreInfo: "More Info",
+      gotIt: "Got it",
     },
     dialog: {
       addNewMachine: "Add New Machine",
@@ -280,7 +293,7 @@ export const messages = {
       editMachines: "Edit machines",
       editModeInstruction:
         "Click a machine to edit its position & size (drag to move), hold space to drag the map",
-      viewModeInstruction: "Click a machine to see its exercises",
+      viewModeInstruction: "Tip: Click a machine to see its exercises",
     },
     panel: {
       selected: "Selected: ",
@@ -329,6 +342,17 @@ export const messages = {
       noMediaToDelete: "No media to delete",
       mediaFileDeleted: "Media file deleted",
       deletedSuccessfully: "Deleted successfully",
+    },
+    searchHelp: {
+      title: "Search Help",
+      description: "You can search within the following categories:",
+      machinesSection: "Machines",
+      exercisesSection: "Exercises",
+      machineName: "Machine name",
+      exerciseName: "Exercise name",
+      muscleGroups: "Muscle groups",
+      difficultyFilter: "Difficulty (using chips)",
+      tip: "Tip: Use difficulty chips to filter exercises by level.",
     },
     warning: {
       followingWillBeDeleted: "The following will be permanently deleted:",
@@ -386,6 +410,7 @@ export const messages = {
       editCard: "Upraviť kartu",
       deleteCard: "Zmazať kartu",
       moreInfo: "Viac informácií",
+      gotIt: "Rozumiem",
     },
     dialog: {
       addNewMachine: "Pridať nový stroj",
@@ -450,7 +475,7 @@ export const messages = {
       editMachines: "Upraviť stroje",
       editModeInstruction:
         "Kliknite na stroj pre úpravu jeho pozície a veľkosti (ťahajte pre presunutie), držte medzeru pre ťahanie mapy",
-      viewModeInstruction: "Kliknite na stroj pre zobrazenie jeho cvikov",
+      viewModeInstruction: "Tip: Kliknite na stroj pre zobrazenie jeho cvikov",
     },
     panel: {
       selected: "Vybrané: ",
@@ -499,6 +524,17 @@ export const messages = {
       noMediaToDelete: "Žiadne médiá na zmazanie",
       mediaFileDeleted: "Video bolo zmazané",
       deletedSuccessfully: "Úspešne zmazané",
+    },
+    searchHelp: {
+      title: "Nápoveda k vyhľadávaniu",
+      description: "Môžete vyhľadávať v nasledujúcich kategóriách:",
+      machinesSection: "Stroje",
+      exercisesSection: "Cviky",
+      machineName: "Názov stroja",
+      exerciseName: "Názov cviku",
+      muscleGroups: "Svalové skupiny",
+      difficultyFilter: "Obtiažnosť (pomocou štítkov)",
+      tip: "Tip: Použite štítky obtiažnosti na filtrovanie cvikov podľa úrovne.",
     },
     warning: {
       followingWillBeDeleted: "Nasledovné bude natrvalo zmazané:",
