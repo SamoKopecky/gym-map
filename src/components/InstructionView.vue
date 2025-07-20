@@ -325,47 +325,53 @@ function deleteMedia() {
           <p v-if="canEdit" class="text-center text-subtitle-1 font-weight-medium mb-2">
             {{ mediaName }}
           </p>
-          <v-carousel
-            hide-delimiters
-            hide-delimiter-background
-            v-model="carouselIndex"
-            style="height: 100%"
-            class="video-carousel"
+          <v-defaults-provider
+            :defaults="{ VBtn: { size: 'small', variant: 'outlined', color: '#eee' } }"
           >
-            <v-carousel-item v-for="m in medias" :key="m.url">
-              <video
-                v-if="m.type !== MediaType.Youtube"
-                controls
-                :src="m.url"
-                :type="m.type"
-                style="background-color: black"
-                class="responsive-video"
-              />
-              <iframe
-                v-else
-                :src="`https://www.youtube-nocookie.com/embed/${m.url}?rel=0`"
-                class="responsive-video"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-            </v-carousel-item>
-            <v-overlay
-              :scrim="false"
-              content-class="w-100 h-100 d-flex flex-column align-center justify-space-between pointer-pass-through py-3"
-              contained
-              model-value
-              no-click-animation
-              persistent
+            <v-carousel
+              hide-delimiters
+              hide-delimiter-background
+              vertical-arrows="left"
+              direction="vertical"
+              v-model="carouselIndex"
+              style="height: 100%"
+              class="video-carousel"
             >
-              <v-chip
-                :text="`${carouselIndex + 1} / ${medias.length}`"
-                color="#eee"
-                size="small"
-                variant="flat"
-              />
-            </v-overlay>
-          </v-carousel>
+              <v-carousel-item v-for="m in medias" :key="m.url">
+                <video
+                  v-if="m.type !== MediaType.Youtube"
+                  controls
+                  :src="m.url"
+                  :type="m.type"
+                  style="background-color: black"
+                  class="responsive-video"
+                />
+                <iframe
+                  v-else
+                  :src="`https://www.youtube-nocookie.com/embed/${m.url}?rel=0`"
+                  class="responsive-video"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </v-carousel-item>
+              <v-overlay
+                :scrim="false"
+                content-class="w-100 h-100 d-flex flex-column align-center justify-space-between pointer-pass-through py-3"
+                contained
+                model-value
+                no-click-animation
+                persistent
+              >
+                <v-chip
+                  :text="`${carouselIndex + 1} / ${medias.length}`"
+                  color="#eee"
+                  size="small"
+                  variant="flat"
+                />
+              </v-overlay>
+            </v-carousel>
+          </v-defaults-provider>
         </v-responsive>
         <div v-else class="text-center text-grey">
           <v-icon size="64">mdi-video-off-outline</v-icon>

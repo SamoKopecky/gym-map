@@ -1,3 +1,9 @@
+# Version 0.2.0
+
+## Changed
+
+- Change carousel arrows position, scroll direction and style
+
 # Version 0.1.0
 
 ## Added
