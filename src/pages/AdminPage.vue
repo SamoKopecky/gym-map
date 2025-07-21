@@ -6,6 +6,7 @@ import { computed } from "vue"
 import { onMounted } from "vue"
 import { ref } from "vue"
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
+import CategoriesPage from "@/components/CategoriesPage.vue"
 import { useI18n } from "vue-i18n"
 
 const users = ref<User[]>([])
@@ -96,24 +97,23 @@ onMounted(() => loadUsers())
       ></v-text-field>
     </v-card-title>
 
-    <v-divider></v-divider>
-
-    <v-data-table :loading="tableLoading" :headers="headers" :items="users" :search="search">
-      <!-- eslint-disable-next-line -->
-      <template #item.actions="{ item }">
-        <v-btn
-          variant="text"
-          color="grey-darken-1"
-          :v-tooltip:bottom="t('button.unregister')"
-          icon="mdi-close-circle-outline"
-          @click="confirmUserUnregistration(item)"
-        ></v-btn>
-      </template>
-    </v-data-table>
-
-    <v-divider></v-divider>
-
     <v-card-text>
+      <v-divider></v-divider>
+
+      <v-data-table :loading="tableLoading" :headers="headers" :items="users" :search="search">
+        <!-- eslint-disable-next-line -->
+        <template #item.actions="{ item }">
+          <v-btn
+            variant="text"
+            color="grey-darken-1"
+            :v-tooltip:bottom="t('button.unregister')"
+            icon="mdi-close-circle-outline"
+            @click="confirmUserUnregistration(item)"
+          ></v-btn>
+        </template>
+      </v-data-table>
+
+      <v-divider></v-divider>
       <v-form v-model="isFormValid" @submit.prevent="addNew">
         <v-row class="align-center">
           <v-col cols="12" sm="8">
@@ -146,4 +146,5 @@ onMounted(() => loadUsers())
       </v-form>
     </v-card-text>
   </v-card>
+  <CategoriesPage class="mt-2" />
 </template>
