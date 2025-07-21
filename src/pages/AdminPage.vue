@@ -80,7 +80,7 @@ onMounted(() => loadUsers())
     >{{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
-  <v-card>
+  <v-card class="mb-2">
     <v-card-title class="d-flex align-center">
       <v-icon icon="mdi-account-group"></v-icon> &nbsp; {{ t("table.trainers") }}
 
@@ -114,7 +114,7 @@ onMounted(() => loadUsers())
       </v-data-table>
 
       <v-divider></v-divider>
-      <v-form v-model="isFormValid" @submit.prevent="addNew">
+      <v-form v-model="isFormValid" @submit.prevent="addNew" class="mt-2">
         <v-row class="align-center">
           <v-col cols="12" sm="8">
             <v-text-field
@@ -146,5 +146,5 @@ onMounted(() => loadUsers())
       </v-form>
     </v-card-text>
   </v-card>
-  <CategoriesPage class="mt-2" />
+  <CategoriesPage />
 </template>
