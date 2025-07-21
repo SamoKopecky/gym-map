@@ -5,9 +5,14 @@ import { type Category, type CategoryProperties } from "@/types/category"
 import { useDebounceFn } from "@vueuse/core"
 import { onMounted } from "vue"
 import { ref } from "vue"
+import { useI18n } from "vue-i18n"
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog.vue"
 
 const { addNotification } = useNotificationStore()
 const categories = ref<CategoryProperties[]>([])
+const toDeleteCategory = ref<CategoryProperties>()
+const toDeleteActive = ref(false)
+const { t } = useI18n()
 
 function newCategory() {
   categoryService
@@ -17,6 +22,13 @@ function newCategory() {
       addNotification("Category added", "success")
     })
     .catch(() => addNotification("Failed to add category", "error"))
+}
+
+function deleteCategory(id: number) {
+  categoryService.delete(id).then(() => {
+    categories.value = categories.value.filter((c) => c.id !== id)
+    addNotification("Category deleted", "success")
+  })
 }
 
 const updateNameDebounce = useDebounceFn(
@@ -33,6 +45,16 @@ onMounted(() => {
 </script>
 
 <template>
+  <DeleteConfirmationDialog
+    v-if="toDeleteCategory"
+    v-model="toDeleteActive"
+    :confirm-text="t('button.delete')"
+    @confirm="deleteCategory(toDeleteCategory.id)"
+  >
+    Are you sure you want to delete <b>{{ toDeleteCategory.name }}</b
+    >? This action cannot be undone.
+  </DeleteConfirmationDialog>
+
   <v-card title="Exercise categories">
     <v-card-text>
       <v-card v-for="category in categories" :key="category.id" variant="flat">
@@ -51,6 +73,12 @@ onMounted(() => {
               variant="text"
               color="error"
               v-tooltip:bottom="'Delete'"
+              @click="
+                () => {
+                  toDeleteCategory = category
+                  toDeleteActive = true
+                }
+              "
             />
           </div>
         </v-card-title>
