@@ -29,6 +29,7 @@ export function exerciseFactory(
     difficulty: diffculty,
     id: 1,
     instruction_count: 0,
+    property_ids: [],
   }
 }
 

@@ -27,6 +27,7 @@ const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
 const categories = ref<CategoryProperties[]>([])
+const activeCategories = ref<CategoryProperties[]>([])
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
@@ -37,6 +38,7 @@ const formData = reactive<ExerciseState>({
   description: "",
   muscle_groups: [],
   difficulty: undefined,
+  property_ids: [],
 })
 
 const nameRules = [
@@ -168,23 +170,31 @@ onMounted(() => {
           ></v-select>
 
           <v-combobox
+            v-model="activeCategories"
             :label="'Categories'"
             chips
             multiple
             variant="outlined"
             persistent-hint
             hide-details="auto"
-            :items="categories.map((c) => c.name)"
+            item-value="id"
+            item-title="name"
+            :items="categories"
           />
 
           <v-combobox
-            class="mt-2 ml-2"
-            :label="'Category 1'"
+            v-for="category in activeCategories"
+            class="mt-2 ml-4"
+            :label="category.name"
             chips
             multiple
             variant="outlined"
             persistent-hint
             hide-details="auto"
+            item-value="id"
+            item-title="name"
+            :items="category.properties"
+            @update:model-value="(values) => console.log(values)"
           />
         </v-card-text>
 
