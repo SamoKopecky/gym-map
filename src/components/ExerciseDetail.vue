@@ -2,11 +2,13 @@
 import { exerciseService } from "@/services/exercise"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type ExerciseState, type Exercise, Difficulty } from "@/types/exercise"
-import { reactive } from "vue"
+import { onMounted, reactive } from "vue"
 import { ref, watch } from "vue"
 import { difficultyToString } from "@/utils/transformators"
 import { useUser } from "@/composables/useUser"
 import { useI18n } from "vue-i18n"
+import { categoryService } from "@/services/category"
+import type { CategoryProperties } from "@/types/category"
 
 const MAX_NAME_CHARS = 255
 
@@ -24,6 +26,7 @@ const active = defineModel<boolean>("active", { required: true })
 const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
+const categories = ref<CategoryProperties[]>([])
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
@@ -100,6 +103,10 @@ function saveExercise() {
       })
   }
 }
+
+onMounted(() => {
+  categoryService.getCategoryProperties().then((res) => (categories.value = res))
+})
 </script>
 
 <template>
@@ -159,6 +166,26 @@ function saveExercise() {
             prepend-inner-icon="mdi-speedometer"
             class="mb-2"
           ></v-select>
+
+          <v-combobox
+            :label="'Categories'"
+            chips
+            multiple
+            variant="outlined"
+            persistent-hint
+            hide-details="auto"
+            :items="categories.map((c) => c.name)"
+          />
+
+          <v-combobox
+            class="mt-2 ml-2"
+            :label="'Category 1'"
+            chips
+            multiple
+            variant="outlined"
+            persistent-hint
+            hide-details="auto"
+          />
         </v-card-text>
 
         <v-divider />
