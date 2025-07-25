@@ -8,7 +8,10 @@ import { difficultyToString } from "@/utils/transformators"
 import { useUser } from "@/composables/useUser"
 import { useI18n } from "vue-i18n"
 import { categoryService } from "@/services/category"
-import type { CategoryProperties } from "@/types/category"
+import type { Category, CategoryProperties } from "@/types/category"
+import { categoriesToPropertyIds } from "@/utils/categories"
+import { computed } from "vue"
+import type { Property } from "@/types/property"
 
 const MAX_NAME_CHARS = 255
 
@@ -27,7 +30,18 @@ const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
 const categories = ref<CategoryProperties[]>([])
-const activeCategories = ref<CategoryProperties[]>([])
+const categoriesMap = computed(() => {
+  const res = new Map<number, Property[]>()
+  categories.value.forEach((c) => res.set(c.id, c.properties))
+  return res
+})
+const categoriesOnly = computed(() => {
+  const categoriesOnly: Category[] = []
+  categories.value.forEach((c) => {
+    categoriesOnly.push({ name: c.name, id: c.id })
+  })
+  return categoriesOnly
+})
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
@@ -38,7 +52,7 @@ const formData = reactive<ExerciseState>({
   description: "",
   muscle_groups: [],
   difficulty: undefined,
-  property_ids: [],
+  active_categories: [],
 })
 
 const nameRules = [
@@ -54,16 +68,20 @@ watch(active, (newVal) => {
     formData.description = exercise.value.description ?? ""
     formData.muscle_groups = exercise.value.muscle_groups ?? []
     formData.difficulty = exercise.value.difficulty
+    categoryService
+      .get({ property_ids: exercise.value.property_ids })
+      .then((res) => (formData.active_categories = res))
+      .catch(() => (formData.active_categories = []))
   } else {
     formData.name = ""
     formData.description = ""
     formData.muscle_groups = []
     formData.difficulty = undefined
+    formData.active_categories = []
   }
 })
 
 function saveExercise() {
-  // TODO: User feedback on fail
   if (!isFormValid.value) return
 
   isLoading.value = true
@@ -74,7 +92,13 @@ function saveExercise() {
       return
     }
     exerciseService
-      .post({ ...formData, machine_id: props.machineId })
+      .post({
+        name: formData.name,
+        property_ids: categoriesToPropertyIds(formData.active_categories),
+        description: formData.description,
+        muscle_groups: formData.muscle_groups,
+        machine_id: props.machineId,
+      })
       .then((res) => {
         emit("create:exercise", res)
         addNotification(t("notification.exerciseSuccessfullySaved"), "success")
@@ -90,10 +114,14 @@ function saveExercise() {
     exerciseService
       .patch({
         id: exercise.value.id,
-        ...formData,
+        name: formData.name,
+        description: formData.description,
+        muscle_groups: formData.muscle_groups,
+        property_ids: categoriesToPropertyIds(formData.active_categories),
       })
       .then(() => {
         Object.assign(exercise.value!, formData)
+        exercise.value!.property_ids = categoriesToPropertyIds(formData.active_categories)
         active.value = false
         addNotification(t("notification.exerciseEdited"), "success")
       })
@@ -107,7 +135,7 @@ function saveExercise() {
 }
 
 onMounted(() => {
-  categoryService.getCategoryProperties().then((res) => (categories.value = res))
+  categoryService.get().then((res) => (categories.value = res))
 })
 </script>
 
@@ -169,8 +197,9 @@ onMounted(() => {
             class="mb-2"
           ></v-select>
 
+          <!-- TODO: use select here and figure out why v model behaves wierd -->
           <v-combobox
-            v-model="activeCategories"
+            v-model="formData.active_categories"
             :label="'Categories'"
             chips
             multiple
@@ -179,11 +208,13 @@ onMounted(() => {
             hide-details="auto"
             item-value="id"
             item-title="name"
-            :items="categories"
+            :items="categoriesOnly"
           />
 
           <v-combobox
-            v-for="category in activeCategories"
+            v-for="category in formData.active_categories"
+            :key="category.id"
+            v-model="category.properties"
             class="mt-2 ml-4"
             :label="category.name"
             chips
@@ -193,8 +224,7 @@ onMounted(() => {
             hide-details="auto"
             item-value="id"
             item-title="name"
-            :items="category.properties"
-            @update:model-value="(values) => console.log(values)"
+            :items="categoriesMap.get(category.id)"
           />
         </v-card-text>
 

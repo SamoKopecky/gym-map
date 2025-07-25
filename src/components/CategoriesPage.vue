@@ -68,7 +68,7 @@ function handlePropertyUpdate(values: string[], category: CategoryProperties) {
 }
 
 onMounted(() => {
-  categoryService.getCategoryProperties().then((res) => (categories.value = res))
+  categoryService.get().then((res) => (categories.value = res))
 })
 </script>
 
@@ -85,43 +85,46 @@ onMounted(() => {
 
   <v-card :title="t('categories.title')">
     <v-card-text>
-      <v-card v-for="category in categories" :key="category.id" variant="flat">
-        <v-card-title>
-          <div class="d-flex align-center">
-            <v-text-field
-              v-model="category.name"
-              variant="plain"
+      <div v-for="category in categories" :key="category.id">
+        <v-divider />
+        <v-card variant="flat">
+          <v-card-title>
+            <div class="d-flex align-center">
+              <v-text-field
+                v-model="category.name"
+                variant="plain"
+                hide-details="auto"
+                @update:model-value="updateNameDebounce(category)"
+              />
+              <v-btn
+                class="ml-2"
+                icon="mdi-close"
+                variant="text"
+                color="error"
+                v-tooltip:bottom="t('categories.deleteTooltip')"
+                @click="
+                  () => {
+                    toDeleteCategory = category
+                    toDeleteActive = true
+                  }
+                "
+              />
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <v-combobox
+              :model-value="category.properties.map((p) => p.name)"
+              chips
+              multiple
+              variant="outlined"
+              persistent-hint
               hide-details="auto"
-              @update:model-value="updateNameDebounce(category)"
+              :placeholder="t('categories.propertiesPlaceholder')"
+              @update:model-value="(values: string[]) => handlePropertyUpdate(values, category)"
             />
-            <v-btn
-              class="ml-2"
-              icon="mdi-close"
-              variant="text"
-              color="error"
-              v-tooltip:bottom="t('categories.deleteTooltip')"
-              @click="
-                () => {
-                  toDeleteCategory = category
-                  toDeleteActive = true
-                }
-              "
-            />
-          </div>
-        </v-card-title>
-        <v-card-text>
-          <v-combobox
-            :model-value="category.properties.map((p) => p.name)"
-            chips
-            multiple
-            variant="outlined"
-            persistent-hint
-            hide-details="auto"
-            :placeholder="t('categories.propertiesPlaceholder')"
-            @update:model-value="(values: string[]) => handlePropertyUpdate(values, category)"
-          />
-        </v-card-text>
-      </v-card>
+          </v-card-text>
+        </v-card>
+      </div>
 
       <v-btn class="mt-2" variant="tonal" color="primary" @click="newCategory">
         <v-icon start>mdi-plus-circle-outline</v-icon>

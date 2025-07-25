@@ -6,12 +6,14 @@ export interface ExercisePostRequest {
   name: string
   description?: string
   muscle_groups?: string[]
+  property_ids: number[]
 }
 
 export interface ExercisePatchRequest extends PatchBase {
   name?: string
   description?: string
   muscle_groups?: string[]
+  property_ids?: number[]
 }
 
 export interface ExerciseQueryParams {
