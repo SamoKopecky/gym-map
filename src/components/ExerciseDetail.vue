@@ -181,6 +181,7 @@ onMounted(() => {
 
           <!-- TODO: use select here and figure out why v model behaves wierd -->
           <v-combobox
+            :readonly="!isAdmin"
             v-model="formData.active_categories"
             :label="'Categories'"
             chips
@@ -194,6 +195,7 @@ onMounted(() => {
           />
 
           <v-combobox
+            :readonly="!isAdmin"
             v-for="category in formData.active_categories"
             :key="category.id"
             v-model="category.properties"

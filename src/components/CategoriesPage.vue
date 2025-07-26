@@ -81,15 +81,15 @@ onMounted(() => {
 
   <v-card :title="t('categories.title')">
     <v-card-text>
-      <div v-for="category in categories" :key="category.id">
-        <v-divider />
-        <v-card variant="flat">
-          <v-card-title>
+      <div v-for="category in categories" :key="category.id" class="mb-4">
+        <v-card variant="outlined" class="category-card">
+          <v-card-title class="pb-2">
             <div class="d-flex align-center">
               <v-text-field
                 v-model="category.name"
-                variant="plain"
+                variant="underlined"
                 hide-details="auto"
+                class="category-name-field"
                 @update:model-value="updateNameDebounceCat(category)"
               />
               <v-btn
@@ -107,7 +107,8 @@ onMounted(() => {
               />
             </div>
           </v-card-title>
-          <v-card-text class="ml-4">
+          <v-divider></v-divider>
+          <v-card-text class="px-4 py-3">
             <div
               v-for="property in category.properties"
               :key="property.id"
@@ -139,10 +140,35 @@ onMounted(() => {
         </v-card>
       </div>
 
-      <v-btn class="mt-2" variant="tonal" color="primary" @click="newCategory">
-        <v-icon start>mdi-plus-circle-outline</v-icon>
-        {{ t("categories.addNewCategory") }}
-      </v-btn>
+      <div class="text-center mt-4">
+        <v-btn variant="tonal" color="primary" size="large" @click="newCategory">
+          <v-icon start>mdi-plus-circle-outline</v-icon>
+          {{ t("categories.addNewCategory") }}
+        </v-btn>
+      </div>
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+.category-card {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.category-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category-name-field {
+  max-width: none;
+}
+
+.category-name-field :deep(.v-field__input) {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.category-name-field :deep(input) {
+  text-overflow: ellipsis;
+}
+</style>
