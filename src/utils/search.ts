@@ -13,9 +13,7 @@ export function isMachineSearched(searchData: SearchData, machine: Machine): boo
 
 export function isExerciseSearched(searchData: SearchData, exercise: Exercise): boolean {
   const adjustedSearchText = searchData.text.toLowerCase()
-  const textSearched =
-    exercise.name.toLowerCase().includes(adjustedSearchText) ||
-    exercise.muscle_groups!.some((mg) => mg.toLowerCase().includes(adjustedSearchText))
+  const textSearched = exercise.name.toLowerCase().includes(adjustedSearchText)
 
   let difficultySearched = true
   if (searchData.difficulties.length !== 0) {

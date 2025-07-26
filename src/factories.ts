@@ -16,15 +16,10 @@ export function machineFactory(name?: string, muscleGroups?: string[]): Machine 
   }
 }
 
-export function exerciseFactory(
-  name?: string,
-  muscleGroups?: string[],
-  diffculty?: Difficulty,
-): Exercise {
+export function exerciseFactory(name?: string, diffculty?: Difficulty): Exercise {
   return {
     name: name ?? "foo",
     machine_id: 0,
-    muscle_groups: muscleGroups ?? [],
     description: "bar",
     difficulty: diffculty,
     id: 1,

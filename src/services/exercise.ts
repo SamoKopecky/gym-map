@@ -12,6 +12,7 @@ export interface ExercisePostRequest {
 export interface ExercisePatchRequest extends PatchBase {
   name?: string
   description?: string
+  difficulty?: string
   muscle_groups?: string[]
   property_ids?: number[]
 }

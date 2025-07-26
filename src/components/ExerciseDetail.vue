@@ -50,7 +50,6 @@ const { t } = useI18n()
 const formData = reactive<ExerciseState>({
   name: "",
   description: "",
-  muscle_groups: [],
   difficulty: undefined,
   active_categories: [],
 })
@@ -66,7 +65,6 @@ watch(active, (newVal) => {
   if (exercise.value && newVal) {
     formData.name = exercise.value.name
     formData.description = exercise.value.description ?? ""
-    formData.muscle_groups = exercise.value.muscle_groups ?? []
     formData.difficulty = exercise.value.difficulty
     categoryService
       .get({ property_ids: exercise.value.property_ids })
@@ -75,7 +73,6 @@ watch(active, (newVal) => {
   } else {
     formData.name = ""
     formData.description = ""
-    formData.muscle_groups = []
     formData.difficulty = undefined
     formData.active_categories = []
   }
@@ -96,7 +93,6 @@ function saveExercise() {
         name: formData.name,
         property_ids: categoriesToPropertyIds(formData.active_categories),
         description: formData.description,
-        muscle_groups: formData.muscle_groups,
         machine_id: props.machineId,
       })
       .then((res) => {
@@ -116,7 +112,7 @@ function saveExercise() {
         id: exercise.value.id,
         name: formData.name,
         description: formData.description,
-        muscle_groups: formData.muscle_groups,
+        difficulty: formData.difficulty,
         property_ids: categoriesToPropertyIds(formData.active_categories),
       })
       .then(() => {
@@ -170,19 +166,6 @@ onMounted(() => {
             auto-grow
             prepend-inner-icon="mdi-note-text-outline"
             class="mb-2"
-          />
-
-          <v-combobox
-            :readonly="!isAdmin"
-            v-model="formData.muscle_groups"
-            :label="t('form.muscleGroups')"
-            chips
-            multiple
-            variant="outlined"
-            prepend-inner-icon="mdi-weight-lifter"
-            :hint="isAdmin ? t('form.muscleGroupsHint') : undefined"
-            persistent-hint
-            :class="[isAdmin ? 'mb-3' : '']"
           />
 
           <v-select

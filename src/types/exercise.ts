@@ -11,7 +11,6 @@ export interface Exercise extends Entity {
   machine_id: number
   name: string
   description?: string
-  muscle_groups?: string[]
   difficulty?: Difficulty
   property_ids: number[]
   instruction_count: number
@@ -21,7 +20,6 @@ export interface Exercise extends Entity {
 export interface ExerciseState {
   name: string
   description: string
-  muscle_groups: string[]
   difficulty?: Difficulty
   active_categories: CategoryProperties[]
 }

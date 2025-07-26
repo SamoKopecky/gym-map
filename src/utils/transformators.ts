@@ -15,7 +15,6 @@ export function exerciseToCard(exercise: Exercise): Card {
   return {
     name: exercise.name,
     id: exercise.id,
-    subtitle: exercise.muscle_groups?.join(", "),
     description: exercise.description,
     chips: chips,
     count: exercise.instruction_count,
