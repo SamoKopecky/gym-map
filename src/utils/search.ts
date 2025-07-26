@@ -12,11 +12,8 @@ export function isMachineSearched(searchData: SearchData, machine: Machine): boo
 }
 
 export function isExerciseSearched(searchData: SearchData, exercise: Exercise): boolean {
-  const propertyNames = exercise.categories.map((c) => c.properties.map((p) => p.name)).flat()
   const adjustedSearchText = searchData.text.toLowerCase()
-  const textSearched =
-    exercise.name.toLowerCase().includes(adjustedSearchText) ||
-    propertyNames.some((mg) => mg.toLowerCase().includes(adjustedSearchText))
+  const isTextSearched = exercise.name.toLowerCase().includes(adjustedSearchText)
 
   let difficultySearched = true
   if (searchData.difficulties.length !== 0) {
@@ -27,7 +24,13 @@ export function isExerciseSearched(searchData: SearchData, exercise: Exercise): 
     }
   }
 
-  return textSearched && difficultySearched
+  let isPropertySearched = true
+  if (searchData.properties.length > 0) {
+    const propertyIds = searchData.properties.map((p) => p.id)
+    isPropertySearched = exercise.property_ids.some((p) => propertyIds.includes(p))
+  }
+
+  return isTextSearched && difficultySearched && isPropertySearched
 }
 
 export function isInstructionSearched(searchData: SearchData, instruction: Instruction): boolean {

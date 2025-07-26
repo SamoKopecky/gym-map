@@ -1,4 +1,5 @@
 import type { Difficulty } from "./exercise"
+import type { Property } from "./property"
 
 export type NotificationType = "success" | "info" | "warning" | "error" | undefined
 
@@ -10,6 +11,7 @@ export interface ChangeNotification {
 export interface SearchData {
   text: string
   difficulties: Difficulty[]
+  properties: Property[]
 }
 
 export interface MediaInfo {

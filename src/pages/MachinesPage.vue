@@ -6,6 +6,7 @@ import MachineDetail from "@/components/MachineDetail.vue"
 import InstructionDetail from "@/components/InstructionDetail.vue"
 import InstructionView from "@/components/InstructionView.vue"
 import SearchHelp from "@/components/SearchHelp.vue"
+import FilterMenu from "@/components/FilterMenu.vue"
 import { onMounted } from "vue"
 import {
   exerciseToCard,
@@ -29,6 +30,7 @@ import type { Machine } from "@/types/machine"
 import type { Exercise } from "@/types/exercise"
 import type { Instruction } from "@/types/instruction"
 import { useI18n } from "vue-i18n"
+import type { Property } from "@/types/property"
 
 const props = defineProps({
   id: {
@@ -41,6 +43,7 @@ const props = defineProps({
 const searchData = reactive<SearchData>({
   difficulties: [],
   text: "",
+  properties: [],
 })
 const panelsShow = ref<CardPanelName[]>(["machines", "exercises"])
 const selectedMachineCard = ref<Card>()
@@ -192,6 +195,11 @@ function instructionCreation(instruction: Instruction) {
     exerciseSelected.instruction_count += 1
   }
 }
+
+function removePropertyFilter(property: Property) {
+  const index = searchData.properties.indexOf(property)
+  searchData.properties.splice(index, 1)
+}
 </script>
 
 <template>
@@ -220,6 +228,7 @@ function instructionCreation(instruction: Instruction) {
     <SearchHelp v-model="showSearchHelp" />
 
     <v-container fluid>
+      <!-- TODO: Make rows if smaller screen-->
       <div class="d-flex align-center mt-2 mx-2">
         <v-text-field
           prepend-icon="mdi-magnify"
@@ -231,6 +240,7 @@ function instructionCreation(instruction: Instruction) {
           clearable
           hide-details="auto"
         />
+        <FilterMenu v-model="searchData.properties" class="ml-2" />
         <v-btn
           icon="mdi-help-circle-outline"
           variant="text"
@@ -239,7 +249,8 @@ function instructionCreation(instruction: Instruction) {
           :title="t('searchHelp.title')"
         />
       </div>
-      <div class="d-flex pa-2">
+
+      <div class="d-flex">
         <v-chip-group v-model="searchData.difficulties" filter multiple>
           <v-chip
             variant="outlined"
@@ -251,6 +262,21 @@ function instructionCreation(instruction: Instruction) {
             {{ t(difficultyToString(difficulty)) }}
           </v-chip>
         </v-chip-group>
+      </div>
+
+      <div v-if="searchData.properties.length > 0" class="d-flex align-center">
+        <transition-group name="chip" tag="div" class="d-flex">
+          <v-chip
+            v-for="property in searchData.properties"
+            :key="property.id"
+            variant="outlined"
+            class="mr-2"
+            closable
+            @click:close="removePropertyFilter(property)"
+          >
+            {{ property.name }}
+          </v-chip>
+        </transition-group>
       </div>
     </v-container>
 
@@ -339,3 +365,14 @@ function instructionCreation(instruction: Instruction) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.chip-leave-active {
+  transition: all 0.3s ease;
+}
+
+.chip-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+</style>
