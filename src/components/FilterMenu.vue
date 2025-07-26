@@ -23,6 +23,21 @@ onMounted(() => categoryService.get().then((res) => (categories.value = res)))
 
     <v-navigation-drawer v-model="drawer">
       <v-list nav dense>
+        <v-list-item class="d-flex justify-space-between align-center">
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="drawer = false"
+            class="ml-auto"
+            v-tooltip:bottom="'Close'"
+          />
+          <v-btn
+            icon="mdi-refresh"
+            variant="text"
+            @click="resetFilters"
+            v-tooltip:bottom="'Reset filters'"
+          />
+        </v-list-item>
         <v-list-group v-for="category in categories" :key="category.id" no-action>
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props">
@@ -30,24 +45,17 @@ onMounted(() => categoryService.get().then((res) => (categories.value = res)))
             </v-list-item>
           </template>
 
-          <v-list-item v-for="property in category.properties" :key="property.id">
+          <v-list-item v-for="property in category.properties" :key="property.id" density="compact">
             <v-checkbox
               v-model="activeFilters"
               :label="property.name"
               :value="property"
               hide-details
-              dense
+              density="compact"
             ></v-checkbox>
           </v-list-item>
         </v-list-group>
       </v-list>
-
-      <template v-slot:append>
-        <div class="pa-2">
-          <v-btn block class="mt-2" @click="resetFilters"> Reset </v-btn>
-          <v-btn block class="mt-2" @click="drawer = false"> Close </v-btn>
-        </div>
-      </template>
     </v-navigation-drawer>
   </div>
 </template>
