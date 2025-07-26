@@ -66,6 +66,7 @@ function deleteProperty(category: CategoryProperties, property: Property) {
 onMounted(() => {
   categoryService.get().then((res) => (categories.value = res))
 })
+// TODO:  make toolbar on the edge fit screen on phone, adjust search help
 </script>
 
 <template>

@@ -228,27 +228,37 @@ function removePropertyFilter(property: Property) {
     <SearchHelp v-model="showSearchHelp" />
 
     <v-container fluid>
-      <!-- TODO: Make rows if smaller screen-->
-      <div class="d-flex align-center mt-2 mx-2">
-        <v-text-field
-          prepend-icon="mdi-magnify"
-          v-model="searchData.text"
-          class="flex-grow-1"
-          :label="t('form.search')"
-          :placeholder="t('form.searchPlaceholder')"
-          variant="outlined"
-          clearable
-          hide-details="auto"
-        />
-        <FilterMenu v-model="searchData.properties" class="ml-2" />
-        <v-btn
-          icon="mdi-help-circle-outline"
-          variant="text"
-          class="ml-2"
-          @click="showSearchHelp = true"
-          :title="t('searchHelp.title')"
-        />
-      </div>
+      <v-row no-gutters>
+        <v-col cols="12" md="10" xl="11" sm="12">
+          <v-text-field
+            prepend-icon="mdi-magnify"
+            v-model="searchData.text"
+            class="flex-grow-1"
+            :label="t('form.search')"
+            :placeholder="t('form.searchPlaceholder')"
+            variant="outlined"
+            clearable
+            hide-details="auto"
+          />
+        </v-col>
+        <v-col cols="12" md="2" xl="1" sm="12">
+          <div class="d-flex align-center justify-center">
+            <FilterMenu
+              v-model="searchData.properties"
+              class="ml-2"
+              v-tooltip:bottom="'Filter categories'"
+            />
+            <v-btn
+              icon="mdi-help-circle-outline"
+              variant="text"
+              class="ml-2"
+              @click="showSearchHelp = true"
+              :title="t('searchHelp.title')"
+              v-tooltip:bottom="'Help'"
+            />
+          </div>
+        </v-col>
+      </v-row>
 
       <div class="d-flex">
         <v-chip-group v-model="searchData.difficulties" filter multiple>

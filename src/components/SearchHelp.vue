@@ -7,7 +7,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <v-dialog :model-value="active" max-width="500" scrollable>
+  <v-dialog v-model="active" max-width="500" scrollable>
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
         <v-icon class="me-3" color="primary">mdi-help-circle-outline</v-icon>
