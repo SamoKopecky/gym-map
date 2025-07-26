@@ -13,6 +13,7 @@ import { categoriesToPropertyIds } from "@/utils/categories"
 import { computed } from "vue"
 import type { Property } from "@/types/property"
 
+// TODO: Make properties able to change name, creating new properties breaks existing links
 const MAX_NAME_CHARS = 255
 
 const props = defineProps({
@@ -29,15 +30,15 @@ const active = defineModel<boolean>("active", { required: true })
 const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
-const categories = ref<CategoryProperties[]>([])
+const allCategories = ref<CategoryProperties[]>([])
 const categoriesMap = computed(() => {
   const res = new Map<number, Property[]>()
-  categories.value.forEach((c) => res.set(c.id, c.properties))
+  allCategories.value.forEach((c) => res.set(c.id, c.properties))
   return res
 })
 const categoriesOnly = computed(() => {
   const categoriesOnly: Category[] = []
-  categories.value.forEach((c) => {
+  allCategories.value.forEach((c) => {
     categoriesOnly.push({ name: c.name, id: c.id })
   })
   return categoriesOnly
@@ -66,10 +67,7 @@ watch(active, (newVal) => {
     formData.name = exercise.value.name
     formData.description = exercise.value.description ?? ""
     formData.difficulty = exercise.value.difficulty
-    categoryService
-      .get({ property_ids: exercise.value.property_ids })
-      .then((res) => (formData.active_categories = res))
-      .catch(() => (formData.active_categories = []))
+    formData.active_categories = exercise.value.categories
   } else {
     formData.name = ""
     formData.description = ""
@@ -130,8 +128,9 @@ function saveExercise() {
   }
 }
 
+// TODO: Cache or create store
 onMounted(() => {
-  categoryService.get().then((res) => (categories.value = res))
+  categoryService.get().then((res) => (allCategories.value = res))
 })
 </script>
 

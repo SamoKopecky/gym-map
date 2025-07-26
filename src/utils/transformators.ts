@@ -12,8 +12,10 @@ export function exerciseToCard(exercise: Exercise): Card {
     })
   }
 
+  const propertyNames = exercise.categories.map((c) => c.properties.map((p) => p.name)).flat()
   return {
     name: exercise.name,
+    subtitle: propertyNames.join(", "),
     id: exercise.id,
     description: exercise.description,
     chips: chips,

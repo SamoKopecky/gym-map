@@ -9,19 +9,14 @@ export interface CategoryPatchRequest extends PatchBase {
   name: string
 }
 
-export interface CategoryGetRequest {
-  property_ids: number[]
-}
-
 class CategoryService extends ServiceBase<CategoryPatchRequest, CategoryPostRequest, Category> {
   constructor() {
     super(Route.Categories)
   }
 
-  public async get(queryParams?: CategoryGetRequest): Promise<CategoryProperties[]> {
+  public async get(): Promise<CategoryProperties[]> {
     return this.handleRequest({
       method: Method.GET,
-      queryParams,
       route: this.route,
     })
   }

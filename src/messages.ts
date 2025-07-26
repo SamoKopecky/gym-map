@@ -62,6 +62,7 @@ export const messages = {
       trainers: "Trenéři",
     },
     $vuetify: {
+      close: "close",
       badge: "badge",
       input: {
         clear: "clear",
@@ -260,6 +261,7 @@ export const messages = {
       trainers: "Trainers",
     },
     $vuetify: {
+      close: "close",
       badge: "badge",
       input: {
         clear: "clear",
@@ -459,6 +461,7 @@ export const messages = {
       trainers: "Tréneri",
     },
     $vuetify: {
+      close: "close",
       badge: "badge",
       input: {
         clear: "vymazať",

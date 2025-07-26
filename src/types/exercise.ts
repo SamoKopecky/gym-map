@@ -13,6 +13,7 @@ export interface Exercise extends Entity {
   description?: string
   difficulty?: Difficulty
   property_ids: number[]
+  categories: CategoryProperties[]
   instruction_count: number
 }
 
