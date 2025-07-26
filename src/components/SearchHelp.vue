@@ -83,6 +83,15 @@ const { t } = useI18n()
               {{ t("searchHelp.difficultyFilter") }}
             </v-list-item-title>
           </v-list-item>
+
+          <v-list-item class="px-2 py-1">
+            <template #prepend>
+              <v-icon size="18" color="info">mdi-tune</v-icon>
+            </template>
+            <v-list-item-title class="text-body-2">
+              {{ t("searchHelp.propertyFilter") }}
+            </v-list-item-title>
+          </v-list-item>
         </v-list>
 
         <v-alert

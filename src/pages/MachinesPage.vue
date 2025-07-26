@@ -65,6 +65,11 @@ watch(
   () => (panelsShow.value = ["exercises"]),
 )
 
+watch(
+  () => searchData.properties,
+  () => (panelsShow.value = ["exercises"]),
+)
+
 function handleCardSelect(card: Card, panelName: CardPanelName) {
   if (panelName === "machines") {
     handleMachinesCardSelect(card)

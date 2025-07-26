@@ -66,7 +66,6 @@ function deleteProperty(category: CategoryProperties, property: Property) {
 onMounted(() => {
   categoryService.get().then((res) => (categories.value = res))
 })
-// TODO:   adjust search help
 </script>
 
 <template>

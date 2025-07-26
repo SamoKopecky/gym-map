@@ -180,7 +180,8 @@ export const messages = {
       exerciseName: "Název cviku",
       muscleGroups: "Svalové skupiny",
       difficultyFilter: "Obtížnost (pomocí štítků)",
-      tip: "Tip: Použijte štítky obtížnosti k filtrování cviků podle úrovně.",
+      propertyFilter: "Vlastnosti (pomocí filtru)",
+      tip: "Tip: Použijte štítky obtížnosti a filtry vlastností k filtrování cviků.",
     },
     categories: {
       title: "Kategorie cviků",
@@ -384,7 +385,8 @@ export const messages = {
       exerciseName: "Exercise name",
       muscleGroups: "Muscle groups",
       difficultyFilter: "Difficulty (using chips)",
-      tip: "Tip: Use difficulty chips to filter exercises by level.",
+      propertyFilter: "Properties (using filters)",
+      tip: "Tip: Use difficulty chips and property filters to filter exercises.",
     },
     categories: {
       title: "Exercise categories",
@@ -589,7 +591,8 @@ export const messages = {
       exerciseName: "Názov cviku",
       muscleGroups: "Svalové skupiny",
       difficultyFilter: "Obtiažnosť (pomocou štítkov)",
-      tip: "Tip: Použite štítky obtiažnosti na filtrovanie cvikov podľa úrovne.",
+      propertyFilter: "Vlastnosti (pomocou filtrov)",
+      tip: "Tip: Použite štítky obtiažnosti a filtre vlastností na filtrovanie cvikov.",
     },
     categories: {
       title: "Kategórie cvikov",
