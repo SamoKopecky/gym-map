@@ -6,7 +6,11 @@ export interface PropertyPostRequest {
   category_id: number
 }
 
-class PropertyService extends ServiceBase<PatchBase, PropertyPostRequest, Property> {
+export interface PropertyPatchRequest extends PatchBase {
+  name: string
+}
+
+class PropertyService extends ServiceBase<PropertyPatchRequest, PropertyPostRequest, Property> {
   constructor() {
     super(Route.Properties)
   }

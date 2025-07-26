@@ -33,7 +33,7 @@ function deleteCategory(id: number) {
   })
 }
 
-const updateNameDebounce = useDebounceFn(
+const updateNameDebounceCat = useDebounceFn(
   (category: Category) =>
     categoryService
       .patch({ name: category.name, id: category.id })
@@ -41,9 +41,17 @@ const updateNameDebounce = useDebounceFn(
   1000,
 )
 
-function addProperty(category: CategoryProperties, propertyName: string) {
+const updateNameDebounceProp = useDebounceFn(
+  (property: Property) =>
+    propertyService
+      .patch({ name: property.name, id: property.id })
+      .catch(() => addNotification(t("notification.propertyNameChangeFailed"), "error")),
+  1000,
+)
+
+function addProperty(category: CategoryProperties) {
   propertyService
-    .post({ name: propertyName, category_id: category.id })
+    .post({ name: `property ${category.properties.length + 1}`, category_id: category.id })
     .then((res) => category.properties.push(res))
     .catch(() => addNotification(t("notification.propertyAddFailed"), "error"))
 }
@@ -53,18 +61,6 @@ function deleteProperty(category: CategoryProperties, property: Property) {
     .delete(property.id)
     .then(() => (category.properties = category.properties.filter((p) => p.id !== property.id)))
     .catch(() => addNotification(t("notification.propertyDeleteFailed"), "error"))
-}
-
-function handlePropertyUpdate(values: string[], category: CategoryProperties) {
-  const currentNames = category.properties.map((p) => p.name)
-
-  // Find new properties (added)
-  const newValues = values.filter((v) => !currentNames.includes(v))
-  newValues.forEach((name) => addProperty(category, name))
-
-  // Find removed properties (deleted)
-  const removedProperties = category.properties.filter((p) => !values.includes(p.name))
-  removedProperties.forEach((property) => deleteProperty(category, property))
 }
 
 onMounted(() => {
@@ -94,13 +90,13 @@ onMounted(() => {
                 v-model="category.name"
                 variant="plain"
                 hide-details="auto"
-                @update:model-value="updateNameDebounce(category)"
+                @update:model-value="updateNameDebounceCat(category)"
               />
               <v-btn
                 class="ml-2"
-                icon="mdi-close"
+                icon="mdi-close-circle-outline"
                 variant="text"
-                color="error"
+                color="grey-darken-1"
                 v-tooltip:bottom="t('categories.deleteTooltip')"
                 @click="
                   () => {
@@ -111,17 +107,34 @@ onMounted(() => {
               />
             </div>
           </v-card-title>
-          <v-card-text>
-            <v-combobox
-              :model-value="category.properties.map((p) => p.name)"
-              chips
-              multiple
-              variant="outlined"
-              persistent-hint
-              hide-details="auto"
-              :placeholder="t('categories.propertiesPlaceholder')"
-              @update:model-value="(values: string[]) => handlePropertyUpdate(values, category)"
-            />
+          <v-card-text class="ml-4">
+            <div
+              v-for="property in category.properties"
+              :key="property.id"
+              class="d-flex align-center mb-2"
+            >
+              <v-text-field
+                v-model="property.name"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                :placeholder="t('categories.propertyPlaceholder')"
+                @update:model-value="updateNameDebounceProp(property)"
+              />
+              <v-btn
+                class="ml-2"
+                icon="mdi-delete-outline"
+                variant="text"
+                color="error"
+                v-tooltip:bottom="t('categories.deletePropertyTooltip')"
+                @click="deleteProperty(category, property)"
+              />
+            </div>
+
+            <v-btn class="mt-2" variant="text" color="primary" @click="addProperty(category)">
+              <v-icon start>mdi-plus</v-icon>
+              {{ t("categories.addNewProperty") }}
+            </v-btn>
           </v-card-text>
         </v-card>
       </div>

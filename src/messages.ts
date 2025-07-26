@@ -169,6 +169,7 @@ export const messages = {
       propertyAddFailed: "Nepodařilo se přidat vlastnost",
       propertyDeleted: "Vlastnost smazána",
       propertyDeleteFailed: "Nepodařilo se smazat vlastnost",
+      propertyNameChangeFailed: "Nepodařilo se změnit název vlastnosti",
     },
     searchHelp: {
       title: "Nápověda k vyhledávání",
@@ -184,10 +185,14 @@ export const messages = {
     categories: {
       title: "Kategorie cviků",
       newCategoryName: "nová kategorie",
+      newPropertyName: "vlastnost {number}",
       propertiesPlaceholder: "Přidat hodnoty...",
       addNewCategory: "Přidat novou kategorii",
-      deleteTooltip: "Smazat",
+      deleteTooltip: "Smazat kategorii",
       confirmDelete: "Opravdu chcete smazat <b>{categoryName}</b>? Tuto akci nelze vrátit zpět.",
+      addNewProperty: "Přidat novou vlastnost",
+      propertyPlaceholder: "Název vlastnosti...",
+      deletePropertyTooltip: "Smazat vlastnost",
     },
     warning: {
       followingWillBeDeleted: "Následující bude trvale smazáno:",
@@ -368,6 +373,7 @@ export const messages = {
       propertyAddFailed: "Failed to add property",
       propertyDeleted: "Property deleted",
       propertyDeleteFailed: "Failed to delete property",
+      propertyNameChangeFailed: "Failed to change property name",
     },
     searchHelp: {
       title: "Search Help",
@@ -383,11 +389,15 @@ export const messages = {
     categories: {
       title: "Exercise categories",
       newCategoryName: "new category",
+      newPropertyName: "property {number}",
       propertiesPlaceholder: "Add values...",
       addNewCategory: "Add new category",
-      deleteTooltip: "Delete",
+      deleteTooltip: "Delete category",
       confirmDelete:
         "Are you sure you want to delete <b>{categoryName}</b>? This action cannot be undone.",
+      addNewProperty: "Add new property",
+      propertyPlaceholder: "Property name...",
+      deletePropertyTooltip: "Delete property",
     },
     warning: {
       followingWillBeDeleted: "The following will be permanently deleted:",
@@ -568,6 +578,7 @@ export const messages = {
       propertyAddFailed: "Nepodarilo sa pridať vlastnosť",
       propertyDeleted: "Vlastnosť zmazaná",
       propertyDeleteFailed: "Nepodarilo sa zmazať vlastnosť",
+      propertyNameChangeFailed: "Nepodarilo sa zmeniť názov vlastnosti",
     },
     searchHelp: {
       title: "Nápoveda k vyhľadávaniu",
@@ -583,11 +594,15 @@ export const messages = {
     categories: {
       title: "Kategórie cvikov",
       newCategoryName: "nová kategória",
+      newPropertyName: "vlastnosť {number}",
       propertiesPlaceholder: "Pridať hodnoty...",
       addNewCategory: "Pridať novú kategóriu",
-      deleteTooltip: "Zmazať",
+      deleteTooltip: "Zmazať kategóriu",
       confirmDelete:
         "Naozaj chcete zmazať <b>{categoryName}</b>? Túto akciu nie je možné vrátiť späť.",
+      addNewProperty: "Pridať novú vlastnosť",
+      propertyPlaceholder: "Názov vlastnosti...",
+      deletePropertyTooltip: "Zmazať vlastnosť",
     },
     warning: {
       followingWillBeDeleted: "Nasledovné bude natrvalo zmazané:",
