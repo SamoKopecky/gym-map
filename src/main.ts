@@ -72,6 +72,9 @@ import {
   VToolbar,
   VWindow,
   VWindowItem,
+  VToolbarTitle,
+  VNavigationDrawer,
+  VListGroup,
 } from "vuetify/components"
 import * as directives from "vuetify/directives"
 
@@ -113,7 +116,11 @@ const vuetify = createVuetify({
     VMain,
     VContainer,
     VAlert,
+    VListGroup,
     VSlideYTransition,
+    VToolbarTitle,
+    VToolbar,
+    VNavigationDrawer,
     VLabel,
     VProgressCircular,
     VProgressLinear,
@@ -157,7 +164,6 @@ const vuetify = createVuetify({
     VImg,
     VCheckbox,
     VNumberInput,
-    VToolbar,
     VExpansionPanelText,
     VSlider,
     VExpansionPanel,

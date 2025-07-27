@@ -2,12 +2,18 @@
 import { exerciseService } from "@/services/exercise"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { type ExerciseState, type Exercise, Difficulty } from "@/types/exercise"
-import { reactive } from "vue"
+import { onMounted, reactive } from "vue"
 import { ref, watch } from "vue"
 import { difficultyToString } from "@/utils/transformators"
 import { useUser } from "@/composables/useUser"
 import { useI18n } from "vue-i18n"
+import { categoryService } from "@/services/category"
+import type { Category, CategoryProperties } from "@/types/category"
+import { categoriesToPropertyIds } from "@/utils/categories"
+import { computed } from "vue"
+import type { Property } from "@/types/property"
 
+// TODO: Make properties able to change name, creating new properties breaks existing links
 const MAX_NAME_CHARS = 255
 
 const props = defineProps({
@@ -24,6 +30,19 @@ const active = defineModel<boolean>("active", { required: true })
 const exercise = defineModel<Exercise>("exercise", { required: false })
 const isLoading = ref(false)
 const isFormValid = ref(false)
+const allCategories = ref<CategoryProperties[]>([])
+const categoriesMap = computed(() => {
+  const res = new Map<number, Property[]>()
+  allCategories.value.forEach((c) => res.set(c.id, c.properties))
+  return res
+})
+const categoriesOnly = computed(() => {
+  const categoriesOnly: Category[] = []
+  allCategories.value.forEach((c) => {
+    categoriesOnly.push({ name: c.name, id: c.id })
+  })
+  return categoriesOnly
+})
 
 const { addNotification } = useNotificationStore()
 const { isAdmin } = useUser()
@@ -32,8 +51,8 @@ const { t } = useI18n()
 const formData = reactive<ExerciseState>({
   name: "",
   description: "",
-  muscle_groups: [],
   difficulty: undefined,
+  active_categories: [],
 })
 
 const nameRules = [
@@ -47,18 +66,17 @@ watch(active, (newVal) => {
   if (exercise.value && newVal) {
     formData.name = exercise.value.name
     formData.description = exercise.value.description ?? ""
-    formData.muscle_groups = exercise.value.muscle_groups ?? []
     formData.difficulty = exercise.value.difficulty
+    formData.active_categories = exercise.value.categories
   } else {
     formData.name = ""
     formData.description = ""
-    formData.muscle_groups = []
     formData.difficulty = undefined
+    formData.active_categories = []
   }
 })
 
 function saveExercise() {
-  // TODO: User feedback on fail
   if (!isFormValid.value) return
 
   isLoading.value = true
@@ -69,7 +87,12 @@ function saveExercise() {
       return
     }
     exerciseService
-      .post({ ...formData, machine_id: props.machineId })
+      .post({
+        name: formData.name,
+        property_ids: categoriesToPropertyIds(formData.active_categories),
+        description: formData.description,
+        machine_id: props.machineId,
+      })
       .then((res) => {
         emit("create:exercise", res)
         addNotification(t("notification.exerciseSuccessfullySaved"), "success")
@@ -85,10 +108,14 @@ function saveExercise() {
     exerciseService
       .patch({
         id: exercise.value.id,
-        ...formData,
+        name: formData.name,
+        description: formData.description,
+        difficulty: formData.difficulty,
+        property_ids: categoriesToPropertyIds(formData.active_categories),
       })
       .then(() => {
         Object.assign(exercise.value!, formData)
+        exercise.value!.property_ids = categoriesToPropertyIds(formData.active_categories)
         active.value = false
         addNotification(t("notification.exerciseEdited"), "success")
       })
@@ -100,6 +127,11 @@ function saveExercise() {
       })
   }
 }
+
+// TODO: Cache or create store
+onMounted(() => {
+  categoryService.get().then((res) => (allCategories.value = res))
+})
 </script>
 
 <template>
@@ -135,19 +167,6 @@ function saveExercise() {
             class="mb-2"
           />
 
-          <v-combobox
-            :readonly="!isAdmin"
-            v-model="formData.muscle_groups"
-            :label="t('form.muscleGroups')"
-            chips
-            multiple
-            variant="outlined"
-            prepend-inner-icon="mdi-weight-lifter"
-            :hint="isAdmin ? t('form.muscleGroupsHint') : undefined"
-            persistent-hint
-            :class="[isAdmin ? 'mb-3' : '']"
-          />
-
           <v-select
             :readonly="!isAdmin"
             v-model="formData.difficulty"
@@ -159,6 +178,38 @@ function saveExercise() {
             prepend-inner-icon="mdi-speedometer"
             class="mb-2"
           ></v-select>
+
+          <!-- TODO: use select here and figure out why v model behaves wierd -->
+          <v-combobox
+            :readonly="!isAdmin"
+            v-model="formData.active_categories"
+            :label="'Categories'"
+            chips
+            multiple
+            variant="outlined"
+            persistent-hint
+            hide-details="auto"
+            item-value="id"
+            item-title="name"
+            :items="categoriesOnly"
+          />
+
+          <v-combobox
+            :readonly="!isAdmin"
+            v-for="category in formData.active_categories"
+            :key="category.id"
+            v-model="category.properties"
+            class="mt-2 ml-4"
+            :label="category.name"
+            chips
+            multiple
+            variant="outlined"
+            persistent-hint
+            hide-details="auto"
+            item-value="id"
+            item-title="name"
+            :items="categoriesMap.get(category.id)"
+          />
         </v-card-text>
 
         <v-divider />

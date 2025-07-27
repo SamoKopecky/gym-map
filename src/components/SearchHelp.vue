@@ -7,7 +7,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <v-dialog :model-value="active" max-width="500" scrollable>
+  <v-dialog v-model="active" max-width="500" scrollable>
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
         <v-icon class="me-3" color="primary">mdi-help-circle-outline</v-icon>
@@ -81,6 +81,15 @@ const { t } = useI18n()
             </template>
             <v-list-item-title class="text-body-2">
               {{ t("searchHelp.difficultyFilter") }}
+            </v-list-item-title>
+          </v-list-item>
+
+          <v-list-item class="px-2 py-1">
+            <template #prepend>
+              <v-icon size="18" color="info">mdi-tune</v-icon>
+            </template>
+            <v-list-item-title class="text-body-2">
+              {{ t("searchHelp.propertyFilter") }}
             </v-list-item-title>
           </v-list-item>
         </v-list>

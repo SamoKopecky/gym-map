@@ -1,4 +1,5 @@
 import { type Entity } from "./base"
+import type { CategoryProperties } from "./category"
 
 export enum Difficulty {
   Easy = "easy",
@@ -10,8 +11,9 @@ export interface Exercise extends Entity {
   machine_id: number
   name: string
   description?: string
-  muscle_groups?: string[]
   difficulty?: Difficulty
+  property_ids: number[]
+  categories: CategoryProperties[]
   instruction_count: number
 }
 
@@ -19,6 +21,6 @@ export interface Exercise extends Entity {
 export interface ExerciseState {
   name: string
   description: string
-  muscle_groups: string[]
   difficulty?: Difficulty
+  active_categories: CategoryProperties[]
 }

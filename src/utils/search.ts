@@ -1,5 +1,4 @@
 import { type Exercise } from "@/types/exercise"
-import type { Instruction } from "@/types/instruction"
 import type { Machine } from "@/types/machine"
 import type { SearchData } from "@/types/other"
 
@@ -13,9 +12,7 @@ export function isMachineSearched(searchData: SearchData, machine: Machine): boo
 
 export function isExerciseSearched(searchData: SearchData, exercise: Exercise): boolean {
   const adjustedSearchText = searchData.text.toLowerCase()
-  const textSearched =
-    exercise.name.toLowerCase().includes(adjustedSearchText) ||
-    exercise.muscle_groups!.some((mg) => mg.toLowerCase().includes(adjustedSearchText))
+  const isTextSearched = exercise.name.toLowerCase().includes(adjustedSearchText)
 
   let difficultySearched = true
   if (searchData.difficulties.length !== 0) {
@@ -26,16 +23,11 @@ export function isExerciseSearched(searchData: SearchData, exercise: Exercise): 
     }
   }
 
-  return textSearched && difficultySearched
-}
+  let isPropertySearched = true
+  if (searchData.properties.length > 0) {
+    const propertyIds = searchData.properties.map((p) => p.id)
+    isPropertySearched = exercise.property_ids.some((p) => propertyIds.includes(p))
+  }
 
-export function isInstructionSearched(searchData: SearchData, instruction: Instruction): boolean {
-  const textLower = searchData.text.toLowerCase()
-
-  if (!instruction.first_name || !instruction.last_name) return true
-
-  return (
-    instruction.first_name.toLowerCase().includes(textLower) ||
-    instruction.last_name.toLowerCase().includes(textLower)
-  )
+  return isTextSearched && difficultySearched && isPropertySearched
 }

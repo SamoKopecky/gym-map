@@ -1,6 +1,7 @@
 import type { Machine } from "@/types/machine"
 import { Difficulty, type Exercise } from "@/types/exercise"
 import type { Instruction } from "@/types/instruction"
+import type { Property } from "./types/property"
 
 export function machineFactory(name?: string, muscleGroups?: string[]): Machine {
   return {
@@ -16,19 +17,36 @@ export function machineFactory(name?: string, muscleGroups?: string[]): Machine 
   }
 }
 
-export function exerciseFactory(
-  name?: string,
-  muscleGroups?: string[],
-  diffculty?: Difficulty,
-): Exercise {
+export function exerciseFactory(data: {
+  name?: string
+  propertyNames?: string[]
+  diffculty?: Difficulty
+  propertyIds?: number[]
+}): Exercise {
+  const properties = data.propertyNames?.map((n, index) => {
+    const prop: Property = {
+      id: index + 1,
+      name: n,
+      category_id: 1,
+    }
+
+    return prop
+  })
   return {
-    name: name ?? "foo",
+    categories: [
+      {
+        id: 1,
+        name: "xyz",
+        properties: properties ?? [],
+      },
+    ],
+    name: data.name ?? "foo",
     machine_id: 0,
-    muscle_groups: muscleGroups ?? [],
     description: "bar",
-    difficulty: diffculty,
+    difficulty: data.diffculty,
     id: 1,
     instruction_count: 0,
+    property_ids: data.propertyIds ?? [],
   }
 }
 

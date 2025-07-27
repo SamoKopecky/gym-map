@@ -5,21 +5,14 @@ import CardPanel from "@/components/CardPanel.vue"
 import MachineDetail from "@/components/MachineDetail.vue"
 import InstructionDetail from "@/components/InstructionDetail.vue"
 import InstructionView from "@/components/InstructionView.vue"
-import SearchHelp from "@/components/SearchHelp.vue"
+import SearchMenu from "@/components/SearchMenu.vue"
 import { onMounted } from "vue"
-import {
-  exerciseToCard,
-  machineToCard,
-  difficultyToColor,
-  instructionToCard,
-  difficultyToString,
-} from "@/utils/transformators"
+import { exerciseToCard, machineToCard, instructionToCard } from "@/utils/transformators"
 import { isExerciseSearched, isMachineSearched } from "@/utils/search"
 import { useDetail } from "@/composables/useDetail"
 import { machineService } from "@/services/machine"
 import { exerciseService } from "@/services/exercise"
 import ExerciseDetail from "@/components/ExerciseDetail.vue"
-import { Difficulty } from "@/types/exercise"
 import { reactive } from "vue"
 import { type SearchData } from "@/types/other"
 import { instructionService } from "@/services/instruction"
@@ -41,12 +34,12 @@ const props = defineProps({
 const searchData = reactive<SearchData>({
   difficulties: [],
   text: "",
+  properties: [],
 })
 const panelsShow = ref<CardPanelName[]>(["machines", "exercises"])
 const selectedMachineCard = ref<Card>()
 const selectedExerciseCard = ref<Card>()
 const selectedInstructionCard = ref<Card>()
-const showSearchHelp = ref(false)
 
 const selectedInstruction = computed(() => {
   if (!selectedInstructionCard.value) return
@@ -59,6 +52,11 @@ const { t } = useI18n()
 
 watch(
   () => searchData.difficulties,
+  () => (panelsShow.value = ["exercises"]),
+)
+
+watch(
+  () => searchData.properties,
   () => (panelsShow.value = ["exercises"]),
 )
 
@@ -217,42 +215,7 @@ function instructionCreation(instruction: Instruction) {
       :user-id="userId"
     />
 
-    <SearchHelp v-model="showSearchHelp" />
-
-    <v-container fluid>
-      <div class="d-flex align-center mt-2 mx-2">
-        <v-text-field
-          prepend-icon="mdi-magnify"
-          v-model="searchData.text"
-          class="flex-grow-1"
-          :label="t('form.search')"
-          :placeholder="t('form.searchPlaceholder')"
-          variant="outlined"
-          clearable
-          hide-details="auto"
-        />
-        <v-btn
-          icon="mdi-help-circle-outline"
-          variant="text"
-          class="ml-2"
-          @click="showSearchHelp = true"
-          :title="t('searchHelp.title')"
-        />
-      </div>
-      <div class="d-flex pa-2">
-        <v-chip-group v-model="searchData.difficulties" filter multiple>
-          <v-chip
-            variant="outlined"
-            v-for="difficulty in Object.values(Difficulty)"
-            :key="difficulty"
-            :value="difficulty"
-            :color="difficultyToColor(difficulty)"
-          >
-            {{ t(difficultyToString(difficulty)) }}
-          </v-chip>
-        </v-chip-group>
-      </div>
-    </v-container>
+    <SearchMenu v-model="searchData" />
 
     <v-expansion-panels v-model="panelsShow" multiple variant="accordion">
       <CardPanel
