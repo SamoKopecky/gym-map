@@ -17,14 +17,15 @@ export function machineFactory(name?: string, muscleGroups?: string[]): Machine 
   }
 }
 
-export function exerciseFactory(
-  name?: string,
-  propertyNames?: string[],
-  diffculty?: Difficulty,
-): Exercise {
-  const properties = propertyNames?.map((n) => {
+export function exerciseFactory(data: {
+  name?: string
+  propertyNames?: string[]
+  diffculty?: Difficulty
+  propertyIds?: number[]
+}): Exercise {
+  const properties = data.propertyNames?.map((n, index) => {
     const prop: Property = {
-      id: 1,
+      id: index + 1,
       name: n,
       category_id: 1,
     }
@@ -39,13 +40,13 @@ export function exerciseFactory(
         properties: properties ?? [],
       },
     ],
-    name: name ?? "foo",
+    name: data.name ?? "foo",
     machine_id: 0,
     description: "bar",
-    difficulty: diffculty,
+    difficulty: data.diffculty,
     id: 1,
     instruction_count: 0,
-    property_ids: [],
+    property_ids: data.propertyIds ?? [],
   }
 }
 

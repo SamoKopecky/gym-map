@@ -1,5 +1,4 @@
 import { type Exercise } from "@/types/exercise"
-import type { Instruction } from "@/types/instruction"
 import type { Machine } from "@/types/machine"
 import type { SearchData } from "@/types/other"
 
@@ -31,15 +30,4 @@ export function isExerciseSearched(searchData: SearchData, exercise: Exercise): 
   }
 
   return isTextSearched && difficultySearched && isPropertySearched
-}
-
-export function isInstructionSearched(searchData: SearchData, instruction: Instruction): boolean {
-  const textLower = searchData.text.toLowerCase()
-
-  if (!instruction.first_name || !instruction.last_name) return true
-
-  return (
-    instruction.first_name.toLowerCase().includes(textLower) ||
-    instruction.last_name.toLowerCase().includes(textLower)
-  )
 }
