@@ -20,7 +20,7 @@ onMounted(() => categoryService.get().then((res) => (categories.value = res)))
 <template>
   <div>
     <v-btn
-      icon="mdi-filter-outline"
+      icon="mdi-tune-vertical"
       variant="text"
       @click="drawer = !drawer"
       v-tooltip:bottom="'Filter categories'"

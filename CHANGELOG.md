@@ -1,3 +1,9 @@
+# Version 0.3.1 - 2025-08-02
+
+## Changed
+
+- Filter icon
+
 # Version 0.3.0 - 2025-07-27
 
 ## Added
