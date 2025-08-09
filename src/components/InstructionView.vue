@@ -313,6 +313,9 @@ function deleteMedia() {
         </v-progress-circular>
       </div>
 
+      <p v-if="canEdit" class="text-center text-subtitle-1 font-weight-medium mb-2">
+        {{ mediaName }}
+      </p>
       <div class="d-flex justify-center mt-4">
         <v-progress-circular size="100" v-if="mediaLoading" indeterminate />
 
@@ -322,9 +325,6 @@ function deleteMedia() {
           max-width="1440"
           class="mx-auto"
         >
-          <p v-if="canEdit" class="text-center text-subtitle-1 font-weight-medium mb-2">
-            {{ mediaName }}
-          </p>
           <v-defaults-provider
             :defaults="{ VBtn: { size: 'small', variant: 'outlined', color: '#eee' } }"
           >
