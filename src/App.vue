@@ -35,6 +35,9 @@ const getTabFromPath = (path: string) => {
   if (path.startsWith("/map")) {
     return "map"
   }
+  if (path.startsWith("/beginner")) {
+    return "beginner"
+  }
   if (path.startsWith("/admin")) {
     return "admin"
   }
@@ -82,6 +85,10 @@ function login() {
           <v-tabs v-model="tab">
             <v-tab to="/map" value="map">{{ t("navigation.map") }}</v-tab>
             <v-tab to="/machines" value="machines">{{ t("navigation.machines") }}</v-tab>
+            <v-tab to="/beginner" value="beginner">
+              <v-icon start>mdi-school</v-icon>
+              Beginner
+            </v-tab>
             <v-tab to="/admin" value="admin" v-if="isAdmin">{{ t("navigation.admin") }}</v-tab>
           </v-tabs>
         </div>
