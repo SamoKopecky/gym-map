@@ -1,68 +1,64 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useDisplay } from "vuetify"
+import { useI18n } from "vue-i18n"
 
 const currentSlide = ref(0)
 // eslint-disable-next-line
 const selectedExercise = ref<any>(null)
 const { xs, mdAndUp } = useDisplay()
+const { t } = useI18n()
 
-const legExercises = [
+const legExercises = ref([
   {
     id: 1,
-    name: "Squats",
-    description: "The king of leg exercises",
-    instructions:
-      "Stand with feet shoulder-width apart, lower body as if sitting back into a chair, keep chest up and knees behind toes, return to standing",
-    difficulty: "Beginner",
+    name: "beginner.exercises.leg.squats.name",
+    description: "beginner.exercises.leg.squats.description",
+    instructions: "beginner.exercises.leg.squats.instructions",
+    difficulty: "beginner.exercises.leg.squats.difficulty",
   },
   {
     id: 2,
-    name: "Leg Press",
-    description: "Machine-based leg strengthening",
-    instructions:
-      "Sit on leg press machine, place feet shoulder-width apart on platform, lower weight by bending knees to 90 degrees, push back up",
-    difficulty: "Beginner",
+    name: "beginner.exercises.leg.legPress.name",
+    description: "beginner.exercises.leg.legPress.description",
+    instructions: "beginner.exercises.leg.legPress.instructions",
+    difficulty: "beginner.exercises.leg.legPress.difficulty",
   },
   {
     id: 3,
-    name: "Hack Squat Machine",
-    description: "Guided squat movement",
-    instructions:
-      "Position yourself on hack squat machine, feet shoulder-width apart, lower by bending knees while keeping back against pad, push up through heels",
-    difficulty: "Beginner",
+    name: "beginner.exercises.leg.hackSquat.name",
+    description: "beginner.exercises.leg.hackSquat.description",
+    instructions: "beginner.exercises.leg.hackSquat.instructions",
+    difficulty: "beginner.exercises.leg.hackSquat.difficulty",
   },
-]
+])
 
-const chestExercises = [
+const chestExercises = ref([
   {
     id: 4,
-    name: "Bench Press",
-    description: "Classic chest building exercise",
-    instructions:
-      "Lie on bench, grip barbell slightly wider than shoulders, lower to chest, press up until arms are extended",
-    difficulty: "Beginner",
+    name: "beginner.exercises.chest.benchPress.name",
+    description: "beginner.exercises.chest.benchPress.description",
+    instructions: "beginner.exercises.chest.benchPress.instructions",
+    difficulty: "beginner.exercises.chest.benchPress.difficulty",
   },
   {
     id: 5,
-    name: "Chest Press Machine",
-    description: "Safe machine-based chest exercise",
-    instructions:
-      "Sit on chest press machine, grip handles at chest level, push forward until arms are extended, return slowly",
-    difficulty: "Beginner",
+    name: "beginner.exercises.chest.chestPress.name",
+    description: "beginner.exercises.chest.chestPress.description",
+    instructions: "beginner.exercises.chest.chestPress.instructions",
+    difficulty: "beginner.exercises.chest.chestPress.difficulty",
   },
   {
     id: 6,
-    name: "Incline Dumbbell Press",
-    description: "Upper chest development",
-    instructions:
-      "Lie on inclined bench, hold dumbbells at chest level, press up and slightly inward, lower slowly to starting position",
-    difficulty: "Beginner",
+    name: "beginner.exercises.chest.inclineDumbbell.name",
+    description: "beginner.exercises.chest.inclineDumbbell.description",
+    instructions: "beginner.exercises.chest.inclineDumbbell.instructions",
+    difficulty: "beginner.exercises.chest.inclineDumbbell.difficulty",
   },
-]
+])
 
-const currentExerciseSet = ref(legExercises)
-const currentSetName = ref("Leg")
+const currentExerciseSet = ref(legExercises.value)
+const currentSetName = ref("leg")
 
 function nextSlide() {
   if (currentSlide.value === 0) {
@@ -73,8 +69,8 @@ function nextSlide() {
     currentSlide.value = 3 // Go to encouragement slide
   } else if (currentSlide.value === 3) {
     // Switch to chest exercises
-    currentExerciseSet.value = chestExercises
-    currentSetName.value = "Chest"
+    currentExerciseSet.value = chestExercises.value
+    currentSetName.value = "chest"
     selectedExercise.value = null
     currentSlide.value = 4 // Chest exercise selection
   } else if (currentSlide.value === 4 && selectedExercise.value) {
@@ -92,11 +88,11 @@ function previousSlide() {
     } else if (currentSlide.value === 3) {
       // Going back to leg instructions
       currentSlide.value = 2
-    } else if (currentSlide.value === 1 && currentSetName.value === "Chest") {
+    } else if (currentSlide.value === 1 && currentSetName.value === "chest") {
       // Going back from chest to encouragement slide
       currentSlide.value = 3
-      currentExerciseSet.value = legExercises
-      currentSetName.value = "Leg"
+      currentExerciseSet.value = legExercises.value
+      currentSetName.value = "leg"
     }
   }
 }
@@ -109,8 +105,8 @@ function selectExercise(exercise) {
 function resetSlideshow() {
   currentSlide.value = 0
   selectedExercise.value = null
-  currentExerciseSet.value = legExercises
-  currentSetName.value = "Leg"
+  currentExerciseSet.value = legExercises.value
+  currentSetName.value = "leg"
 }
 
 function goToMap() {
@@ -141,15 +137,14 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon :size="140" color="primary" class="mb-8">mdi-dumbbell</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Welcome to Gym Basics!</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.title') }}</h1>
           <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis max-width-700">
-            Learn the fundamental exercises to start your fitness journey. We'll guide you through
-            each exercise step by step.
+            {{ t('beginner.subtitle') }}
           </p>
           <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
-            <p class="mb-4">💧 Grab a water bottle to stay hydrated</p>
-            <p class="mb-4">🏃‍♂️ Warm up with 5-10 minutes on the treadmill</p>
-            <p class="mb-4">🧻 Don't forget a towel for wiping down equipment</p>
+            <p class="mb-4">💧 {{ t('beginner.tips.water') }}</p>
+            <p class="mb-4">🏃‍♂️ {{ t('beginner.tips.warmup') }}</p>
+            <p class="mb-4">🧻 {{ t('beginner.tips.towel') }}</p>
           </div>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -159,7 +154,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-play</v-icon>
-            Get Started
+            {{ t('beginner.getStarted') }}
           </v-btn>
         </div>
       </v-window-item>
@@ -169,11 +164,10 @@ function goToMap() {
         <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
             <h2 class="text-md-h2 text-sm-h4 mb-6">
-              Choose Your First {{ currentSetName }} Exercise
+              {{ t('beginner.chooseExercise', { type: currentSetName }) }}
             </h2>
             <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
-              Select one of these beginner-friendly {{ currentSetName.toLowerCase() }} exercises to
-              learn
+              {{ t('beginner.chooseExerciseSubtitle', { type: currentSetName.toLowerCase() }) }}
             </p>
           </div>
 
@@ -196,18 +190,18 @@ function goToMap() {
                     <v-card-title class="d-flex align-center pa-6">
                       <v-chip class="mr-3" size="small" variant="tonal" color="success">
                         <v-icon start>mdi-weight-lifter</v-icon>
-                        {{ exercise.difficulty }}
+                        {{ t(exercise.difficulty) }}
                       </v-chip>
-                      <span class="text-md-h5 text-sm-h6">{{ exercise.name }}</span>
+                      <span class="text-md-h5 text-sm-h6">{{ t(exercise.name) }}</span>
                     </v-card-title>
 
                     <v-card-text class="pa-6">
                       <div class="text-md-h6 text-sm-body-1 mb-6">
-                        {{ exercise.description }}
+                        {{ t(exercise.description) }}
                       </div>
                       <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
-                        Learn This Exercise
+                        {{ t('beginner.learnThisExercise') }}
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -236,11 +230,11 @@ function goToMap() {
                     :size="xs ? 'default' : 'large'"
                   >
                     <v-icon start>mdi-weight-lifter</v-icon>
-                    {{ selectedExercise.difficulty }}
+                    {{ t(selectedExercise.difficulty) }}
                   </v-chip>
-                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ selectedExercise.name }}</h2>
+                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ t(selectedExercise.name) }}</h2>
                   <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis">
-                    {{ selectedExercise.description }}
+                    {{ t(selectedExercise.description) }}
                   </p>
                 </div>
               </v-col>
@@ -249,11 +243,11 @@ function goToMap() {
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
                   <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
-                    Instructions
+                    {{ t('beginner.instructions') }}
                   </v-card-title>
                   <v-card-text class="pa-0">
                     <p class="text-md-h6 text-sm-body-1 mb-6">
-                      {{ selectedExercise.instructions }}
+                      {{ t(selectedExercise.instructions) }}
                     </p>
                   </v-card-text>
                 </v-card>
@@ -262,9 +256,9 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">Video Tutorial</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.videoTutorial') }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      Watch a demonstration of proper form and technique
+                      {{ t('beginner.videoDescription') }}
                     </p>
                     <v-btn
                       color="primary"
@@ -273,7 +267,7 @@ function goToMap() {
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
-                      Coming Soon
+                      {{ t('beginner.comingSoon') }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -282,9 +276,9 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">Find This Equipment</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.findEquipment') }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      Locate this exercise equipment in your gym
+                      {{ t('beginner.findEquipmentDescription') }}
                     </p>
                     <v-btn
                       color="success"
@@ -293,7 +287,7 @@ function goToMap() {
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
-                      View on Gym Map
+                      {{ t('beginner.viewOnGymMap') }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -310,13 +304,12 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon size="140" color="success" class="mb-8">mdi-trophy</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Great Job!</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.greatJob') }}</h1>
           <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
-            You've completed your first leg exercise! 💪
+            {{ t('beginner.firstExerciseComplete') }}
           </p>
           <p class="text-md-h5 text-sm-h6 mb-10 text-medium-emphasis max-width-700">
-            Keep the momentum going! Now let's work on building your chest strength. Remember to
-            maintain proper form and breathe steadily.
+            {{ t('beginner.continueEncouragement') }}
           </p>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -326,7 +319,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-arrow-right</v-icon>
-            Continue to Chest Exercises
+            {{ t('beginner.continueToChest') }}
           </v-btn>
         </div>
       </v-window-item>
@@ -336,11 +329,10 @@ function goToMap() {
         <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
             <h2 class="text-md-h2 text-sm-h4 mb-6">
-              Choose Your First {{ currentSetName }} Exercise
+              {{ t('beginner.chooseExercise', { type: currentSetName }) }}
             </h2>
             <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
-              Select one of these beginner-friendly {{ currentSetName.toLowerCase() }} exercises to
-              learn
+              {{ t('beginner.chooseExerciseSubtitle', { type: currentSetName.toLowerCase() }) }}
             </p>
           </div>
 
@@ -363,18 +355,18 @@ function goToMap() {
                     <v-card-title class="d-flex align-center pa-6">
                       <v-chip class="mr-3" size="small" variant="tonal" color="success">
                         <v-icon start>mdi-weight-lifter</v-icon>
-                        {{ exercise.difficulty }}
+                        {{ t(exercise.difficulty) }}
                       </v-chip>
-                      <span class="text-md-h5 text-sm-h6">{{ exercise.name }}</span>
+                      <span class="text-md-h5 text-sm-h6">{{ t(exercise.name) }}</span>
                     </v-card-title>
 
                     <v-card-text class="pa-6">
                       <div class="text-md-h6 text-sm-body-1 mb-6">
-                        {{ exercise.description }}
+                        {{ t(exercise.description) }}
                       </div>
                       <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
-                        Learn This Exercise
+                        {{ t('beginner.learnThisExercise') }}
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -403,11 +395,11 @@ function goToMap() {
                     :size="xs ? 'default' : 'large'"
                   >
                     <v-icon start>mdi-weight-lifter</v-icon>
-                    {{ selectedExercise.difficulty }}
+                    {{ t(selectedExercise.difficulty) }}
                   </v-chip>
-                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ selectedExercise.name }}</h2>
+                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ t(selectedExercise.name) }}</h2>
                   <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis">
-                    {{ selectedExercise.description }}
+                    {{ t(selectedExercise.description) }}
                   </p>
                 </div>
               </v-col>
@@ -416,11 +408,11 @@ function goToMap() {
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
                   <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
-                    Instructions
+                    {{ t('beginner.instructions') }}
                   </v-card-title>
                   <v-card-text class="pa-0">
                     <p class="text-md-h6 text-sm-body-1 mb-6">
-                      {{ selectedExercise.instructions }}
+                      {{ t(selectedExercise.instructions) }}
                     </p>
                   </v-card-text>
                 </v-card>
@@ -429,9 +421,9 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">Video Tutorial</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.videoTutorial') }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      Watch a demonstration of proper form and technique
+                      {{ t('beginner.videoDescription') }}
                     </p>
                     <v-btn
                       color="primary"
@@ -440,7 +432,7 @@ function goToMap() {
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
-                      Coming Soon
+                      {{ t('beginner.comingSoon') }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -449,9 +441,9 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">Find This Equipment</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.findEquipment') }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      Locate this exercise equipment in your gym
+                      {{ t('beginner.findEquipmentDescription') }}
                     </p>
                     <v-btn
                       color="success"
@@ -460,7 +452,7 @@ function goToMap() {
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
-                      View on Gym Map
+                      {{ t('beginner.viewOnGymMap') }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -477,19 +469,18 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon size="140" color="success" class="mb-8">mdi-trophy-award</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Congratulations! 🎉</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.congratulations') }}</h1>
           <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
-            You've completed your beginner workout! 💪
+            {{ t('beginner.workoutComplete') }}
           </p>
           <p class="text-md-h5 text-sm-h6 mb-6 text-medium-emphasis max-width-700">
-            You've successfully learned fundamental leg and chest exercises. This is just the
-            beginning of your fitness journey!
+            {{ t('beginner.workoutSummary') }}
           </p>
           <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
-            <p class="mb-4">🔥 You've built a solid foundation</p>
-            <p class="mb-4">💪 Remember to maintain proper form</p>
-            <p class="mb-4">🎯 Consistency is key to success</p>
-            <p class="mb-4">📈 Progress comes with time and dedication</p>
+            <p class="mb-4">🔥 {{ t('beginner.achievements.foundation') }}</p>
+            <p class="mb-4">💪 {{ t('beginner.achievements.form') }}</p>
+            <p class="mb-4">🎯 {{ t('beginner.achievements.consistency') }}</p>
+            <p class="mb-4">📈 {{ t('beginner.achievements.progress') }}</p>
           </div>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -499,7 +490,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-restart</v-icon>
-            Start Over
+            {{ t('beginner.startOver') }}
           </v-btn>
         </div>
       </v-window-item>
@@ -515,7 +506,7 @@ function goToMap() {
         class="mr-4"
       >
         <v-icon start>mdi-arrow-left</v-icon>
-        Back
+        {{ t('beginner.back') }}
       </v-btn>
 
       <v-spacer />
@@ -538,7 +529,7 @@ function goToMap() {
         @click="nextSlide"
       >
         <v-icon start>mdi-arrow-right</v-icon>
-        Continue
+        {{ t('beginner.continue') }}
       </v-btn>
     </div>
   </div>
