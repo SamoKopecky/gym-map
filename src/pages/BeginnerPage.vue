@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import { useDisplay } from "vuetify"
 
 const currentSlide = ref(0)
+// eslint-disable-next-line
 const selectedExercise = ref<any>(null)
+const { xs, mdAndUp } = useDisplay()
 
 const legExercises = [
   {
@@ -98,7 +101,7 @@ function previousSlide() {
   }
 }
 
-function selectExercise(exercise: any) {
+function selectExercise(exercise) {
   selectedExercise.value = exercise
   nextSlide()
 }
@@ -149,11 +152,11 @@ function goToMap() {
             <p class="mb-4">🧻 Don't forget a towel for wiping down equipment</p>
           </div>
           <v-btn
-            :size="$vuetify.display.xs ? 'large' : 'x-large'"
+            :size="xs ? 'large' : 'x-large'"
             color="primary"
             variant="flat"
             @click="nextSlide"
-            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
+            :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-play</v-icon>
             Get Started
@@ -202,12 +205,7 @@ function goToMap() {
                       <div class="text-md-h6 text-sm-body-1 mb-6">
                         {{ exercise.description }}
                       </div>
-                      <v-btn
-                        variant="tonal"
-                        color="primary"
-                        block
-                        :size="$vuetify.display.xs ? 'large' : 'x-large'"
-                      >
+                      <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
                         Learn This Exercise
                       </v-btn>
@@ -227,19 +225,15 @@ function goToMap() {
             <v-row
               style="min-height: 100%"
               class="align-center instruction-slide-row"
-              :class="$vuetify.display.mdAndUp ? 'align-center' : 'align-start'"
+              :class="mdAndUp ? 'align-center' : 'align-start'"
             >
-              <v-col
-                cols="12"
-                md="6"
-                :class="$vuetify.display.mdAndUp ? 'd-flex align-center' : ''"
-              >
+              <v-col cols="12" md="6" :class="mdAndUp ? 'd-flex align-center' : ''">
                 <div class="text-center text-md-left">
                   <v-chip
                     class="mb-6"
                     variant="tonal"
                     color="success"
-                    :size="$vuetify.display.xs ? 'default' : 'large'"
+                    :size="xs ? 'default' : 'large'"
                   >
                     <v-icon start>mdi-weight-lifter</v-icon>
                     {{ selectedExercise.difficulty }}
@@ -275,7 +269,7 @@ function goToMap() {
                     <v-btn
                       color="primary"
                       variant="outlined"
-                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      :size="xs ? 'default' : 'large'"
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
@@ -295,7 +289,7 @@ function goToMap() {
                     <v-btn
                       color="success"
                       variant="flat"
-                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      :size="xs ? 'default' : 'large'"
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
@@ -325,11 +319,11 @@ function goToMap() {
             maintain proper form and breathe steadily.
           </p>
           <v-btn
-            :size="$vuetify.display.xs ? 'large' : 'x-large'"
+            :size="xs ? 'large' : 'x-large'"
             color="success"
             variant="flat"
             @click="nextSlide"
-            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
+            :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-arrow-right</v-icon>
             Continue to Chest Exercises
@@ -378,12 +372,7 @@ function goToMap() {
                       <div class="text-md-h6 text-sm-body-1 mb-6">
                         {{ exercise.description }}
                       </div>
-                      <v-btn
-                        variant="tonal"
-                        color="primary"
-                        block
-                        :size="$vuetify.display.xs ? 'large' : 'x-large'"
-                      >
+                      <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
                         Learn This Exercise
                       </v-btn>
@@ -403,19 +392,15 @@ function goToMap() {
             <v-row
               style="min-height: 100%"
               class="align-center instruction-slide-row"
-              :class="$vuetify.display.mdAndUp ? 'align-center' : 'align-start'"
+              :class="mdAndUp ? 'align-center' : 'align-start'"
             >
-              <v-col
-                cols="12"
-                md="6"
-                :class="$vuetify.display.mdAndUp ? 'd-flex align-center' : ''"
-              >
+              <v-col cols="12" md="6" :class="mdAndUp ? 'd-flex align-center' : ''">
                 <div class="text-center text-md-left">
                   <v-chip
                     class="mb-6"
                     variant="tonal"
                     color="success"
-                    :size="$vuetify.display.xs ? 'default' : 'large'"
+                    :size="xs ? 'default' : 'large'"
                   >
                     <v-icon start>mdi-weight-lifter</v-icon>
                     {{ selectedExercise.difficulty }}
@@ -451,7 +436,7 @@ function goToMap() {
                     <v-btn
                       color="primary"
                       variant="outlined"
-                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      :size="xs ? 'default' : 'large'"
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
@@ -471,7 +456,7 @@ function goToMap() {
                     <v-btn
                       color="success"
                       variant="flat"
-                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      :size="xs ? 'default' : 'large'"
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
@@ -507,11 +492,11 @@ function goToMap() {
             <p class="mb-4">📈 Progress comes with time and dedication</p>
           </div>
           <v-btn
-            :size="$vuetify.display.xs ? 'large' : 'x-large'"
+            :size="xs ? 'large' : 'x-large'"
             color="primary"
             variant="flat"
             @click="resetSlideshow"
-            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
+            :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-restart</v-icon>
             Start Over
@@ -525,7 +510,7 @@ function goToMap() {
       <v-btn
         v-if="currentSlide > 0"
         variant="outlined"
-        :size="$vuetify.display.xs ? 'default' : 'large'"
+        :size="xs ? 'default' : 'large'"
         @click="previousSlide"
         class="mr-4"
       >
@@ -539,7 +524,7 @@ function goToMap() {
         v-if="currentSlide === 6"
         color="primary"
         variant="flat"
-        :size="$vuetify.display.xs ? 'default' : 'large'"
+        :size="xs ? 'default' : 'large'"
         @click="resetSlideshow"
       >
         <v-icon start>mdi-restart</v-icon>
@@ -549,7 +534,7 @@ function goToMap() {
         v-else-if="currentSlide === 2 || currentSlide === 5"
         color="success"
         variant="flat"
-        :size="$vuetify.display.xs ? 'default' : 'large'"
+        :size="xs ? 'default' : 'large'"
         @click="nextSlide"
       >
         <v-icon start>mdi-arrow-right</v-icon>
@@ -586,20 +571,10 @@ function goToMap() {
 }
 
 .slide-window {
-  height: calc(100% - 80px); /* Leave space for navigation */
+  height: 100%;
   width: 100%;
-}
-
-@media (max-width: 768px) {
-  .slide-window {
-    height: calc(100% - 70px); /* Less space needed for smaller navigation */
-  }
-}
-
-@media (max-width: 480px) {
-  .slide-window {
-    height: calc(100% - 65px);
-  }
+  padding-bottom: 80px; /* Space for navigation controls */
+  box-sizing: border-box;
 }
 
 .slide-content {
@@ -667,6 +642,10 @@ function goToMap() {
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
+  .slide-window {
+    padding-bottom: 70px; /* Space for navigation controls on tablet */
+  }
+
   .slide-content {
     padding: 16px;
     min-height: 100%;
@@ -746,6 +725,10 @@ function goToMap() {
 }
 
 @media (max-width: 480px) {
+  .slide-window {
+    padding-bottom: 65px; /* Space for navigation controls on mobile */
+  }
+
   .slide-content {
     padding: 12px;
     min-height: 100%;
