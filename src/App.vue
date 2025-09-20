@@ -118,7 +118,11 @@ function login() {
               />
 
               <!-- Admin -->
-              <v-list-item v-if="smAndDown" :title="'Admin'" @click="router.push('/admin')" />
+              <v-list-item
+                v-if="isAdmin && smAndDown"
+                :title="'Admin'"
+                @click="router.push('/admin')"
+              />
 
               <!-- Changelog -->
               <v-list-item v-if="isTrainer || isAdmin" @click="router.push('/changelog')">
