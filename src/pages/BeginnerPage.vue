@@ -137,14 +137,14 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon :size="140" color="primary" class="mb-8">mdi-dumbbell</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.title') }}</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t("beginner.title") }}</h1>
           <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis max-width-700">
-            {{ t('beginner.subtitle') }}
+            {{ t("beginner.subtitle") }}
           </p>
           <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
-            <p class="mb-4">💧 {{ t('beginner.tips.water') }}</p>
-            <p class="mb-4">🏃‍♂️ {{ t('beginner.tips.warmup') }}</p>
-            <p class="mb-4">🧻 {{ t('beginner.tips.towel') }}</p>
+            <p class="mb-4">💧 {{ t("beginner.tips.water") }}</p>
+            <p class="mb-4">🏃‍♂️ {{ t("beginner.tips.warmup") }}</p>
+            <p class="mb-4">🧻 {{ t("beginner.tips.towel") }}</p>
           </div>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -154,7 +154,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-play</v-icon>
-            {{ t('beginner.getStarted') }}
+            {{ t("beginner.getStarted") }}
           </v-btn>
         </div>
       </v-window-item>
@@ -164,10 +164,10 @@ function goToMap() {
         <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
             <h2 class="text-md-h2 text-sm-h4 mb-6">
-              {{ t('beginner.chooseExercise', { type: currentSetName }) }}
+              {{ t("beginner.chooseExercise", { type: currentSetName }) }}
             </h2>
             <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
-              {{ t('beginner.chooseExerciseSubtitle', { type: currentSetName.toLowerCase() }) }}
+              {{ t("beginner.chooseExerciseSubtitle", { type: currentSetName.toLowerCase() }) }}
             </p>
           </div>
 
@@ -201,7 +201,7 @@ function goToMap() {
                       </div>
                       <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
-                        {{ t('beginner.learnThisExercise') }}
+                        {{ t("beginner.learnThisExercise") }}
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -243,7 +243,7 @@ function goToMap() {
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
                   <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
-                    {{ t('beginner.instructions') }}
+                    {{ t("beginner.instructions") }}
                   </v-card-title>
                   <v-card-text class="pa-0">
                     <p class="text-md-h6 text-sm-body-1 mb-6">
@@ -256,9 +256,9 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.videoTutorial') }}</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t("beginner.videoTutorial") }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      {{ t('beginner.videoDescription') }}
+                      {{ t("beginner.videoDescription") }}
                     </p>
                     <v-btn
                       color="primary"
@@ -267,7 +267,7 @@ function goToMap() {
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
-                      {{ t('beginner.comingSoon') }}
+                      {{ t("beginner.comingSoon") }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -276,9 +276,9 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.findEquipment') }}</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t("beginner.findEquipment") }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      {{ t('beginner.findEquipmentDescription') }}
+                      {{ t("beginner.findEquipmentDescription") }}
                     </p>
                     <v-btn
                       color="success"
@@ -287,7 +287,7 @@ function goToMap() {
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
-                      {{ t('beginner.viewOnGymMap') }}
+                      {{ t("beginner.viewOnGymMap") }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -304,12 +304,12 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon size="140" color="success" class="mb-8">mdi-trophy</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.greatJob') }}</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t("beginner.greatJob") }}</h1>
           <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
-            {{ t('beginner.firstExerciseComplete') }}
+            {{ t("beginner.firstExerciseComplete") }}
           </p>
           <p class="text-md-h5 text-sm-h6 mb-10 text-medium-emphasis max-width-700">
-            {{ t('beginner.continueEncouragement') }}
+            {{ t("beginner.continueEncouragement") }}
           </p>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -319,7 +319,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-arrow-right</v-icon>
-            {{ t('beginner.continueToChest') }}
+            {{ t("beginner.continueToChest") }}
           </v-btn>
         </div>
       </v-window-item>
@@ -329,10 +329,10 @@ function goToMap() {
         <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
             <h2 class="text-md-h2 text-sm-h4 mb-6">
-              {{ t('beginner.chooseExercise', { type: currentSetName }) }}
+              {{ t("beginner.chooseExercise", { type: currentSetName }) }}
             </h2>
             <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
-              {{ t('beginner.chooseExerciseSubtitle', { type: currentSetName.toLowerCase() }) }}
+              {{ t("beginner.chooseExerciseSubtitle", { type: currentSetName.toLowerCase() }) }}
             </p>
           </div>
 
@@ -366,7 +366,7 @@ function goToMap() {
                       </div>
                       <v-btn variant="tonal" color="primary" block :size="xs ? 'large' : 'x-large'">
                         <v-icon start>mdi-play-circle</v-icon>
-                        {{ t('beginner.learnThisExercise') }}
+                        {{ t("beginner.learnThisExercise") }}
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -408,7 +408,7 @@ function goToMap() {
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
                   <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
-                    {{ t('beginner.instructions') }}
+                    {{ t("beginner.instructions") }}
                   </v-card-title>
                   <v-card-text class="pa-0">
                     <p class="text-md-h6 text-sm-body-1 mb-6">
@@ -421,9 +421,9 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.videoTutorial') }}</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t("beginner.videoTutorial") }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      {{ t('beginner.videoDescription') }}
+                      {{ t("beginner.videoDescription") }}
                     </p>
                     <v-btn
                       color="primary"
@@ -432,7 +432,7 @@ function goToMap() {
                       disabled
                     >
                       <v-icon start>mdi-video</v-icon>
-                      {{ t('beginner.comingSoon') }}
+                      {{ t("beginner.comingSoon") }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -441,9 +441,9 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t('beginner.findEquipment') }}</h3>
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">{{ t("beginner.findEquipment") }}</h3>
                     <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
-                      {{ t('beginner.findEquipmentDescription') }}
+                      {{ t("beginner.findEquipmentDescription") }}
                     </p>
                     <v-btn
                       color="success"
@@ -452,7 +452,7 @@ function goToMap() {
                       @click="goToMap"
                     >
                       <v-icon start>mdi-map</v-icon>
-                      {{ t('beginner.viewOnGymMap') }}
+                      {{ t("beginner.viewOnGymMap") }}
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -469,18 +469,20 @@ function goToMap() {
           style="min-height: 100%"
         >
           <v-icon size="140" color="success" class="mb-8">mdi-trophy-award</v-icon>
-          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">{{ t('beginner.congratulations') }}</h1>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">
+            {{ t("beginner.congratulations") }}
+          </h1>
           <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
-            {{ t('beginner.workoutComplete') }}
+            {{ t("beginner.workoutComplete") }}
           </p>
           <p class="text-md-h5 text-sm-h6 mb-6 text-medium-emphasis max-width-700">
-            {{ t('beginner.workoutSummary') }}
+            {{ t("beginner.workoutSummary") }}
           </p>
           <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
-            <p class="mb-4">🔥 {{ t('beginner.achievements.foundation') }}</p>
-            <p class="mb-4">💪 {{ t('beginner.achievements.form') }}</p>
-            <p class="mb-4">🎯 {{ t('beginner.achievements.consistency') }}</p>
-            <p class="mb-4">📈 {{ t('beginner.achievements.progress') }}</p>
+            <p class="mb-4">🔥 {{ t("beginner.achievements.foundation") }}</p>
+            <p class="mb-4">💪 {{ t("beginner.achievements.form") }}</p>
+            <p class="mb-4">🎯 {{ t("beginner.achievements.consistency") }}</p>
+            <p class="mb-4">📈 {{ t("beginner.achievements.progress") }}</p>
           </div>
           <v-btn
             :size="xs ? 'large' : 'x-large'"
@@ -490,7 +492,7 @@ function goToMap() {
             :class="xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-restart</v-icon>
-            {{ t('beginner.startOver') }}
+            {{ t("beginner.startOver") }}
           </v-btn>
         </div>
       </v-window-item>
@@ -506,7 +508,7 @@ function goToMap() {
         class="mr-4"
       >
         <v-icon start>mdi-arrow-left</v-icon>
-        {{ t('beginner.back') }}
+        {{ t("beginner.back") }}
       </v-btn>
 
       <v-spacer />
@@ -529,7 +531,7 @@ function goToMap() {
         @click="nextSlide"
       >
         <v-icon start>mdi-arrow-right</v-icon>
-        {{ t('beginner.continue') }}
+        {{ t("beginner.continue") }}
       </v-btn>
     </div>
   </div>

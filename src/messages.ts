@@ -206,8 +206,9 @@ export const messages = {
       allExerciseInstructions: "Všechny instrukce cviku",
     },
     beginner: {
-      title: "Vítejte v Gym Základech!",
-      subtitle: "Naučte se základní cviky pro začátek vaší fitness cesty. Provedeme vás každým cvikem krok za krokem.",
+      title: "Vitaj v Gym Základech!",
+      subtitle:
+        "Nauč se základní cviky pro začátek svojí fitness cesty. Provedeme tě každým cvikem krok za krokem.",
       tips: {
         water: "Vezmi si láhev s vodou pro udržení hydratace",
         warmup: "Zahřej se 5-10 minutami na běžeckém pásu",
@@ -226,11 +227,13 @@ export const messages = {
       viewOnGymMap: "Zobrazit na mapě posilovny",
       greatJob: "Skvělá práce!",
       firstExerciseComplete: "Dokončil jsi svůj první cvik na nohy! 💪",
-      continueEncouragement: "Pokračuj v tempu! Teď se zaměřme na budování síly tvých prsních svalů. Nezapomeň na správnou techniku a klidné dýchání.",
+      continueEncouragement:
+        "Pokračuj v tempu! Teď se zaměřme na budování síly tvých prsních svalů. Nezapomeň na správnou techniku a klidné dýchání.",
       continueToChest: "Pokračovat k cvik na prsa",
       congratulations: "Gratulujeme! 🎉",
       workoutComplete: "Dokončil jsi svůj začáteční trénink! 💪",
-      workoutSummary: "Úspěšně ses naučil základní cviky na nohy a prsa. Toto je teprve začátek tvé fitness cesty!",
+      workoutSummary:
+        "Úspěšně ses naučil základní cviky na nohy a prsa. Toto je teprve začátek tvé fitness cesty!",
       achievements: {
         foundation: "Vybudoval jsi pevný základ",
         form: "Nezapomeň na správnou techniku",
@@ -245,19 +248,22 @@ export const messages = {
           squats: {
             name: "Dřepy",
             description: "Král všech cviků na nohy",
-            instructions: "Postav se s nohama na šířku ramen, sniž tělo, jako bys si seděl na židli, udržuj hruď nahoře a kolena za prsty, vrať se do stoje",
+            instructions:
+              "Postav se s nohama na šířku ramen, sniž tělo, jako bys si seděl na židli, udržuj hruď nahoře a kolena za prsty, vrať se do stoje",
             difficulty: "Začátečník",
           },
           legPress: {
             name: "Leg press",
             description: "Posilování nohou na stroji",
-            instructions: "Sedni si na leg press stroj, polož nohy na šířku ramen na platformu, sniž váhu ohnutím kolen na 90 stupňů, zatlač zpět nahoru",
+            instructions:
+              "Sedni si na leg press stroj, polož nohy na šířku ramen na platformu, sniž váhu ohnutím kolen na 90 stupňů, zatlač zpět nahoru",
             difficulty: "Začátečník",
           },
           hackSquat: {
             name: "Hack squat stroj",
             description: "Řízený pohyb dřepů",
-            instructions: "Postav se na hack squat stroj, nohy na šířku ramen, sniž se ohnutím kolen při zachování zad na podložce, tlač nahoru přes paty",
+            instructions:
+              "Postav se na hack squat stroj, nohy na šířku ramen, sniž se ohnutím kolen při zachování zad na podložce, tlač nahoru přes paty",
             difficulty: "Začátečník",
           },
         },
@@ -265,19 +271,22 @@ export const messages = {
           benchPress: {
             name: "Bench press",
             description: "Klasický cvik pro budování prsních svalů",
-            instructions: "Lehni si na lavici, uchop činku trochu šířeji než ramena, sniž k hrudi, tlač nahoru až jsou paže natažené",
+            instructions:
+              "Lehni si na lavici, uchop činku trochu šířeji než ramena, sniž k hrudi, tlač nahoru až jsou paže natažené",
             difficulty: "Začátečník",
           },
           chestPress: {
             name: "Chest press stroj",
             description: "Bezpečný cvik na prsa na stroji",
-            instructions: "Sedni si na chest press stroj, uchop rukojeti ve výši prsů, tlač dopředu až jsou paže natažené, pomalu se vrať",
+            instructions:
+              "Sedni si na chest press stroj, uchop rukojeti ve výši prsů, tlač dopředu až jsou paže natažené, pomalu se vrať",
             difficulty: "Začátečník",
           },
           inclineDumbbell: {
             name: "Šikmý bench s činkami",
             description: "Rozvoj horní části prsních svalů",
-            instructions: "Lehni si na šikmou lavici, drž činky ve výši prsů, tlač nahoru a mírně dovnitř, pomalu sniž do výchozí pozice",
+            instructions:
+              "Lehni si na šikmou lavici, drž činky ve výši prsů, tlač nahoru a mírně dovnitř, pomalu sniž do výchozí pozice",
             difficulty: "Začátečník",
           },
         },
@@ -493,7 +502,8 @@ export const messages = {
     },
     beginner: {
       title: "Welcome to Gym Basics!",
-      subtitle: "Learn the fundamental exercises to start your fitness journey. We'll guide you through each exercise step by step.",
+      subtitle:
+        "Learn the fundamental exercises to start your fitness journey. We'll guide you through each exercise step by step.",
       tips: {
         water: "Grab a water bottle to stay hydrated",
         warmup: "Warm up with 5-10 minutes on the treadmill",
@@ -512,11 +522,13 @@ export const messages = {
       viewOnGymMap: "View on Gym Map",
       greatJob: "Great Job!",
       firstExerciseComplete: "You've completed your first leg exercise! 💪",
-      continueEncouragement: "Keep the momentum going! Now let's work on building your chest strength. Remember to maintain proper form and breathe steadily.",
+      continueEncouragement:
+        "Keep the momentum going! Now let's work on building your chest strength. Remember to maintain proper form and breathe steadily.",
       continueToChest: "Continue to Chest Exercises",
       congratulations: "Congratulations! 🎉",
       workoutComplete: "You've completed your beginner workout! 💪",
-      workoutSummary: "You've successfully learned fundamental leg and chest exercises. This is just the beginning of your fitness journey!",
+      workoutSummary:
+        "You've successfully learned fundamental leg and chest exercises. This is just the beginning of your fitness journey!",
       achievements: {
         foundation: "You've built a solid foundation",
         form: "Remember to maintain proper form",
@@ -531,19 +543,22 @@ export const messages = {
           squats: {
             name: "Squats",
             description: "The king of leg exercises",
-            instructions: "Stand with feet shoulder-width apart, lower body as if sitting back into a chair, keep chest up and knees behind toes, return to standing",
+            instructions:
+              "Stand with feet shoulder-width apart, lower body as if sitting back into a chair, keep chest up and knees behind toes, return to standing",
             difficulty: "Beginner",
           },
           legPress: {
             name: "Leg Press",
             description: "Machine-based leg strengthening",
-            instructions: "Sit on leg press machine, place feet shoulder-width apart on platform, lower weight by bending knees to 90 degrees, push back up",
+            instructions:
+              "Sit on leg press machine, place feet shoulder-width apart on platform, lower weight by bending knees to 90 degrees, push back up",
             difficulty: "Beginner",
           },
           hackSquat: {
             name: "Hack Squat Machine",
             description: "Guided squat movement",
-            instructions: "Position yourself on hack squat machine, feet shoulder-width apart, lower by bending knees while keeping back against pad, push up through heels",
+            instructions:
+              "Position yourself on hack squat machine, feet shoulder-width apart, lower by bending knees while keeping back against pad, push up through heels",
             difficulty: "Beginner",
           },
         },
@@ -551,19 +566,22 @@ export const messages = {
           benchPress: {
             name: "Bench Press",
             description: "Classic chest building exercise",
-            instructions: "Lie on bench, grip barbell slightly wider than shoulders, lower to chest, press up until arms are extended",
+            instructions:
+              "Lie on bench, grip barbell slightly wider than shoulders, lower to chest, press up until arms are extended",
             difficulty: "Beginner",
           },
           chestPress: {
             name: "Chest Press Machine",
             description: "Safe machine-based chest exercise",
-            instructions: "Sit on chest press machine, grip handles at chest level, push forward until arms are extended, return slowly",
+            instructions:
+              "Sit on chest press machine, grip handles at chest level, push forward until arms are extended, return slowly",
             difficulty: "Beginner",
           },
           inclineDumbbell: {
             name: "Incline Dumbbell Press",
             description: "Upper chest development",
-            instructions: "Lie on inclined bench, hold dumbbells at chest level, press up and slightly inward, lower slowly to starting position",
+            instructions:
+              "Lie on inclined bench, hold dumbbells at chest level, press up and slightly inward, lower slowly to starting position",
             difficulty: "Beginner",
           },
         },
@@ -778,8 +796,9 @@ export const messages = {
       allExerciseInstructions: "Všetky inštrukcie cviku",
     },
     beginner: {
-      title: "Vitajte v Gym Základoch!",
-      subtitle: "Naučte sa základné cviky na začiatok vašej fitness cesty. Prevedieme vás každým cvikom krok za krokom.",
+      title: "Vitaj v Gym Základoch!",
+      subtitle:
+        "Nauč sa základné cviky na začiatok svojej fitness cesty. Prevedieme ťa každým cvikom krok za krokom.",
       tips: {
         water: "Vezmi si fľašu s vodou na udržanie hydratácie",
         warmup: "Zahrej sa 5-10 minútami na bežeckom páse",
@@ -798,11 +817,13 @@ export const messages = {
       viewOnGymMap: "Zobraziť na mape posilňovne",
       greatJob: "Skvelá práca!",
       firstExerciseComplete: "Dokončil si svoj prvý cvik na nohy! 💪",
-      continueEncouragement: "Pokračuj v tempe! Teraz sa zamerajme na budovanie sily tvojich prsných svalov. Nezabudni na správnu techniku a pokojné dýchanie.",
+      continueEncouragement:
+        "Pokračuj v tempe! Teraz sa zamerajme na budovanie sily tvojich prsných svalov. Nezabudni na správnu techniku a pokojné dýchanie.",
       continueToChest: "Pokračovať k cvikom na prsia",
       congratulations: "Gratulujeme! 🎉",
       workoutComplete: "Dokončil si svoj začiatočnícky tréning! 💪",
-      workoutSummary: "Úspešne si sa naučil základné cviky na nohy a prsia. Toto je len začiatok tvojej fitness cesty!",
+      workoutSummary:
+        "Úspešne si sa naučil základné cviky na nohy a prsia. Toto je len začiatok tvojej fitness cesty!",
       achievements: {
         foundation: "Vybudoval si pevný základ",
         form: "Nezabudni na správnu techniku",
@@ -817,19 +838,22 @@ export const messages = {
           squats: {
             name: "Drepy",
             description: "Kráľ všetkých cvikov na nohy",
-            instructions: "Postav sa s nohami na šírku ramien, zníž telo, akoby si si sadal na stoličku, udržuj hruď hore a kolená za prstami, vráť sa do stoja",
+            instructions:
+              "Postav sa s nohami na šírku ramien, zníž telo, akoby si si sadal na stoličku, udržuj hruď hore a kolená za prstami, vráť sa do stoja",
             difficulty: "Začiatočník",
           },
           legPress: {
             name: "Leg press",
             description: "Posilňovanie nôh na stroji",
-            instructions: "Sadni si na leg press stroj, polož nohy na šírku ramien na platformu, zníž váhu ohnutím kolien na 90 stupňov, zatlač späť hore",
+            instructions:
+              "Sadni si na leg press stroj, polož nohy na šírku ramien na platformu, zníž váhu ohnutím kolien na 90 stupňov, zatlač späť hore",
             difficulty: "Začiatočník",
           },
           hackSquat: {
             name: "Hack squat stroj",
             description: "Riadený pohyb drepov",
-            instructions: "Postav sa na hack squat stroj, nohy na šírku ramien, zníž sa ohnutím kolien pri zachovaní chrbta na podložke, tlač hore cez päty",
+            instructions:
+              "Postav sa na hack squat stroj, nohy na šírku ramien, zníž sa ohnutím kolien pri zachovaní chrbta na podložke, tlač hore cez päty",
             difficulty: "Začiatočník",
           },
         },
@@ -837,19 +861,22 @@ export const messages = {
           benchPress: {
             name: "Bench press",
             description: "Klasický cvik pre budovanie prsných svalov",
-            instructions: "Ľahni si na lavicu, uchop činku trochu širšie než ramená, zníž k hrudi, tlač hore až sú paže natiahnuté",
+            instructions:
+              "Ľahni si na lavicu, uchop činku trochu širšie než ramená, zníž k hrudi, tlač hore až sú paže natiahnuté",
             difficulty: "Začiatočník",
           },
           chestPress: {
             name: "Chest press stroj",
             description: "Bezpečný cvik na prsia na stroji",
-            instructions: "Sadni si na chest press stroj, uchop rukoväte vo výške pŕs, tlač dopredu až sú paže natiahnuté, pomaly sa vráť",
+            instructions:
+              "Sadni si na chest press stroj, uchop rukoväte vo výške pŕs, tlač dopredu až sú paže natiahnuté, pomaly sa vráť",
             difficulty: "Začiatočník",
           },
           inclineDumbbell: {
             name: "Šikmý bench s činkami",
             description: "Rozvoj hornej časti prsných svalov",
-            instructions: "Ľahni si na šikmú lavicu, drž činky vo výške pŕs, tlač hore a mierne dovnútra, pomaly zníž do východiskovej pozície",
+            instructions:
+              "Ľahni si na šikmú lavicu, drž činky vo výške pŕs, tlač hore a mierne dovnútra, pomaly zníž do východiskovej pozície",
             difficulty: "Začiatočník",
           },
         },
