@@ -76,6 +76,8 @@ function nextSlide() {
     currentSlide.value = 4 // Chest exercise selection
   } else if (currentSlide.value === 4 && selectedExercise.value) {
     currentSlide.value = 5 // Chest instruction slide
+  } else if (currentSlide.value === 5) {
+    currentSlide.value = 6 // Final congratulations slide
   }
 }
 
@@ -120,35 +122,38 @@ function goToMap() {
     <!-- Slide Counter - Fixed Position -->
     <div class="slide-counter">
       <v-progress-linear
-        :model-value="((currentSlide + 1) / 6) * 100"
+        :model-value="((currentSlide + 1) / 7) * 100"
         height="4"
         color="primary"
         class="mb-2"
       />
-      <v-chip size="small" variant="outlined"> {{ currentSlide + 1 }} / 6 </v-chip>
+      <v-chip size="small" variant="outlined"> {{ currentSlide + 1 }} / 7 </v-chip>
     </div>
 
     <v-window v-model="currentSlide" class="slide-window">
       <!-- Intro Slide -->
       <v-window-item :value="0" class="slide-content">
-        <div class="d-flex flex-column justify-center align-center text-center h-100">
-          <v-icon size="140" color="primary" class="mb-8">mdi-dumbbell</v-icon>
-          <h1 class="text-h1 mb-6 font-weight-bold">Welcome to Gym Basics!</h1>
-          <p class="text-h5 mb-8 text-medium-emphasis max-width-700">
+        <div
+          class="d-flex flex-column justify-center align-center text-center"
+          style="min-height: 100%"
+        >
+          <v-icon :size="140" color="primary" class="mb-8">mdi-dumbbell</v-icon>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Welcome to Gym Basics!</h1>
+          <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis max-width-700">
             Learn the fundamental exercises to start your fitness journey. We'll guide you through
             each exercise step by step.
           </p>
-          <div class="text-h6 mb-10 text-medium-emphasis max-width-600">
+          <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
             <p class="mb-4">💧 Grab a water bottle to stay hydrated</p>
             <p class="mb-4">🏃‍♂️ Warm up with 5-10 minutes on the treadmill</p>
             <p class="mb-4">🧻 Don't forget a towel for wiping down equipment</p>
           </div>
           <v-btn
-            size="x-large"
+            :size="$vuetify.display.xs ? 'large' : 'x-large'"
             color="primary"
             variant="flat"
             @click="nextSlide"
-            class="px-12 py-4"
+            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-play</v-icon>
             Get Started
@@ -158,18 +163,20 @@ function goToMap() {
 
       <!-- Exercise Choice Slide -->
       <v-window-item :value="1" class="slide-content">
-        <div class="h-100 d-flex flex-column">
+        <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
-            <h2 class="text-h2 mb-6">Choose Your First {{ currentSetName }} Exercise</h2>
-            <p class="text-h5 text-medium-emphasis">
+            <h2 class="text-md-h2 text-sm-h4 mb-6">
+              Choose Your First {{ currentSetName }} Exercise
+            </h2>
+            <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
               Select one of these beginner-friendly {{ currentSetName.toLowerCase() }} exercises to
               learn
             </p>
           </div>
 
-          <div class="flex-grow-1 d-flex align-center">
+          <div class="flex-grow-1">
             <v-container>
-              <v-row justify="center" class="fill-height">
+              <v-row justify="center">
                 <v-col
                   v-for="exercise in currentExerciseSet"
                   :key="exercise.id"
@@ -188,14 +195,19 @@ function goToMap() {
                         <v-icon start>mdi-weight-lifter</v-icon>
                         {{ exercise.difficulty }}
                       </v-chip>
-                      <span class="text-h5">{{ exercise.name }}</span>
+                      <span class="text-md-h5 text-sm-h6">{{ exercise.name }}</span>
                     </v-card-title>
 
                     <v-card-text class="pa-6">
-                      <div class="text-h6 mb-6">
+                      <div class="text-md-h6 text-sm-body-1 mb-6">
                         {{ exercise.description }}
                       </div>
-                      <v-btn variant="tonal" color="primary" block size="x-large">
+                      <v-btn
+                        variant="tonal"
+                        color="primary"
+                        block
+                        :size="$vuetify.display.xs ? 'large' : 'x-large'"
+                      >
                         <v-icon start>mdi-play-circle</v-icon>
                         Learn This Exercise
                       </v-btn>
@@ -210,17 +222,30 @@ function goToMap() {
 
       <!-- Exercise Instructions Slide -->
       <v-window-item :value="2" class="slide-content">
-        <div class="h-100" v-if="selectedExercise">
-          <v-container class="h-100">
-            <v-row class="h-100 align-center instruction-slide-row">
-              <v-col cols="12" md="6" class="d-flex align-center">
-                <div>
-                  <v-chip class="mb-6" variant="tonal" color="success" size="large">
+        <div style="min-height: 100%" v-if="selectedExercise">
+          <v-container style="min-height: 100%">
+            <v-row
+              style="min-height: 100%"
+              class="align-center instruction-slide-row"
+              :class="$vuetify.display.mdAndUp ? 'align-center' : 'align-start'"
+            >
+              <v-col
+                cols="12"
+                md="6"
+                :class="$vuetify.display.mdAndUp ? 'd-flex align-center' : ''"
+              >
+                <div class="text-center text-md-left">
+                  <v-chip
+                    class="mb-6"
+                    variant="tonal"
+                    color="success"
+                    :size="$vuetify.display.xs ? 'default' : 'large'"
+                  >
                     <v-icon start>mdi-weight-lifter</v-icon>
                     {{ selectedExercise.difficulty }}
                   </v-chip>
-                  <h2 class="text-h1 mb-6">{{ selectedExercise.name }}</h2>
-                  <p class="text-h5 mb-8 text-medium-emphasis">
+                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ selectedExercise.name }}</h2>
+                  <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis">
                     {{ selectedExercise.description }}
                   </p>
                 </div>
@@ -228,12 +253,14 @@ function goToMap() {
 
               <v-col cols="12" md="6">
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
-                  <v-card-title class="d-flex align-center mb-6 text-h4">
+                  <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
                     Instructions
                   </v-card-title>
                   <v-card-text class="pa-0">
-                    <p class="text-h6 mb-6">{{ selectedExercise.instructions }}</p>
+                    <p class="text-md-h6 text-sm-body-1 mb-6">
+                      {{ selectedExercise.instructions }}
+                    </p>
                   </v-card-text>
                 </v-card>
 
@@ -241,11 +268,16 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-h5 mb-4">Video Tutorial</h3>
-                    <p class="text-body-1 text-medium-emphasis mb-6">
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">Video Tutorial</h3>
+                    <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
                       Watch a demonstration of proper form and technique
                     </p>
-                    <v-btn color="primary" variant="outlined" size="large" disabled>
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
+                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      disabled
+                    >
                       <v-icon start>mdi-video</v-icon>
                       Coming Soon
                     </v-btn>
@@ -256,11 +288,16 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-h5 mb-4">Find This Equipment</h3>
-                    <p class="text-body-1 text-medium-emphasis mb-6">
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">Find This Equipment</h3>
+                    <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
                       Locate this exercise equipment in your gym
                     </p>
-                    <v-btn color="success" variant="flat" size="large" @click="goToMap">
+                    <v-btn
+                      color="success"
+                      variant="flat"
+                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      @click="goToMap"
+                    >
                       <v-icon start>mdi-map</v-icon>
                       View on Gym Map
                     </v-btn>
@@ -274,22 +311,25 @@ function goToMap() {
 
       <!-- Encouragement Slide -->
       <v-window-item :value="3" class="slide-content">
-        <div class="d-flex flex-column justify-center align-center text-center h-100">
-          <v-icon size="120" color="success" class="mb-8">mdi-trophy</v-icon>
-          <h1 class="text-h1 mb-6 font-weight-bold">Great Job!</h1>
-          <p class="text-h4 mb-8 text-medium-emphasis">
+        <div
+          class="d-flex flex-column justify-center align-center text-center"
+          style="min-height: 100%"
+        >
+          <v-icon size="140" color="success" class="mb-8">mdi-trophy</v-icon>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Great Job!</h1>
+          <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
             You've completed your first leg exercise! 💪
           </p>
-          <p class="text-h5 mb-10 text-medium-emphasis max-width-700">
+          <p class="text-md-h5 text-sm-h6 mb-10 text-medium-emphasis max-width-700">
             Keep the momentum going! Now let's work on building your chest strength. Remember to
             maintain proper form and breathe steadily.
           </p>
           <v-btn
-            size="x-large"
+            :size="$vuetify.display.xs ? 'large' : 'x-large'"
             color="success"
             variant="flat"
             @click="nextSlide"
-            class="px-12 py-4"
+            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
           >
             <v-icon start>mdi-arrow-right</v-icon>
             Continue to Chest Exercises
@@ -299,18 +339,20 @@ function goToMap() {
 
       <!-- Chest Exercise Choice Slide -->
       <v-window-item :value="4" class="slide-content">
-        <div class="h-100 d-flex flex-column">
+        <div class="d-flex flex-column" style="min-height: 100%">
           <div class="text-center mb-10">
-            <h2 class="text-h2 mb-6">Choose Your First {{ currentSetName }} Exercise</h2>
-            <p class="text-h5 text-medium-emphasis">
+            <h2 class="text-md-h2 text-sm-h4 mb-6">
+              Choose Your First {{ currentSetName }} Exercise
+            </h2>
+            <p class="text-md-h5 text-sm-h6 text-medium-emphasis">
               Select one of these beginner-friendly {{ currentSetName.toLowerCase() }} exercises to
               learn
             </p>
           </div>
 
-          <div class="flex-grow-1 d-flex align-center">
+          <div class="flex-grow-1">
             <v-container>
-              <v-row justify="center" class="fill-height">
+              <v-row justify="center">
                 <v-col
                   v-for="exercise in currentExerciseSet"
                   :key="exercise.id"
@@ -329,14 +371,19 @@ function goToMap() {
                         <v-icon start>mdi-weight-lifter</v-icon>
                         {{ exercise.difficulty }}
                       </v-chip>
-                      <span class="text-h5">{{ exercise.name }}</span>
+                      <span class="text-md-h5 text-sm-h6">{{ exercise.name }}</span>
                     </v-card-title>
 
                     <v-card-text class="pa-6">
-                      <div class="text-h6 mb-6">
+                      <div class="text-md-h6 text-sm-body-1 mb-6">
                         {{ exercise.description }}
                       </div>
-                      <v-btn variant="tonal" color="primary" block size="x-large">
+                      <v-btn
+                        variant="tonal"
+                        color="primary"
+                        block
+                        :size="$vuetify.display.xs ? 'large' : 'x-large'"
+                      >
                         <v-icon start>mdi-play-circle</v-icon>
                         Learn This Exercise
                       </v-btn>
@@ -351,17 +398,30 @@ function goToMap() {
 
       <!-- Chest Exercise Instructions Slide -->
       <v-window-item :value="5" class="slide-content">
-        <div class="h-100" v-if="selectedExercise">
-          <v-container class="h-100">
-            <v-row class="h-100 align-center instruction-slide-row">
-              <v-col cols="12" md="6" class="d-flex align-center">
-                <div>
-                  <v-chip class="mb-6" variant="tonal" color="success" size="large">
+        <div style="min-height: 100%" v-if="selectedExercise">
+          <v-container style="min-height: 100%">
+            <v-row
+              style="min-height: 100%"
+              class="align-center instruction-slide-row"
+              :class="$vuetify.display.mdAndUp ? 'align-center' : 'align-start'"
+            >
+              <v-col
+                cols="12"
+                md="6"
+                :class="$vuetify.display.mdAndUp ? 'd-flex align-center' : ''"
+              >
+                <div class="text-center text-md-left">
+                  <v-chip
+                    class="mb-6"
+                    variant="tonal"
+                    color="success"
+                    :size="$vuetify.display.xs ? 'default' : 'large'"
+                  >
                     <v-icon start>mdi-weight-lifter</v-icon>
                     {{ selectedExercise.difficulty }}
                   </v-chip>
-                  <h2 class="text-h1 mb-6">{{ selectedExercise.name }}</h2>
-                  <p class="text-h5 mb-8 text-medium-emphasis">
+                  <h2 class="text-md-h1 text-sm-h3 mb-6">{{ selectedExercise.name }}</h2>
+                  <p class="text-md-h5 text-sm-h6 mb-8 text-medium-emphasis">
                     {{ selectedExercise.description }}
                   </p>
                 </div>
@@ -369,12 +429,14 @@ function goToMap() {
 
               <v-col cols="12" md="6">
                 <v-card variant="outlined" class="pa-8 instruction-card mb-6">
-                  <v-card-title class="d-flex align-center mb-6 text-h4">
+                  <v-card-title class="d-flex align-center mb-6 text-md-h4 text-sm-h5">
                     <v-icon start color="primary" size="large">mdi-information-outline</v-icon>
                     Instructions
                   </v-card-title>
                   <v-card-text class="pa-0">
-                    <p class="text-h6 mb-6">{{ selectedExercise.instructions }}</p>
+                    <p class="text-md-h6 text-sm-body-1 mb-6">
+                      {{ selectedExercise.instructions }}
+                    </p>
                   </v-card-text>
                 </v-card>
 
@@ -382,11 +444,16 @@ function goToMap() {
                 <v-card variant="outlined" class="mb-6 video-placeholder">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="primary" class="mb-4">mdi-play-circle-outline</v-icon>
-                    <h3 class="text-h5 mb-4">Video Tutorial</h3>
-                    <p class="text-body-1 text-medium-emphasis mb-6">
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">Video Tutorial</h3>
+                    <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
                       Watch a demonstration of proper form and technique
                     </p>
-                    <v-btn color="primary" variant="outlined" size="large" disabled>
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
+                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      disabled
+                    >
                       <v-icon start>mdi-video</v-icon>
                       Coming Soon
                     </v-btn>
@@ -397,11 +464,16 @@ function goToMap() {
                 <v-card variant="outlined" class="map-redirect-card">
                   <v-card-text class="pa-8 text-center">
                     <v-icon size="60" color="success" class="mb-4">mdi-map-marker</v-icon>
-                    <h3 class="text-h5 mb-4">Find This Equipment</h3>
-                    <p class="text-body-1 text-medium-emphasis mb-6">
+                    <h3 class="text-md-h5 text-sm-h6 mb-4">Find This Equipment</h3>
+                    <p class="text-md-body-1 text-sm-body-2 text-medium-emphasis mb-6">
                       Locate this exercise equipment in your gym
                     </p>
-                    <v-btn color="success" variant="flat" size="large" @click="goToMap">
+                    <v-btn
+                      color="success"
+                      variant="flat"
+                      :size="$vuetify.display.xs ? 'default' : 'large'"
+                      @click="goToMap"
+                    >
                       <v-icon start>mdi-map</v-icon>
                       View on Gym Map
                     </v-btn>
@@ -412,6 +484,40 @@ function goToMap() {
           </v-container>
         </div>
       </v-window-item>
+
+      <!-- Final Congratulations Slide -->
+      <v-window-item :value="6" class="slide-content">
+        <div
+          class="d-flex flex-column justify-center align-center text-center"
+          style="min-height: 100%"
+        >
+          <v-icon size="140" color="success" class="mb-8">mdi-trophy-award</v-icon>
+          <h1 class="text-md-h1 text-sm-h3 mb-6 font-weight-bold">Congratulations! 🎉</h1>
+          <p class="text-md-h4 text-sm-h5 mb-8 text-medium-emphasis">
+            You've completed your beginner workout! 💪
+          </p>
+          <p class="text-md-h5 text-sm-h6 mb-6 text-medium-emphasis max-width-700">
+            You've successfully learned fundamental leg and chest exercises. This is just the
+            beginning of your fitness journey!
+          </p>
+          <div class="text-md-h6 text-sm-body-1 mb-10 text-medium-emphasis max-width-600">
+            <p class="mb-4">🔥 You've built a solid foundation</p>
+            <p class="mb-4">💪 Remember to maintain proper form</p>
+            <p class="mb-4">🎯 Consistency is key to success</p>
+            <p class="mb-4">📈 Progress comes with time and dedication</p>
+          </div>
+          <v-btn
+            :size="$vuetify.display.xs ? 'large' : 'x-large'"
+            color="primary"
+            variant="flat"
+            @click="resetSlideshow"
+            :class="$vuetify.display.xs ? 'px-6 py-3' : 'px-12 py-4'"
+          >
+            <v-icon start>mdi-restart</v-icon>
+            Start Over
+          </v-btn>
+        </div>
+      </v-window-item>
     </v-window>
 
     <!-- Navigation Controls - Fixed Bottom -->
@@ -419,7 +525,7 @@ function goToMap() {
       <v-btn
         v-if="currentSlide > 0"
         variant="outlined"
-        size="large"
+        :size="$vuetify.display.xs ? 'default' : 'large'"
         @click="previousSlide"
         class="mr-4"
       >
@@ -430,20 +536,20 @@ function goToMap() {
       <v-spacer />
 
       <v-btn
-        v-if="currentSlide === 5"
+        v-if="currentSlide === 6"
         color="primary"
         variant="flat"
-        size="large"
+        :size="$vuetify.display.xs ? 'default' : 'large'"
         @click="resetSlideshow"
       >
         <v-icon start>mdi-restart</v-icon>
         Start Over
       </v-btn>
       <v-btn
-        v-else-if="currentSlide === 2"
+        v-else-if="currentSlide === 2 || currentSlide === 5"
         color="success"
         variant="flat"
-        size="large"
+        :size="$vuetify.display.xs ? 'default' : 'large'"
         @click="nextSlide"
       >
         <v-icon start>mdi-arrow-right</v-icon>
@@ -462,6 +568,12 @@ function goToMap() {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
+@media (max-width: 768px) {
+  .fullscreen-slideshow {
+    height: calc(100vh - 56px); /* Smaller app bar on mobile */
+  }
+}
+
 .slide-counter {
   position: absolute;
   top: 20px;
@@ -478,10 +590,24 @@ function goToMap() {
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .slide-window {
+    height: calc(100% - 70px); /* Less space needed for smaller navigation */
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-window {
+    height: calc(100% - 65px);
+  }
+}
+
 .slide-content {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   padding: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .navigation-controls {
@@ -542,17 +668,164 @@ function goToMap() {
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .slide-content {
-    padding: 20px;
+    padding: 16px;
+    min-height: 100%;
+    overflow-y: auto;
   }
 
   .navigation-controls {
-    padding: 0 20px;
+    padding: 0 16px;
+    height: 70px;
   }
 
   .slide-counter {
     top: 10px;
     right: 10px;
-    padding: 8px 12px;
+    padding: 6px 10px;
+  }
+
+  /* Responsive icon sizes */
+  .v-icon {
+    font-size: min(var(--v-icon-size-default), 8vw) !important;
+  }
+
+  /* Specific icon size adjustments */
+  .v-icon[style*="font-size: 140"] {
+    font-size: min(80px, 20vw) !important;
+  }
+
+  .v-icon[style*="font-size: 120"] {
+    font-size: min(70px, 18vw) !important;
+  }
+
+  .v-icon[style*="font-size: 60"] {
+    font-size: min(45px, 12vw) !important;
+  }
+
+  /* Adjust margins for mobile */
+  .mb-8 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-10 {
+    margin-bottom: 2rem !important;
+  }
+
+  /* Button adjustments for mobile */
+  .v-btn--size-x-large {
+    padding: 0 1.5rem !important;
+    min-height: 48px !important;
+  }
+
+  .v-btn--size-large {
+    padding: 0 1.25rem !important;
+    min-height: 44px !important;
+  }
+
+  /* Card adjustments */
+  .exercise-card .v-card-title {
+    padding: 1rem !important;
+  }
+
+  .exercise-card .v-card-text {
+    padding: 1rem !important;
+  }
+
+  .instruction-card {
+    padding: 1rem !important;
+  }
+
+  .video-placeholder .v-card-text,
+  .map-redirect-card .v-card-text {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-content {
+    padding: 12px;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+
+  .navigation-controls {
+    padding: 0 12px;
+    height: 65px;
+  }
+
+  /* Even smaller icons for very small screens */
+  .v-icon[style*="font-size: 140"] {
+    font-size: min(60px, 15vw) !important;
+  }
+
+  .v-icon[style*="font-size: 120"] {
+    font-size: min(55px, 14vw) !important;
+  }
+
+  .v-icon[style*="font-size: 60"] {
+    font-size: min(40px, 10vw) !important;
+  }
+
+  /* Tighter spacing */
+  .mb-8 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .mb-10 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Smaller buttons for very small screens */
+  .v-btn--size-x-large {
+    padding: 0 1rem !important;
+    min-height: 44px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .v-btn--size-large {
+    padding: 0 1rem !important;
+    min-height: 40px !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Even more compact cards */
+  .exercise-card .v-card-title,
+  .exercise-card .v-card-text {
+    padding: 0.75rem !important;
+  }
+
+  .instruction-card {
+    padding: 0.75rem !important;
+  }
+
+  .video-placeholder .v-card-text,
+  .map-redirect-card .v-card-text {
+    padding: 1rem !important;
+  }
+
+  /* Better text wrapping */
+  .max-width-700,
+  .max-width-600 {
+    max-width: 100% !important;
+    padding: 0 0.5rem;
+  }
+
+  /* Ensure instruction rows stack properly */
+  .instruction-slide-row {
+    align-items: flex-start !important;
+  }
+
+  /* Improve exercise card layout */
+  .exercise-card {
+    margin-bottom: 1rem;
   }
 }
 </style>
