@@ -1,16 +1,29 @@
-import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript"
-import pluginVitest from "@vitest/eslint-plugin"
+import tseslint from "typescript-eslint"
+import pluginVue from "eslint-plugin-vue"
+import eslintConfigPrettier from "eslint-config-prettier"
 
-export default defineConfigWithVueTs(
+export default tseslint.config(
+  { ignores: ["dist", "node_modules", ".nuxt", ".output"] },
+
+  // 1. Load recommended logic rules
+  ...tseslint.configs.recommended,
+  ...pluginVue.configs["flat/recommended"],
+
+  // 2. Minimal Vue/TS Setup
   {
-    name: "app/files-to-lint",
-    files: ["**/*.{ts,mts,tsx,vue}"],
+    files: ["**/*.ts", "**/*.vue"],
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+        extraFileExtensions: [".vue"],
+      },
+    },
+    rules: {
+      "vue/multi-word-component-names": "off",
+      "no-console": "warn",
+    },
   },
 
-  vueTsConfigs.recommended,
-
-  {
-    ...pluginVitest.configs.recommended,
-    files: ["src/**/__tests__/*"],
-  },
+  // 3. The "Muzzle": Turns off all ESLint formatting rules
+  eslintConfigPrettier,
 )

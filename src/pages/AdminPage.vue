@@ -76,17 +76,17 @@ onMounted(() => loadUsers())
     :confirm-text="t('button.unregister')"
     @confirm="unregisterUserFn"
   >
-    {{ t("dialog.confirmUnregister") }} <strong>{{ unregisterUserName }}</strong
-    >{{ t("dialog.actionCannotBeUndone") }}
+    {{ t("dialog.confirmUnregister") }} <strong>{{ unregisterUserName }}</strong>
+    {{ t("dialog.actionCannotBeUndone") }}
   </DeleteConfirmationDialog>
 
   <v-card class="mb-2">
     <v-card-title class="d-flex align-center">
-      <v-icon icon="mdi-account-group"></v-icon> &nbsp; {{ t("table.trainers") }}
+      <v-icon icon="mdi-account-group" /> &nbsp; {{ t("table.trainers") }}
 
       <v-text-field
-        class="ml-3"
         v-model="search"
+        class="ml-3"
         density="compact"
         :label="t('form.search')"
         prepend-inner-icon="mdi-magnify"
@@ -94,11 +94,11 @@ onMounted(() => loadUsers())
         flat
         hide-details
         single-line
-      ></v-text-field>
+      />
     </v-card-title>
 
     <v-card-text>
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-data-table :loading="tableLoading" :headers="headers" :items="users" :search="search">
         <!-- eslint-disable-next-line -->
@@ -109,12 +109,12 @@ onMounted(() => loadUsers())
             :v-tooltip:bottom="t('button.unregister')"
             icon="mdi-close-circle-outline"
             @click="confirmUserUnregistration(item)"
-          ></v-btn>
+          />
         </template>
       </v-data-table>
 
-      <v-divider></v-divider>
-      <v-form v-model="isFormValid" @submit.prevent="addNew" class="mt-2">
+      <v-divider />
+      <v-form v-model="isFormValid" class="mt-2" @submit.prevent="addNew">
         <v-row class="align-center">
           <v-col cols="12" sm="8">
             <v-text-field
@@ -127,7 +127,7 @@ onMounted(() => loadUsers())
               :placeholder="t('form.newTrainerEmailPlaceholder')"
               :label="t('form.newTrainerEmail')"
               prepend-inner-icon="mdi-email-plus-outline"
-            ></v-text-field>
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <v-btn
@@ -138,7 +138,7 @@ onMounted(() => loadUsers())
               block
               variant="tonal"
             >
-              <v-icon start icon="mdi-account-plus"></v-icon>
+              <v-icon start icon="mdi-account-plus" />
               {{ t("button.registerTrainer") }}
             </v-btn>
           </v-col>
